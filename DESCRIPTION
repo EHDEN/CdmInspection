@@ -1,0 +1,18 @@
+Package: CdmInspection
+Title: R Package to support quality control inspection of an OMOP-CDM instance
+Version: 0.0.0.9000
+Authors@R: 
+    person(given = "Peter",
+           family = "Rijnbeek",
+           role = c("aut", "cre"),
+           email = "p.rijnbeek@erasmusmc.nl",
+           comment = c(ORCID = "https://orcid.org/0000-0003-0621-1979"))
+Description: The CdmInspection R Package is part of this SME Inspection procedure and performs additional checks on top of the Data Quality Dashboard step
+License: Apache License 2.0
+VignetteBuilder: knitr
+URL: https://github.com/EHDEN/CdmInspection
+BugReports: https://github.com/EHDEN/CdmInspection/issue
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.1
