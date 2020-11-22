@@ -92,15 +92,15 @@ connectionDetails <- DatabaseConnector::createConnectionDetails(dbms = dbms,
 oracleTempSchema <- NULL
 
 # Details specific to the database:
-databaseId <- "Your Database ID"
+databaseId <- "TEST"
 databaseName <- "Your database name"
 databaseDescription <- "Your description"
 
 # Details for connecting to the CDM and storing the results
 outputFolder <- file.path(getwd(), "results",databaseId)
-cdmDatabaseSchema <- "Your cdm schema"
-resultsDatabaseSchema <- "Your results schema"
-vocabDatabaseSchema = "Your vocab schema"
+cdmDatabaseSchema <- "synpuf"
+resultsDatabaseSchema <- "prijnbeek"
+vocabDatabaseSchema = "synpuf"
 
 smallCellCount <- 5
 verboseMode <- TRUE
@@ -111,7 +111,7 @@ cdmInspection(connectionDetails,
                 resultsDatabaseSchema = resultsDatabaseSchema,
                 vocabDatabaseSchema = vocabDatabaseSchema,
                 oracleTempSchema = oracleTempSchema,
-                sourcName = databaseName,
+                sourceName = databaseName,
                 smallCellCount = smallCellCount,
                 runSchemaChecks = TRUE,
                 runVocabularyChecks = TRUE,

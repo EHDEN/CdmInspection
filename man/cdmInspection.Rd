@@ -16,17 +16,12 @@ cdmInspection(
   createTable = TRUE,
   smallCellCount = 5,
   cdmVersion = "5",
-  ruhSchemaChecks = TRUE,
+  runSchemaChecks = TRUE,
   runVocabularyChecks = TRUE,
   runPerformanceChecks = TRUE,
-  createIndices = TRUE,
-  numThreads = 1,
-  tempPrefix = "tmpach",
-  dropScratchTables = TRUE,
   sqlOnly = FALSE,
   outputFolder = "output",
-  verboseMode = TRUE,
-  optimizeAtlasCache = FALSE
+  verboseMode = TRUE
 )
 }
 \arguments{
@@ -48,6 +43,8 @@ On SQL Server, this should specifiy both the database and the schema, so for exa
 
 \item{cdmVersion}{Define the OMOP CDM version used:  currently supports v5 and above. Use major release number or minor number only (e.g. 5, 5.3)}
 
+\item{runSchemaChecks}{Boolean to determine if CDM Schema Validation should be run. Default = TRUE}
+
 \item{runVocabularyChecks}{Boolean to determine if vocabulary checks need to be run. Default = TRUE}
 
 \item{runPerformanceChecks}{Boolean to determine if performance checks need to be run. Default = TRUE}
@@ -57,8 +54,6 @@ On SQL Server, this should specifiy both the database and the schema, so for exa
 \item{outputFolder}{Path to store logs and SQL files}
 
 \item{verboseMode}{Boolean to determine if the console will show all execution steps. Default = TRUE}
-
-\item{runSchemaChecks}{Boolean to determine if CDM Schema Validation should be run. Default = TRUE}
 }
 \value{
 \preformatted{                            An object of type \code{achillesResults} containing details for connecting to the database containing the results

@@ -37,7 +37,6 @@
 #' @param oracleTempSchema                 For Oracle only: the name of the database schema where you want all temporary tables to be managed. Requires create/insert permissions to this database.
 #' @param sourceName		                   String name of the data source name. If blank, CDM_SOURCE table will be queried to try to obtain this.
 #' @param smallCellCount                   To avoid patient identifiability, cells with small counts (<= smallCellCount) are deleted. Set to NULL if you don't want any deletions.
-#' @param cdmVersion                       Define the OMOP CDM version used:  currently supports v5 and above. Use major release number or minor number only (e.g. 5, 5.3)
 #' @param runSchemaChecks                   Boolean to determine if CDM Schema Validation should be run. Default = TRUE
 #' @param runVocabularyChecks              Boolean to determine if vocabulary checks need to be run. Default = TRUE
 #' @param runPerformanceChecks             Boolean to determine if performance checks need to be run. Default = TRUE
@@ -56,22 +55,17 @@ cdmInspection <- function (connectionDetails,
                              analysisIds = "",
                              createTable = TRUE,
                              smallCellCount = 5,
-                             cdmVersion = "5",
-                             ruhSchemaChecks = TRUE,
+                             runSchemaChecks = TRUE,
                              runVocabularyChecks = TRUE,
                              runPerformanceChecks = TRUE,
-                             createIndices = TRUE,
-                             numThreads = 1,
-                             tempPrefix = "tmpach",
-                             dropScratchTables = TRUE,
                              sqlOnly = FALSE,
                              outputFolder = "output",
-                             verboseMode = TRUE,
-                             optimizeAtlasCache = FALSE) {
+                             verboseMode = TRUE) {
 
 
   # Log execution -----------------------------------------------------------------------------------------------------------------
   ParallelLogger::clearLoggers()
+  if(!dir.exists(outputFolder)){dir.create(outputFolder,recursive=T)}
 
   logFileName <-"log_cdmInspection.txt"
   unlink(file.path(outputFolder, logFileName))
@@ -90,73 +84,71 @@ cdmInspection <- function (connectionDetails,
                                          appenders = appenders)
   ParallelLogger::registerLogger(logger)
 
-  # Try to get CDM Version if not provided ----------------------------------------------------------------------------------------
 
-  if (missing(cdmVersion)) {
-    cdmVersion <- .getCdmVersion(connectionDetails, cdmDatabaseSchema)
-  }
+  cdmVersion <- .getCdmVersion(connectionDetails, cdmDatabaseSchema)
 
   cdmVersion <- as.character(cdmVersion)
 
   # Check CDM version is valid ---------------------------------------------------------------------------------------------------
-
   if (compareVersion(a = as.character(cdmVersion), b = "5") < 0) {
-    stop("Error: Invalid CDM Version number; this function is only for v5 and above.")
+    ParallelLogger::logError("Not possible to execute the check, this function is only for v5 and above.")
+    ParallelLogger::logError("Is the CDM version available in the cdm_source table?")
+  } else {
+    # Establish folder paths --------------------------------------------------------------------------------------------------------
+
+    if (!dir.exists(outputFolder)) {
+      dir.create(path = outputFolder, recursive = TRUE)
+    }
+
+    # Get source name if none provided ----------------------------------------------------------------------------------------------
+
+    if (missing(sourceName) & !sqlOnly) {
+      .getSourceName(connectionDetails, cdmDatabaseSchema)
+    }
+
+    # Logging
+    ParallelLogger::logInfo(paste0("CDM Inspection of database ",sourceName, " started (cdm_version=",cdmVersion,")"))
+
+    # run all the checks ------------------------------------------------------------------------------------------------------------
+    schemaValid <- FALSE
+
+    if (runSchemaChecks) {
+      ParallelLogger::logInfo(paste0("Running Schema Checks"))
+      schemaValid <- validateSchema(connectionDetails = connectionDetails,
+                     cdmDatabaseSchema = cdmDatabaseSchema,
+                     resultsDatabaseSchema = resultsDatabaseSchema,
+                     runCostAnalysis = FALSE,
+                     cdmVersion = cdmVersion,
+                     outputFolder = outputFolder,
+                     sqlOnly = sqlOnly)
+      ParallelLogger::logInfo(paste0("Done."))
+    }
+
+    if (runVocabularyChecks) {
+      ParallelLogger::logInfo(paste0("Running Vocabulary Checks"))
+      vocabularyChecks(connectionDetails = connectionDetails,
+                       cdmDatabaseSchema = cdmDatabaseSchema,
+                       resultsDatabaseSchema = resultsDatabaseSchema,
+                       oracleTempSchema = roracleTempSchema,
+                       sqlOnly = sqlOnly,
+                       outputFolder = outputFolder)
+      ParallelLogger::logInfo(paste0("Done."))
+    }
+
+    if (runPerformanceChecks) {
+      ParallelLogger::logInfo(paste0("Running Performance Checks"))
+      performanceChecks(connectionDetails = connectionDetails,
+                        cdmDatabaseSchema = cdmDatabaseSchema,
+                        resultsDatabaseSchema = resultsDatabaseSchema,
+                        oracleTempSchema = roracleTempSchema,
+                        sqlOnly = sqlOnly,
+                        outputFolder = outputFolder)
+      ParallelLogger::logInfo(paste0("Done."))
+    }
+
+    ParallelLogger::logInfo(sprintf("The cdm inspection results have been exported to: %s", outputFolder))
+
   }
-
-  # Establish folder paths --------------------------------------------------------------------------------------------------------
-
-  if (!dir.exists(outputFolder)) {
-    dir.create(path = outputFolder, recursive = TRUE)
-  }
-
-  # Get source name if none provided ----------------------------------------------------------------------------------------------
-
-  if (missing(sourceName) & !sqlOnly) {
-    .getSourceName(connectionDetails, cdmDatabaseSchema)
-  }
-
-  # Logging
-  ParallelLogger::logInfo(paste0("CDM Inspection of database ",sourceName, " started (cdm_version=",cdmVersion,")"))
-
-  # run all the checks ------------------------------------------------------------------------------------------------------------
-
-  if (runSchemaChecks) {
-    ParallelLogger::logInfo(paste0("Running Schema Checks"))
-    validateSchema(connectionDetails = connectionDetails,
-                   cdmDatabaseSchema = cdmDatabaseSchema,
-                   resultsDatabaseSchema = resultsDatabaseSchema,
-                   runCostAnalysis = FALSE,
-                   cdmVersion = cdmVersion,
-                   outputFolder = outputFolder,
-                   sqlOnly = sqlOnly)
-    ParallelLogger::logInfo(paste0("Done."))
-  }
-
-  if (runVocabularyChecks) {
-    ParallelLogger::logInfo(paste0("Running Vocabulary Checks"))
-    vocabularyChecks(connectionDetails = connectionDetails,
-                            cdmDatabaseSchema = cdmDatabaseSchema,
-                            resultsDatabaseSchema = resultsDatabaseSchema,
-                            oracleTempSchema = roracleTempSchema,
-                            sqlOnly = sqlOnly,
-                            outputFolder = outputFolder)
-    ParallelLogger::logInfo(paste0("Done."))
-  }
-
-  if (runPerformanceChecks) {
-    ParallelLogger::logInfo(paste0("Running Performance Checks"))
-    performanceChecks(connectionDetails = connectionDetails,
-                         cdmDatabaseSchema = cdmDatabaseSchema,
-                         resultsDatabaseSchema = resultsDatabaseSchema,
-                         oracleTempSchema = roracleTempSchema,
-                         sqlOnly = sqlOnly,
-                         outputFolder = outputFolder)
-    ParallelLogger::logInfo(paste0("Done."))
-  }
-
-  ParallelLogger::logInfo(sprintf("The cdm inspection results have been exported to: %s", outputFolder))
-
 
 }
 
@@ -222,21 +214,6 @@ validateSchema <- function(connectionDetails,
                            sqlOnly = FALSE,
                            verboseMode = TRUE) {
 
-  # Log execution --------------------------------------------------------------------------------------------------------------------
-
-  unlink(file.path(outputFolder, "log_validateSchema.txt"))
-  if (verboseMode) {
-    appenders <- list(ParallelLogger::createConsoleAppender(),
-                      ParallelLogger::createFileAppender(layout = ParallelLogger::layoutParallel,
-                                                         fileName = file.path(outputFolder, "log_validateSchema.txt")))
-  } else {
-    appenders <- list(ParallelLogger::createFileAppender(layout = ParallelLogger::layoutParallel,
-                                                         fileName = file.path(outputFolder, "log_validateSchema.txt")))
-  }
-  logger <- ParallelLogger::createLogger(name = "validateSchema",
-                                         threshold = "INFO",
-                                         appenders = appenders)
-  ParallelLogger::registerLogger(logger)
 
   majorVersions <- lapply(c("5", "5.1", "5.2", "5.3"), function(majorVersion) {
     if (compareVersion(a = as.character(cdmVersion), b = majorVersion) >= 0) {
@@ -259,12 +236,18 @@ validateSchema <- function(connectionDetails,
   if (sqlOnly) {
     SqlRender::writeSql(sql = sql, targetFile = file.path(outputFolder, "ValidateSchema.sql"))
   } else {
-    connection <- DatabaseConnector::connect(connectionDetails = connectionDetails)
-    tables <- DatabaseConnector::querySql(connection = connection, sql = sql)
-    ParallelLogger::logInfo("CDM Schema is valid")
-    DatabaseConnector::disconnect(connection = connection)
+    tryCatch({
+      connection <- DatabaseConnector::connect(connectionDetails = connectionDetails)
+      tables <- DatabaseConnector::querySql(connection = connection, sql = sql, errorReportFile = file.path(outputFolder, "validateSchemaError.txt"))
+      ParallelLogger::logInfo("CDM Schema is valid")
+    },
+    error = function (e) {
+      ParallelLogger::logError(paste0("The CDM Schema is not valid or a table does not contain data to allow schema check, see ",file.path(outputFolder,"validateSchemaError.txt")," for more details"))
+    }, finally = {
+      DatabaseConnector::disconnect(connection = connection)
+      rm(connection)
+      return(FALSE)
+    })
   }
-
-  ParallelLogger::unregisterLogger("validateSchema")
-  invisible(sql)
+  invisible(TRUE)
 }

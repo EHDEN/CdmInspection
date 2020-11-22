@@ -34,20 +34,20 @@ as
   @cdmDatabaseSchema.cdm_source
 ) cdm_source
 ),
-cte_cohort
-as
-(
-  select cast('cohort' as varchar(50)) as tablename
-  from (
-  SELECT top 1
-  cohort_definition_id,
-  subject_id,
-  cohort_start_date,
-  cohort_end_date
-  FROM
-  @resultsDatabaseSchema.cohort
-) cohort
-),
+--cte_cohort
+--as
+--(
+--  select cast('cohort' as varchar(50)) as tablename
+--  from (
+--  SELECT top 1
+--  cohort_definition_id,
+--  subject_id,
+--  cohort_start_date,
+--  cohort_end_date
+--  FROM
+--  @resultsDatabaseSchema.cohort
+--) cohort
+--),
 cte_condition_era
 as
 (
@@ -510,8 +510,8 @@ as
   union all
   select tablename from cte_condition_occurrence
   union all
-  select tablename from cte_cohort
-  union all
+ -- select tablename from cte_cohort
+ --  union all
   select tablename from cte_death
   union all
   select tablename from cte_device_exposure
