@@ -37,8 +37,10 @@
 #' @param oracleTempSchema                 For Oracle only: the name of the database schema where you want all temporary tables to be managed. Requires create/insert permissions to this database.
 #' @param sourceName		                   String name of the data source name. If blank, CDM_SOURCE table will be queried to try to obtain this.
 #' @param smallCellCount                   To avoid patient identifiability, cells with small counts (<= smallCellCount) are deleted. Set to NULL if you don't want any deletions.
-#' @param runSchemaChecks                   Boolean to determine if CDM Schema Validation should be run. Default = TRUE
+#' @param runSchemaChecks                 Boolean to determine if CDM Schema Validation should be run. Default = TRUE
 #' @param runVocabularyChecks              Boolean to determine if vocabulary checks need to be run. Default = TRUE
+#' @param runWebAPIChecks                  Boolean to determine if WebAPI checks need to be run. Default = TRUE
+#' @param baseUrl                          WebAPI url, example: http://server.org:80/WebAPI
 #' @param runPerformanceChecks             Boolean to determine if performance checks need to be run. Default = TRUE
 #' @param sqlOnly                          Boolean to determine if Achilles should be fully executed. TRUE = just generate SQL files, don't actually run, FALSE = run Achilles
 #' @param outputFolder                     Path to store logs and SQL files
@@ -58,6 +60,8 @@ cdmInspection <- function (connectionDetails,
                              runSchemaChecks = TRUE,
                              runVocabularyChecks = TRUE,
                              runPerformanceChecks = TRUE,
+                             runWebAPIChecks = TRUE,
+                             baseUrl,
                              sqlOnly = FALSE,
                              outputFolder = "output",
                              verboseMode = TRUE) {
@@ -121,18 +125,17 @@ cdmInspection <- function (connectionDetails,
                      cdmVersion = cdmVersion,
                      outputFolder = outputFolder,
                      sqlOnly = sqlOnly)
-      ParallelLogger::logInfo(paste0("Done."))
     }
 
     if (runVocabularyChecks) {
       ParallelLogger::logInfo(paste0("Running Vocabulary Checks"))
-      vocabularyChecks(connectionDetails = connectionDetails,
+      vocabularyResults<-vocabularyChecks(connectionDetails = connectionDetails,
                        cdmDatabaseSchema = cdmDatabaseSchema,
                        resultsDatabaseSchema = resultsDatabaseSchema,
                        oracleTempSchema = roracleTempSchema,
                        sqlOnly = sqlOnly,
                        outputFolder = outputFolder)
-      ParallelLogger::logInfo(paste0("Done."))
+      write.csv(vocabularyResults$mappingCompleteness,file.path(outputFolder,"mappingCompleteness.csv"))
     }
 
     if (runPerformanceChecks) {
@@ -146,21 +149,16 @@ cdmInspection <- function (connectionDetails,
         ParallelLogger::logInfo(paste0("Not all the HADES packages are installed, see https://ohdsi.github.io/Hades/installingHades.html for more information"))
         ParallelLogger::logInfo(paste0("Missing:", paste(diffPackages, collapse=', ')))
       } else
-        ParallelLogger::logInfo(paste0("All HADES packages are installed"))
+        ParallelLogger::logInfo(paste0("> All HADES packages are installed"))
 
       packinfo <- installed.packages(fields = c("Package", "Version"))
       hades<-packinfo[,c("Package", "Version")]
       hadesPackageVersions <- hades[row.names(hades) %in% packages,]
       row.names(hadesPackageVersions) <- NULL
-      write.csv(hadesPackageVersions,file.path(outputFolder,"OhdsiPackageVersions.csv"))
 
-
-
-      ParallelLogger::logInfo(paste0("Done."))
       sys_details <- benchmarkme::get_sys_details(sys_info=FALSE)
       ParallelLogger::logInfo(paste0("Running Performance Checks on ", sys_details$cpu$model_name, " cpu with ", sys_details$cpu$no_of_cores, " cores, and ", prettyunits::pretty_bytes(as.numeric(sys_details$ram)), " ram."))
      # benchmark <- benchmark_std()
-      ParallelLogger::logInfo(paste0("Done."))
 
       ParallelLogger::logInfo(paste0("Running Performance Checks SQL"))
       performanceChecks(connectionDetails = connectionDetails,
@@ -169,14 +167,32 @@ cdmInspection <- function (connectionDetails,
                         oracleTempSchema = roracleTempSchema,
                         sqlOnly = sqlOnly,
                         outputFolder = outputFolder)
-      ParallelLogger::logInfo(paste0("Done."))
+
 
 
     }
 
-    ParallelLogger::logInfo(sprintf("The cdm inspection results have been exported to: %s", outputFolder))
+    if (runWebAPIChecks){
+      ParallelLogger::logInfo(paste0("Running WebAPIChecks"))
+
+      tryCatch({
+        webAPIversion <- getWebApiVersion(baseUrl = baseUrl)
+        ParallelLogger::logInfo(sprintf("> Connected successfully to %s", baseUrl))
+        ParallelLogger::logInfo(sprintf("> WebAPI version: %s", webAPIversion))},
+               error = function (e) {
+                 ParallelLogger::logError(paste0("Could not connect to the WebAPI: ", baseUrl))
+        })
+    }
+
+
+    ParallelLogger::logInfo(paste0("Done."))
+
+    # save results  ------------------------------------------------------------------------------------------------------------
 
     results<-list(packinfo=packinfo, hadesPackageVersions = hadesPackageVersions, sys_details= sys_details)
+    saveRDS(results, file.path(outputFolder,"inspection_results.rds"))
+    ParallelLogger::logInfo(sprintf("The cdm inspection results have been exported to: %s", outputFolder))
+
     return(results)
 
   }
@@ -264,6 +280,7 @@ validateSchema <- function(connectionDetails,
                                            resultsDatabaseSchema = resultsDatabaseSchema,
                                            runCostAnalysis = FALSE,
                                            cdmVersion = cdmVersion)
+  schemaValid <- FALSE
   if (sqlOnly) {
     SqlRender::writeSql(sql = sql, targetFile = file.path(outputFolder, "ValidateSchema.sql"))
   } else {
@@ -271,14 +288,14 @@ validateSchema <- function(connectionDetails,
       connection <- DatabaseConnector::connect(connectionDetails = connectionDetails)
       tables <- DatabaseConnector::querySql(connection = connection, sql = sql, errorReportFile = file.path(outputFolder, "validateSchemaError.txt"))
       ParallelLogger::logInfo("CDM Schema is valid")
+      schemaValid <- TRUE
     },
     error = function (e) {
       ParallelLogger::logError(paste0("The CDM Schema is not valid or a table does not contain data to allow schema check, see ",file.path(outputFolder,"validateSchemaError.txt")," for more details"))
     }, finally = {
       DatabaseConnector::disconnect(connection = connection)
       rm(connection)
-      return(FALSE)
     })
   }
-  invisible(TRUE)
+  return(schemaValid)
 }

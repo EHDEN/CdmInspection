@@ -116,6 +116,8 @@ results<-cdmInspection(connectionDetails,
                 runSchemaChecks = TRUE,
                 runVocabularyChecks = TRUE,
                 runPerformanceChecks = TRUE,
+                runWebAPIChecks = TRUE,
+                baseUrl = "http://atlas-demo.ohdsi.org/WebAPI",
                 sqlOnly = FALSE,
                 outputFolder = outputFolder,
                 verboseMode = verboseMode)

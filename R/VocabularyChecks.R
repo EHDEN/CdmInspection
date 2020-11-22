@@ -50,5 +50,28 @@ vocabularyChecks <- function (connectionDetails,
                            sqlOnly = FALSE,
                            outputFolder = "output",
                            verboseMode = TRUE) {
-  return(TRUE)
+
+  sql <- SqlRender::loadRenderTranslateSql(sqlFilename = "mapping_completeness.sql",
+                                           packageName = "CdmInspection",
+                                           dbms = connectionDetails$dbms,
+                                           warnOnMissingParameters = FALSE,
+                                           cdmDatabaseSchema = cdmDatabaseSchema)
+  if (sqlOnly) {
+    SqlRender::writeSql(sql = sql, targetFile = file.path(outputFolder, "ValidateSchema.sql"))
+  } else {
+    tryCatch({
+      connection <- DatabaseConnector::connect(connectionDetails = connectionDetails)
+      mappingCompleteness<- DatabaseConnector::querySql(connection = connection, sql = sql, errorReportFile = file.path(outputFolder, "mappingCompletenessError.txt"))
+      ParallelLogger::logInfo("> Mapping Completeness query executed successfully")
+    },
+    error = function (e) {
+      ParallelLogger::logError(paste0("> Mapping Completeness query did not execute, see ",file.path(outputFolder,"validateSchemaError.txt")," for more details"))
+    }, finally = {
+      DatabaseConnector::disconnect(connection = connection)
+      rm(connection)
+    })
+  }
+
+  results <- list(mappingCompleteness=mappingCompleteness)
+  return(results)
 }
