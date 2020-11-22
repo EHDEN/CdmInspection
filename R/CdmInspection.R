@@ -68,7 +68,7 @@ cdmInspection <- function (connectionDetails,
   if(!dir.exists(outputFolder)){dir.create(outputFolder,recursive=T)}
 
   logFileName <-"log_cdmInspection.txt"
-  unlink(file.path(outputFolder, logFileName))
+  unlink(hadesPackageVersions)
 
   if (verboseMode) {
     appenders <- list(ParallelLogger::createConsoleAppender(),
@@ -136,7 +136,33 @@ cdmInspection <- function (connectionDetails,
     }
 
     if (runPerformanceChecks) {
-      ParallelLogger::logInfo(paste0("Running Performance Checks"))
+
+      ParallelLogger::logInfo(paste0("Check installed R Packages"))
+      packages <- c("SqlRender", "DatabaseConnector", "DatabaseConnectorJars", "PatientLevelPrediction", "CohortDiagnostics", "CohortMethod", "rJava","Cyclops","ParallelLogger","FeatureExtraction","Andromeda",
+                    "ROhdsiWebApi","OhdsiSharing","Hydra","Eunomia","EmpiricalCalibration","MethodEvaluation","EvidenceSynthesis","SelfControlledCaseSeries","SelfControlledCohort")
+      diffPackages <- setdiff(packages, rownames(installed.packages()))
+
+      if (length(diffPackages)>0){
+        ParallelLogger::logInfo(paste0("Not all the HADES packages are installed, see https://ohdsi.github.io/Hades/installingHades.html for more information"))
+        ParallelLogger::logInfo(paste0("Missing:", paste(diffPackages, collapse=', ')))
+      } else
+        ParallelLogger::logInfo(paste0("All HADES packages are installed"))
+
+      packinfo <- installed.packages(fields = c("Package", "Version"))
+      hades<-packinfo[,c("Package", "Version")]
+      hadesPackageVersions <- hades[row.names(hades) %in% packages,]
+      row.names(hadesPackageVersions) <- NULL
+      write.csv(hadesPackageVersions,file.path(outputFolder,"OhdsiPackageVersions.csv"))
+
+
+
+      ParallelLogger::logInfo(paste0("Done."))
+      sys_details <- benchmarkme::get_sys_details(sys_info=FALSE)
+      ParallelLogger::logInfo(paste0("Running Performance Checks on ", sys_details$cpu$model_name, " cpu with ", sys_details$cpu$no_of_cores, " cores, and ", prettyunits::pretty_bytes(as.numeric(sys_details$ram)), " ram."))
+     # benchmark <- benchmark_std()
+      ParallelLogger::logInfo(paste0("Done."))
+
+      ParallelLogger::logInfo(paste0("Running Performance Checks SQL"))
       performanceChecks(connectionDetails = connectionDetails,
                         cdmDatabaseSchema = cdmDatabaseSchema,
                         resultsDatabaseSchema = resultsDatabaseSchema,
@@ -144,9 +170,14 @@ cdmInspection <- function (connectionDetails,
                         sqlOnly = sqlOnly,
                         outputFolder = outputFolder)
       ParallelLogger::logInfo(paste0("Done."))
+
+
     }
 
     ParallelLogger::logInfo(sprintf("The cdm inspection results have been exported to: %s", outputFolder))
+
+    results<-list(packinfo=packinfo, hadesPackageVersions = hadesPackageVersions, sys_details= sys_details)
+    return(results)
 
   }
 

@@ -106,7 +106,7 @@ smallCellCount <- 5
 verboseMode <- TRUE
 
 
-cdmInspection(connectionDetails,
+results<-cdmInspection(connectionDetails,
                 cdmDatabaseSchema = cdmDatabaseSchema,
                 resultsDatabaseSchema = resultsDatabaseSchema,
                 vocabDatabaseSchema = vocabDatabaseSchema,

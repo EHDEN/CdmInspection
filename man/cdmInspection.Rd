@@ -15,7 +15,6 @@ cdmInspection(
   analysisIds = "",
   createTable = TRUE,
   smallCellCount = 5,
-  cdmVersion = "5",
   runSchemaChecks = TRUE,
   runVocabularyChecks = TRUE,
   runPerformanceChecks = TRUE,
@@ -40,8 +39,6 @@ On SQL Server, this should specifiy both the database and the schema, so for exa
 \item{sourceName}{String name of the data source name. If blank, CDM_SOURCE table will be queried to try to obtain this.}
 
 \item{smallCellCount}{To avoid patient identifiability, cells with small counts (<= smallCellCount) are deleted. Set to NULL if you don't want any deletions.}
-
-\item{cdmVersion}{Define the OMOP CDM version used:  currently supports v5 and above. Use major release number or minor number only (e.g. 5, 5.3)}
 
 \item{runSchemaChecks}{Boolean to determine if CDM Schema Validation should be run. Default = TRUE}
 

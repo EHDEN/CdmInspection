@@ -51,5 +51,7 @@ performanceChecks <- function (connectionDetails,
                               outputFolder = "output",
                               verboseMode = TRUE) {
 
+
   return(TRUE)
 }
+
