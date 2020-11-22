@@ -97,7 +97,7 @@ databaseName <- "Your database name"
 databaseDescription <- "Your description"
 
 # Details for connecting to the CDM and storing the results
-outputFolder <- file.path(getwd(), "resu;ts",databaseId)
+outputFolder <- file.path(getwd(), "results",databaseId)
 cdmDatabaseSchema <- "Your cdm schema"
 resultsDatabaseSchema <- "Your results schema"
 vocabDatabaseSchema = "Your vocab schema"
