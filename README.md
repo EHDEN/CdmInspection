@@ -57,7 +57,7 @@ Support
 
 Contributing
 ============
-Read [here](https://ohdsi.github.io/Hades/contribute.html) how you can contribute to this package.
+This package is maintained by the EHDEN consortium as part of its quality control procedures. Additions are welcome through pull requests. We suggest to first create an issue and discuss with the maintainer before implementing additional functionality.
 
 License
 =======
