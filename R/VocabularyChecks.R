@@ -57,7 +57,7 @@ vocabularyChecks <- function (connectionDetails,
                                            warnOnMissingParameters = FALSE,
                                            cdmDatabaseSchema = cdmDatabaseSchema)
   if (sqlOnly) {
-    SqlRender::writeSql(sql = sql, targetFile = file.path(outputFolder, "ValidateSchema.sql"))
+    SqlRender::writeSql(sql = sql, targetFile = file.path(outputFolder, "mapping_completeness.sql"))
   } else {
     tryCatch({
       connection <- DatabaseConnector::connect(connectionDetails = connectionDetails)
@@ -72,6 +72,40 @@ vocabularyChecks <- function (connectionDetails,
     })
   }
 
-  results <- list(mappingCompleteness=mappingCompleteness)
+  colnames(mappingCompleteness) <- c("Domain","#Codes Source","#Codes Mapped","%Codes Mapped","#Records Source","#Records Mapped","%Records Mapped")
+
+
+  sql <- SqlRender::loadRenderTranslateSql(sqlFilename = "get_vocabulary_table.sql",
+                                           packageName = "CdmInspection",
+                                           dbms = connectionDetails$dbms,
+                                           warnOnMissingParameters = FALSE,
+                                           vocabDatabaseSchema = vocabDatabaseSchema)
+  if (sqlOnly) {
+    SqlRender::writeSql(sql = sql, targetFile = file.path(outputFolder, "get_vocabulary_table.sql"))
+  } else {
+    tryCatch({
+      connection <- DatabaseConnector::connect(connectionDetails = connectionDetails)
+      vocabularies<- DatabaseConnector::querySql(connection = connection, sql = sql, errorReportFile = file.path(outputFolder, "vocabulariesError.txt"))
+      ParallelLogger::logInfo("> Vocabulary table successfully extracted")
+    },
+    error = function (e) {
+      ParallelLogger::logError(paste0("> Vocabulary table could not be extracted, see ",file.path(outputFolder,"vocabulariesError.txt")," for more details"))
+    }, finally = {
+      DatabaseConnector::disconnect(connection = connection)
+      rm(connection)
+    })
+  }
+  version = vocabularies[vocabularies$VOCABULARY_ID=='None',]$VOCABULARY_VERSION
+
+  colnames(vocabularies) <- c("ID","Name","Reference","Version","Concept_ID")
+
+  results <- list(version=version,vocabularies=vocabularies,mappingCompleteness=mappingCompleteness)
   return(results)
+}
+
+prettyHr <- function(x) {
+  result <- sprintf("%.2f", x)
+  result[is.na(x)] <- "NA"
+  result <- suppressWarnings(format(as.numeric(result), big.mark=",")) # add thousands separator
+  return(result)
 }

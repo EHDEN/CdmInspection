@@ -18,6 +18,8 @@ cdmInspection(
   runSchemaChecks = TRUE,
   runVocabularyChecks = TRUE,
   runPerformanceChecks = TRUE,
+  runWebAPIChecks = TRUE,
+  baseUrl,
   sqlOnly = FALSE,
   outputFolder = "output",
   verboseMode = TRUE
@@ -45,6 +47,10 @@ On SQL Server, this should specifiy both the database and the schema, so for exa
 \item{runVocabularyChecks}{Boolean to determine if vocabulary checks need to be run. Default = TRUE}
 
 \item{runPerformanceChecks}{Boolean to determine if performance checks need to be run. Default = TRUE}
+
+\item{runWebAPIChecks}{Boolean to determine if WebAPI checks need to be run. Default = TRUE}
+
+\item{baseUrl}{WebAPI url, example: http://server.org:80/WebAPI}
 
 \item{sqlOnly}{Boolean to determine if Achilles should be fully executed. TRUE = just generate SQL files, don't actually run, FALSE = run Achilles}
 

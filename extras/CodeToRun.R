@@ -92,9 +92,9 @@ connectionDetails <- DatabaseConnector::createConnectionDetails(dbms = dbms,
 oracleTempSchema <- NULL
 
 # Details specific to the database:
-databaseId <- "TEST"
-databaseName <- "Your database name"
-databaseDescription <- "Your description"
+databaseId <- "IPCI"
+databaseName <- "Integrated Primary Care Information"
+databaseDescription <- "The IPCI database started in 1992 and is collected from EHR records of patients registered with their GPs throughout the Netherlands. The selection of 640 practices, of which 422 are currently still actively contributing, is representative for the entire country. The database contains records from in total 2.6 million patients (approximately 1.4 million are still active) out of a Dutch population of 17M. The observation period for a patient is determined by the date of registration at the GP and the date of leave/death. The observation period start date is refined by many quality indicators, e.g. exclusion of peaks of conditions when registering at the GP. All data before the observation period is kept as history data. Drugs are captured as prescription records with product, quantity, dosing directions, strength and indication. The duration of the drug exposure is determined for all drugs by: 1. The amount and dose extracted from the signature or if instruction is “see product instructions” we use the DDD and quantity; 2. Duration available in the record; 3. If option 1 and 2 is not possible we use the DDD derived duration, or default to 30 days otherwise. Drugs not prescribed in the GP setting might be underreported. Indications are available as diagnoses by the GPs and, indirectly, from secondary care providers but the latter might not be complete"
 
 # Details for connecting to the CDM and storing the results
 outputFolder <- file.path(getwd(), "results",databaseId)

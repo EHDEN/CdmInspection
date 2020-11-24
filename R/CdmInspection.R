@@ -72,7 +72,6 @@ cdmInspection <- function (connectionDetails,
   if(!dir.exists(outputFolder)){dir.create(outputFolder,recursive=T)}
 
   logFileName <-"log_cdmInspection.txt"
-  unlink(hadesPackageVersions)
 
   if (verboseMode) {
     appenders <- list(ParallelLogger::createConsoleAppender(),
@@ -107,7 +106,7 @@ cdmInspection <- function (connectionDetails,
     # Get source name if none provided ----------------------------------------------------------------------------------------------
 
     if (missing(sourceName) & !sqlOnly) {
-      .getSourceName(connectionDetails, cdmDatabaseSchema)
+      sourceName <- .getSourceName(connectionDetails, cdmDatabaseSchema)
     }
 
     # Logging
@@ -125,23 +124,37 @@ cdmInspection <- function (connectionDetails,
                      cdmVersion = cdmVersion,
                      outputFolder = outputFolder,
                      sqlOnly = sqlOnly)
+      cdmSource<- .getCdmSource(connectionDetails, cdmDatabaseSchema,sqlOnly)
     }
 
     if (runVocabularyChecks) {
       ParallelLogger::logInfo(paste0("Running Vocabulary Checks"))
       vocabularyResults<-vocabularyChecks(connectionDetails = connectionDetails,
                        cdmDatabaseSchema = cdmDatabaseSchema,
+                       vocabDatabaseSchema = vocabDatabaseSchema,
                        resultsDatabaseSchema = resultsDatabaseSchema,
                        oracleTempSchema = roracleTempSchema,
                        sqlOnly = sqlOnly,
                        outputFolder = outputFolder)
+
       write.csv(vocabularyResults$mappingCompleteness,file.path(outputFolder,"mappingCompleteness.csv"))
+      write.csv(vocabularyResults$vocabularies,file.path(outputFolder,"vocabularies.csv"))
+
+      # vocabularies <- data.frame(VocabularyName=c("None", "RxNorm", "CC"))
+      # diffVocabularies <- setdiff(vocabularies, vocabularyResults$vocabularies) #TODO: does not work
+      #
+      # if (length(Vocabularies)>0){
+      #   ParallelLogger::logInfo(paste0("Not all the required standard vocabularies are found"))
+      #   ParallelLogger::logInfo(paste0("Missing:", paste(diffVocabularies, collapse=', ')))
+      # } else
+      #   ParallelLogger::logInfo(paste0("> All required standard vocabularies are found"))
+
     }
 
     if (runPerformanceChecks) {
 
       ParallelLogger::logInfo(paste0("Check installed R Packages"))
-      packages <- c("SqlRender", "DatabaseConnector", "DatabaseConnectorJars", "PatientLevelPrediction", "CohortDiagnostics", "CohortMethod", "rJava","Cyclops","ParallelLogger","FeatureExtraction","Andromeda",
+      packages <- c("SqlRender", "DatabaseConnector", "DatabaseConnectorJars", "PatientLevelPrediction", "CohortDiagnostics", "CohortMethod", "Cyclops","ParallelLogger","FeatureExtraction","Andromeda",
                     "ROhdsiWebApi","OhdsiSharing","Hydra","Eunomia","EmpiricalCalibration","MethodEvaluation","EvidenceSynthesis","SelfControlledCaseSeries","SelfControlledCohort")
       diffPackages <- setdiff(packages, rownames(installed.packages()))
 
@@ -153,8 +166,7 @@ cdmInspection <- function (connectionDetails,
 
       packinfo <- installed.packages(fields = c("Package", "Version"))
       hades<-packinfo[,c("Package", "Version")]
-      hadesPackageVersions <- hades[row.names(hades) %in% packages,]
-      row.names(hadesPackageVersions) <- NULL
+      hadesPackageVersions <- as.data.frame(hades[row.names(hades) %in% packages,])
 
       sys_details <- benchmarkme::get_sys_details(sys_info=FALSE)
       ParallelLogger::logInfo(paste0("Running Performance Checks on ", sys_details$cpu$model_name, " cpu with ", sys_details$cpu$no_of_cores, " cores, and ", prettyunits::pretty_bytes(as.numeric(sys_details$ram)), " ram."))
@@ -189,7 +201,20 @@ cdmInspection <- function (connectionDetails,
 
     # save results  ------------------------------------------------------------------------------------------------------------
 
-    results<-list(packinfo=packinfo, hadesPackageVersions = hadesPackageVersions, sys_details= sys_details)
+    results<-list(executionDate = date(),
+                  databaseName = databaseName,
+                  databaseId = databaseId,
+                  databaseDescription = databaseDescription,
+                  mappingCompleteness = vocabularyResults$mappingCompleteness,
+                  vocabularies = vocabularyResults$vocabularies,
+                  vocabversion = vocabularyResults$version,
+                  packinfo=packinfo,
+                  hadesPackageVersions = hadesPackageVersions,
+                  sys_details= sys_details,
+                  schemaValid = schemaValid,
+                  webAPIversion = webAPIversion,
+                  cdmSource = cdmSource,
+                  dms=connectionDetails$dbms)
     saveRDS(results, file.path(outputFolder,"inspection_results.rds"))
     ParallelLogger::logInfo(sprintf("The cdm inspection results have been exported to: %s", outputFolder))
 
@@ -234,6 +259,31 @@ cdmInspection <- function (connectionDetails,
   })
 
   cdmVersion
+}
+
+.getCdmSource <- function(connectionDetails,
+                           cdmDatabaseSchema,sqlOnly) {
+  sql <- SqlRender::loadRenderTranslateSql(sqlFilename = "get_cdm_source_table.sql",
+                                           packageName = "CdmInspection",
+                                           dbms = connectionDetails$dbms,
+                                           warnOnMissingParameters = FALSE,
+                                           cdmDatabaseSchema = cdmDatabaseSchema)
+  if (sqlOnly) {
+    SqlRender::writeSql(sql = sql, targetFile = file.path(outputFolder, "get_cdm_source_table.sql"))
+  } else {
+    tryCatch({
+      connection <- DatabaseConnector::connect(connectionDetails = connectionDetails)
+      cdmSource<- DatabaseConnector::querySql(connection = connection, sql = sql, errorReportFile = file.path(outputFolder, "vocabulariesError.txt"))
+      ParallelLogger::logInfo("> Vocabulary table successfully extracted")
+    },
+    error = function (e) {
+      ParallelLogger::logError(paste0("> Vocabulary table could not be extracted, see ",file.path(outputFolder,"vocabulariesError.txt")," for more details"))
+    }, finally = {
+      DatabaseConnector::disconnect(connection = connection)
+      rm(connection)
+    })
+  }
+  cdmSource
 }
 
 #' Validate the CDM schema
