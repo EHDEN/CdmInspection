@@ -13,7 +13,9 @@ The CdmInspection R Package is part of this SME Inspection procedure and perform
 **Vocabulary Checks**  
 1. For all custom mapped vocabularies extract the top 50 codes order by frequency from the source_to_concept map. The SME has to approve these top 50 codes. All custom mappings will be extracted as well as part of the package output. Note if the source_to_concept map is not used in the ETL process this information still has to be provided manually for the inspection.
 2. For each domain generate statistics on the number of unmapped codes and and unmapped records.
-3. Extract the vocabulary table and check if all the required vocabularies are present.
+3. Extract the vocabulary table.
+4. Count of concepts per vocabulary by standard, classification and non-standard.
+5. Mapping levels of drugs (Clinical Drug etc.)
 
 **Technical Infrastructure Checks**
 1. Execution of short and longer running queries to test the performance of the system. This information is useful for the SME to provide further guidance on optimizing the infrastructure.
@@ -23,6 +25,9 @@ The CdmInspection R Package is part of this SME Inspection procedure and perform
 5. Check if Achilles results are available in ATLAS.
 6. Check if CatalogueExport package can execute correctly.
 7. Extraction of CDM_Source table
+
+**Results Document Generation**
+Produces a word document in the EHDEN template that contains all the results. This template needs to be completed by the person performing the cdm inspection. The user can also provide a custom template file if required.
 
 Technology
 ==========
@@ -49,11 +54,11 @@ User Documentation
 PDF versions of the documentation are available:
 * Package manual: 
 * Vignette: 
+* CodeToRun Example: [Link](https://github.com/EHDEN/CdmInspection/blob/master/extras/CodeToRun.R)
 
 Support
 =======
-* Developer questions/comments/feedback can be provided via the EHDEN service portal (TO BE ADDED)
-* We use the <a href="https://github.com/EHDEN/CdmInspectionm/issues">GitHub issue tracker</a> for all bugs/issues/enhancements
+* We use the <a href="https://github.com/EHDEN/CdmInspectionm/issues">GitHub issue tracker</a> for all bugs/issues/enhancements/questions/feedback
 
 Contributing
 ============
@@ -70,3 +75,7 @@ CdmInspection is being developed in R Studio.
 ### Development status
 
 Under development by the EHDEN consortium do not use!
+
+## Acknowledgements
+- The European Health Data & Evidence Network has received funding from the Innovative Medicines Initiative 2 Joint Undertaking (JU) under grant agreement No 806968. The JU receives support from the European Union’s Horizon 2020 research 
+- We like to thank the [contributors](https://github.com/OHDSI/Achilles/graphs/contributors) of the OHDSI community for their fantastic work
