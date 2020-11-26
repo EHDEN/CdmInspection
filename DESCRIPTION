@@ -23,4 +23,5 @@ Imports: parallel,
          benchmarkme,
          prettyunits,
          officer,
-         magrittr
+         magrittr,
+         tools

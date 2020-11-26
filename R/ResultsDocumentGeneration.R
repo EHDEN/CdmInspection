@@ -37,40 +37,55 @@ generateResultsDocument<- function(results, outputFolder, docTemplate="EHDEN",sm
             " as part of the inspection task performed by ", smeName, ".")) %>%
   officer::body_add_par(value = "The goal of the inspection report is to provide insight into the completeness, transparency and quality of the performed Extraction Transform, and Load (ETL) process and the readiness of the data partner to be onboarded in the EHDEN and OHDSI data networks and participate in research studies.")
 
-  ## add the analysis name as Section to the doc
-  results$mappingCompleteness$'%Codes Mapped' <- prettyHr(results$mappingCompleteness$'%Codes Mapped')
-  results$mappingCompleteness$'%Records Mapped' <- prettyHr(results$mappingCompleteness$'%Records Mapped')
-
-  doc<-doc %>%
-    officer::body_add_par(value = "Mapping Completeness", style = "heading 1") %>%
-    officer::body_add_par("Table 1. Shows the percentage of codes that are mapped to the standardized vocabularies as well as the percentage of records.") %>%
-    officer::body_add_table(value = results$mappingCompleteness, style = "DefaultTable") %>%
-    body_add_break()
-
-  doc <- doc %>% officer::body_end_section_portrait()
-
   #vocabularies
   doc<-doc %>%
 
     officer::body_add_par(value = "Vocabularies", style = "heading 1") %>%
     officer::body_add_par(paste0("Vocabulary version: ",results$vocabversion)) %>%
-    officer::body_add_par("Table 2. The vocabularies available in the CDM") %>%
-    officer::body_add_table(value = results$vocabularies, style = "DefaultTable") %>%
-    body_end_section_landscape()
+    officer::body_add_par("Table 1. The vocabularies available in the CDM") %>%
+    officer::body_add_table(value = results$vocabularies, style = "EHDEN")
+  ##%>% body_end_section_landscape()
+
+  ## add Concept counts
+  doc<-doc %>%
+    officer::body_add_par(value = "Concept counts", style = "heading 1") %>%
+    officer::body_add_par("Table 2. Shows the content of the concept table") %>%
+    officer::body_add_table(value = results$conceptCounts, style = "EHDEN")
+
+  ## add Mapping Completeness
+  results$mappingCompleteness$'%Codes Mapped' <- prettyHr(results$mappingCompleteness$'%Codes Mapped')
+  results$mappingCompleteness$'%Records Mapped' <- prettyHr(results$mappingCompleteness$'%Records Mapped')
+
+  doc<-doc %>%
+    officer::body_add_par(value = "Mapping Completeness", style = "heading 1") %>%
+    officer::body_add_par("Table 3. Shows the percentage of codes that are mapped to the standardized vocabularies as well as the percentage of records.") %>%
+    officer::body_add_table(value = results$mappingCompleteness, style = "EHDEN") %>%
+    body_add_break()
+
+  ## add Drug Level Mappings
+  doc<-doc %>%
+    officer::body_add_par(value = "Drug Mappings", style = "heading 1") %>%
+    officer::body_add_par("Table 4. The level of the drug mappings") %>%
+    officer::body_add_table(value = results$drugMapping, style = "EHDEN") %>%
+    body_add_break()
+
+ ## doc <- doc %>% officer::body_end_section_portrait()
+
+
 
   #installed packages
   doc<-doc %>%
 
     officer::body_add_par(value = "HADES packages", style = "heading 1") %>%
-    officer::body_add_par("Table 3. Versions of all installed HADES R packages") %>%
-    officer::body_add_table(value = results$hadesPackageVersions, style = "DefaultTable")
+    officer::body_add_par("Table 5. Versions of all installed HADES R packages") %>%
+    officer::body_add_table(value = results$hadesPackageVersions, style = "EHDEN")
 
   #system detail
   doc<-doc %>%
 
     officer::body_add_par(value = "Technical Infrastructure", style = "heading 1") %>%
-    officer::body_add_par("Table 4. cdm_source table content") %>%
-    officer::body_add_table(value =results$cdmSource, style = "DefaultTable") %>%
+    officer::body_add_par("Table 6. cdm_source table content") %>%
+    officer::body_add_table(value =results$cdmSource, style = "EHDEN") %>%
     officer::body_add_par(" ") %>%
     officer::body_add_par(paste0("Installed R version: ",results$sys_details$r_version$version.string)) %>%
     officer::body_add_par(paste0("System CPU vendor: ",results$sys_details$cpu$vendor_id)) %>%

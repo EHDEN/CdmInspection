@@ -206,6 +206,8 @@ cdmInspection <- function (connectionDetails,
                   databaseId = databaseId,
                   databaseDescription = databaseDescription,
                   mappingCompleteness = vocabularyResults$mappingCompleteness,
+                  drugMapping = vocabularyResults$drugMapping,
+                  conceptCounts = vocabularyResults$conceptCounts,
                   vocabularies = vocabularyResults$vocabularies,
                   vocabversion = vocabularyResults$version,
                   packinfo=packinfo,
@@ -263,7 +265,7 @@ cdmInspection <- function (connectionDetails,
 
 .getCdmSource <- function(connectionDetails,
                            cdmDatabaseSchema,sqlOnly) {
-  sql <- SqlRender::loadRenderTranslateSql(sqlFilename = "get_cdm_source_table.sql",
+  sql <- SqlRender::loadRenderTranslateSql(sqlFilename = file.path("checks","get_cdm_source_table.sql"),
                                            packageName = "CdmInspection",
                                            dbms = connectionDetails$dbms,
                                            warnOnMissingParameters = FALSE,
@@ -322,7 +324,7 @@ validateSchema <- function(connectionDetails,
 
   cdmVersion <- max(unlist(majorVersions))
 
-  sql <- SqlRender::loadRenderTranslateSql(sqlFilename = "validate_schema.sql",
+  sql <- SqlRender::loadRenderTranslateSql(sqlFilename = file.path("checks","validate_schema.sql"),
                                            packageName = "CdmInspection",
                                            dbms = connectionDetails$dbms,
                                            warnOnMissingParameters = FALSE,

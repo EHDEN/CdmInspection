@@ -51,58 +51,52 @@ vocabularyChecks <- function (connectionDetails,
                            outputFolder = "output",
                            verboseMode = TRUE) {
 
-  sql <- SqlRender::loadRenderTranslateSql(sqlFilename = "mapping_completeness.sql",
-                                           packageName = "CdmInspection",
-                                           dbms = connectionDetails$dbms,
-                                           warnOnMissingParameters = FALSE,
-                                           cdmDatabaseSchema = cdmDatabaseSchema)
-  if (sqlOnly) {
-    SqlRender::writeSql(sql = sql, targetFile = file.path(outputFolder, "mapping_completeness.sql"))
-  } else {
-    tryCatch({
-      connection <- DatabaseConnector::connect(connectionDetails = connectionDetails)
-      mappingCompleteness<- DatabaseConnector::querySql(connection = connection, sql = sql, errorReportFile = file.path(outputFolder, "mappingCompletenessError.txt"))
-      ParallelLogger::logInfo("> Mapping Completeness query executed successfully")
-    },
-    error = function (e) {
-      ParallelLogger::logError(paste0("> Mapping Completeness query did not execute, see ",file.path(outputFolder,"validateSchemaError.txt")," for more details"))
-    }, finally = {
-      DatabaseConnector::disconnect(connection = connection)
-      rm(connection)
-    })
-  }
-
+  ## run all queries
+  mappingCompleteness <- executeQuery("mapping_completeness.sql", "Mapping Completeness query executed successfully", connectionDetails, sqlOnly, cmdDatabaseSchema, vocabDatabaseSchema)
   colnames(mappingCompleteness) <- c("Domain","#Codes Source","#Codes Mapped","%Codes Mapped","#Records Source","#Records Mapped","%Records Mapped")
 
 
-  sql <- SqlRender::loadRenderTranslateSql(sqlFilename = "get_vocabulary_table.sql",
+  drugMapping  <- executeQuery("mapping_levels_drugs.sql", "Drug Level Mapping query executed successfully", connectionDetails, sqlOnly,  cmdDatabaseSchema, vocabDatabaseSchema)
+  unmappedDrugs<- executeQuery("unmapped_drugs.sql", "Unmapped drugs query executed successfully", connectionDetails, sqlOnly, cmdDatabaseSchema, vocabDatabaseSchema)
+  vocabularies <- executeQuery("get_vocabulary_table.sql", "Vocabulary table query executed successfully", connectionDetails, sqlOnly, cmdDatabaseSchema, vocabDatabaseSchema)
+  conceptCounts <- executeQuery("concept_counts.sql", "Concept counts query executed successfully", connectionDetails, sqlOnly, cmdDatabaseSchema, vocabDatabaseSchema)
+
+  version = vocabularies[vocabularies$VOCABULARY_ID=='None',]$VOCABULARY_VERSION
+
+  results <- list(version=version,
+                  vocabularies=vocabularies,
+                  mappingCompleteness=mappingCompleteness,
+                  drugMapping=drugMapping,
+                  unmappedDrugs=unmappedDrugs,
+                  conceptCounts=conceptCounts)
+  return(results)
+}
+
+
+executeQuery <- function(sqlFileName, successMessage, connectionDetails, sqlOnly, cmdDatabaseSchema, vocabDatabaseSchema){
+  sql <- SqlRender::loadRenderTranslateSql(sqlFilename = file.path("checks",sqlFileName),
                                            packageName = "CdmInspection",
                                            dbms = connectionDetails$dbms,
                                            warnOnMissingParameters = FALSE,
-                                           vocabDatabaseSchema = vocabDatabaseSchema)
+                                           vocabDatabaseSchema = vocabDatabaseSchema,
+                                           cdmDatabaseSchema = cdmDatabaseSchema)
   if (sqlOnly) {
-    SqlRender::writeSql(sql = sql, targetFile = file.path(outputFolder, "get_vocabulary_table.sql"))
+    SqlRender::writeSql(sql = sql, targetFile = file.path(outputFolder, sqlFileName))
   } else {
     tryCatch({
-      connection <- DatabaseConnector::connect(connectionDetails = connectionDetails)
-      vocabularies<- DatabaseConnector::querySql(connection = connection, sql = sql, errorReportFile = file.path(outputFolder, "vocabulariesError.txt"))
-      ParallelLogger::logInfo("> Vocabulary table successfully extracted")
+      connection <- DatabaseConnector::connect(connectionDetails = connectionDetails,)
+      result<- DatabaseConnector::querySql(connection = connection, sql = sql, errorReportFile = file.path(outputFolder, paste0(tools::file_path_sans_ext(sqlFileName),"Err.txt")))
+      ParallelLogger::logInfo(paste("> ",successMessage))
     },
     error = function (e) {
-      ParallelLogger::logError(paste0("> Vocabulary table could not be extracted, see ",file.path(outputFolder,"vocabulariesError.txt")," for more details"))
+      ParallelLogger::logError(paste0("> Failed see ",file.path(outputFolder,paste0(tools::file_path_sans_ext(sqlFileName),"Err.txt"))," for more details"))
     }, finally = {
       DatabaseConnector::disconnect(connection = connection)
       rm(connection)
     })
   }
-  version = vocabularies[vocabularies$VOCABULARY_ID=='None',]$VOCABULARY_VERSION
-
-  colnames(vocabularies) <- c("ID","Name","Reference","Version","Concept_ID")
-
-  results <- list(version=version,vocabularies=vocabularies,mappingCompleteness=mappingCompleteness)
-  return(results)
+  return(result)
 }
-
 prettyHr <- function(x) {
   result <- sprintf("%.2f", x)
   result[is.na(x)] <- "NA"
