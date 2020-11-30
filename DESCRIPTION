@@ -24,4 +24,6 @@ Imports: parallel,
          prettyunits,
          officer,
          magrittr,
-         tools
+         tools,
+         dplyr,
+         data.table

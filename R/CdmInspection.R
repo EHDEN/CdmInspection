@@ -137,8 +137,8 @@ cdmInspection <- function (connectionDetails,
                        sqlOnly = sqlOnly,
                        outputFolder = outputFolder)
 
-      write.csv(vocabularyResults$mappingCompleteness,file.path(outputFolder,"mappingCompleteness.csv"))
-      write.csv(vocabularyResults$vocabularies,file.path(outputFolder,"vocabularies.csv"))
+      write.csv(vocabularyResults$mappingCompleteness$data,file.path(outputFolder,"mappingCompleteness.csv"))
+      write.csv(vocabularyResults$vocabularies$data,file.path(outputFolder,"vocabularies.csv"))
 
       # vocabularies <- data.frame(VocabularyName=c("None", "RxNorm", "CC"))
       # diffVocabularies <- setdiff(vocabularies, vocabularyResults$vocabularies) #TODO: does not work
@@ -173,7 +173,7 @@ cdmInspection <- function (connectionDetails,
      # benchmark <- benchmark_std()
 
       ParallelLogger::logInfo(paste0("Running Performance Checks SQL"))
-      performanceChecks(connectionDetails = connectionDetails,
+      performanceResults <- performanceChecks(connectionDetails = connectionDetails,
                         cdmDatabaseSchema = cdmDatabaseSchema,
                         resultsDatabaseSchema = resultsDatabaseSchema,
                         oracleTempSchema = roracleTempSchema,
@@ -205,13 +205,10 @@ cdmInspection <- function (connectionDetails,
                   databaseName = databaseName,
                   databaseId = databaseId,
                   databaseDescription = databaseDescription,
-                  mappingCompleteness = vocabularyResults$mappingCompleteness,
-                  drugMapping = vocabularyResults$drugMapping,
-                  conceptCounts = vocabularyResults$conceptCounts,
-                  vocabularies = vocabularyResults$vocabularies,
-                  vocabversion = vocabularyResults$version,
+                  vocabularyResults = vocabularyResults,
                   packinfo=packinfo,
                   hadesPackageVersions = hadesPackageVersions,
+                  performanceResults = performanceResults,
                   sys_details= sys_details,
                   schemaValid = schemaValid,
                   webAPIversion = webAPIversion,

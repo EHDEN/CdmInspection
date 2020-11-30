@@ -52,16 +52,15 @@ vocabularyChecks <- function (connectionDetails,
                            verboseMode = TRUE) {
 
   ## run all queries
-  mappingCompleteness <- executeQuery("mapping_completeness.sql", "Mapping Completeness query executed successfully", connectionDetails, sqlOnly, cmdDatabaseSchema, vocabDatabaseSchema)
-  colnames(mappingCompleteness) <- c("Domain","#Codes Source","#Codes Mapped","%Codes Mapped","#Records Source","#Records Mapped","%Records Mapped")
+  mappingCompleteness <- executeQuery(outputFolder,"mapping_completeness.sql", "Mapping Completeness query executed successfully", connectionDetails, sqlOnly, cmdDatabaseSchema, vocabDatabaseSchema)
+  colnames(mappingCompleteness$result) <- c("Domain","#Codes Source","#Codes Mapped","%Codes Mapped","#Records Source","#Records Mapped","%Records Mapped")
 
+  drugMapping  <- executeQuery(outputFolder,"mapping_levels_drugs.sql", "Drug Level Mapping query executed successfully", connectionDetails, sqlOnly,  cmdDatabaseSchema, vocabDatabaseSchema)
+  unmappedDrugs<- executeQuery(outputFolder,"unmapped_drugs.sql", "Unmapped drugs query executed successfully", connectionDetails, sqlOnly, cmdDatabaseSchema, vocabDatabaseSchema)
+  vocabularies <- executeQuery(outputFolder,"get_vocabulary_table.sql", "Vocabulary table query executed successfully", connectionDetails, sqlOnly, cmdDatabaseSchema, vocabDatabaseSchema)
+  conceptCounts <- executeQuery(outputFolder,"concept_counts.sql", "Concept counts query executed successfully", connectionDetails, sqlOnly, cmdDatabaseSchema, vocabDatabaseSchema)
 
-  drugMapping  <- executeQuery("mapping_levels_drugs.sql", "Drug Level Mapping query executed successfully", connectionDetails, sqlOnly,  cmdDatabaseSchema, vocabDatabaseSchema)
-  unmappedDrugs<- executeQuery("unmapped_drugs.sql", "Unmapped drugs query executed successfully", connectionDetails, sqlOnly, cmdDatabaseSchema, vocabDatabaseSchema)
-  vocabularies <- executeQuery("get_vocabulary_table.sql", "Vocabulary table query executed successfully", connectionDetails, sqlOnly, cmdDatabaseSchema, vocabDatabaseSchema)
-  conceptCounts <- executeQuery("concept_counts.sql", "Concept counts query executed successfully", connectionDetails, sqlOnly, cmdDatabaseSchema, vocabDatabaseSchema)
-
-  version = vocabularies[vocabularies$VOCABULARY_ID=='None',]$VOCABULARY_VERSION
+  version = vocabularies$data[vocabularies$data$ID=='None',]$VOCABULARY_VERSION
 
   results <- list(version=version,
                   vocabularies=vocabularies,
@@ -73,33 +72,4 @@ vocabularyChecks <- function (connectionDetails,
 }
 
 
-executeQuery <- function(sqlFileName, successMessage, connectionDetails, sqlOnly, cmdDatabaseSchema, vocabDatabaseSchema){
-  sql <- SqlRender::loadRenderTranslateSql(sqlFilename = file.path("checks",sqlFileName),
-                                           packageName = "CdmInspection",
-                                           dbms = connectionDetails$dbms,
-                                           warnOnMissingParameters = FALSE,
-                                           vocabDatabaseSchema = vocabDatabaseSchema,
-                                           cdmDatabaseSchema = cdmDatabaseSchema)
-  if (sqlOnly) {
-    SqlRender::writeSql(sql = sql, targetFile = file.path(outputFolder, sqlFileName))
-  } else {
-    tryCatch({
-      connection <- DatabaseConnector::connect(connectionDetails = connectionDetails,)
-      result<- DatabaseConnector::querySql(connection = connection, sql = sql, errorReportFile = file.path(outputFolder, paste0(tools::file_path_sans_ext(sqlFileName),"Err.txt")))
-      ParallelLogger::logInfo(paste("> ",successMessage))
-    },
-    error = function (e) {
-      ParallelLogger::logError(paste0("> Failed see ",file.path(outputFolder,paste0(tools::file_path_sans_ext(sqlFileName),"Err.txt"))," for more details"))
-    }, finally = {
-      DatabaseConnector::disconnect(connection = connection)
-      rm(connection)
-    })
-  }
-  return(result)
-}
-prettyHr <- function(x) {
-  result <- sprintf("%.2f", x)
-  result[is.na(x)] <- "NA"
-  result <- suppressWarnings(format(as.numeric(result), big.mark=",")) # add thousands separator
-  return(result)
-}
+

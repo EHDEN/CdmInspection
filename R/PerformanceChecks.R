@@ -51,7 +51,11 @@ performanceChecks <- function (connectionDetails,
                               outputFolder = "output",
                               verboseMode = TRUE) {
 
+  catalogueExportTiming <- executeQuery(outputFolder,"catalogue_export_timing.sql", "Retrieving duration of queries CatalogueExport", connectionDetails, sqlOnly, cmdDatabaseSchema, vocabDatabaseSchema,resultsDatabaseSchema)
+  performanceBenchmark <- executeQuery(outputFolder,"performance_benchmark.sql", "Executing vocabulary query benchmark", connectionDetails, sqlOnly, cmdDatabaseSchema, vocabDatabaseSchema,resultsDatabaseSchema)
+  results <- list(catalogueExportTiming=catalogueExportTiming,
+                  performanceBenchmark=performanceBenchmark)
 
-  return(TRUE)
+  return(results)
 }
 

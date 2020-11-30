@@ -74,6 +74,18 @@ password <- if (Sys.getenv("DB_PASSWORD") == "") NULL else Sys.getenv("DB_PASSWO
 server = Sys.getenv("DB_SERVER")
 port = Sys.getenv("DB_PORT")
 connectionString = Sys.getenv("CONNECTION_STRING")
+
+# User details
+authors <-"My Name" # used in the title page
+
+# Details specific to the database:
+databaseId <- "SYNPUF"
+databaseName <- "Medicare Claims Synthetic Public Use Files "
+databaseDescription <- "The CMS Linkable 2008–2010 Medicare DE-SynPUF originated from a disjoint (mutually exclusive from existing samples) 5% random sample of beneficiaries from the 100% Beneficiary Summary File for 2008. To exclude any overlap with the beneficiaries in the existing 5% CMS research sample, 3 the beneficiaries in that other sample were excluded, and a 5-in-95 random draw was made with the remaining 95% of beneficiaries. A variety of statistical disclosure limitation techniques were used to protect the confidentiality of Medicare beneficiaries in the CMS Linkable 2008–2010 Medicare DE-SynPUF. The DE-SynPUF was created by starting with an actual beneficiary as a “seed” for a synthetic beneficiary. Synthetic beneficiaries and their claims are based on actual seed beneficiaries. Disclosure is reduced through multiple deterministically or stochastically applied treatment mechanisms. First, hot decking based procedures are used to find donors for beneficiary-level variables and individual claims. Second, other synthetic processes are used to protect other elements of the data. Disclosure limitation methods used in the process include variable reduction, suppression, substitution, synthesis, date perturbation, and coarsening. Please refer to the CMS Linkable 2008–2010 Medicare Data Entrepreneurs’ Synthetic Public Use File (DE-SynPUF) User Manual for details regarding how DE-SynPUF was created"
+
+# *******************************************************
+
+
 connectionDetails <- DatabaseConnector::createConnectionDetails(dbms = dbms,
                                                                 server = server,
                                                                 user = user,
@@ -90,11 +102,6 @@ connectionDetails <- DatabaseConnector::createConnectionDetails(dbms = dbms,
 
 # For Oracle: define a schema that can be used to emulate temp tables:
 oracleTempSchema <- NULL
-
-# Details specific to the database:
-databaseId <- "IPCI"
-databaseName <- "Integrated Primary Care Information"
-databaseDescription <- "The IPCI database started in 1992 and is collected from EHR records of patients registered with their GPs throughout the Netherlands. The selection of 640 practices, of which 422 are currently still actively contributing, is representative for the entire country. The database contains records from in total 2.6 million patients (approximately 1.4 million are still active) out of a Dutch population of 17M. The observation period for a patient is determined by the date of registration at the GP and the date of leave/death. The observation period start date is refined by many quality indicators, e.g. exclusion of peaks of conditions when registering at the GP. All data before the observation period is kept as history data. Drugs are captured as prescription records with product, quantity, dosing directions, strength and indication. The duration of the drug exposure is determined for all drugs by: 1. The amount and dose extracted from the signature or if instruction is “see product instructions” we use the DDD and quantity; 2. Duration available in the record; 3. If option 1 and 2 is not possible we use the DDD derived duration, or default to 30 days otherwise. Drugs not prescribed in the GP setting might be underreported. Indications are available as diagnoses by the GPs and, indirectly, from secondary care providers but the latter might not be complete"
 
 # Details for connecting to the CDM and storing the results
 outputFolder <- file.path(getwd(), "results",databaseId)
@@ -122,4 +129,5 @@ results<-cdmInspection(connectionDetails,
                 outputFolder = outputFolder,
                 verboseMode = verboseMode)
 
+generateResultsDocument(results,outputFolder, authors=authors, databaseDescription = databaseDescription)
 
