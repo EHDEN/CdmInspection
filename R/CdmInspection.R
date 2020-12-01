@@ -59,6 +59,7 @@ cdmInspection <- function (connectionDetails,
                              smallCellCount = 5,
                              runSchemaChecks = TRUE,
                              runVocabularyChecks = TRUE,
+                             runDataTablesChecks = TRUE,
                              runPerformanceChecks = TRUE,
                              runWebAPIChecks = TRUE,
                              baseUrl,
@@ -125,6 +126,15 @@ cdmInspection <- function (connectionDetails,
                      outputFolder = outputFolder,
                      sqlOnly = sqlOnly)
       cdmSource<- .getCdmSource(connectionDetails, cdmDatabaseSchema,sqlOnly)
+    }
+
+    if (runDataTablesChecks) {
+      ParallelLogger::logInfo(paste0("Running Data Table Checks"))
+      dataTablesResults <- dataTablesChecks(connectionDetails = connectionDetails,
+                                    cdmDatabaseSchema = cdmDatabaseSchema,
+                                    resultsDatabaseSchema = resultsDatabaseSchema,
+                                    outputFolder = outputFolder,
+                                    sqlOnly = sqlOnly)
     }
 
     if (runVocabularyChecks) {
@@ -206,6 +216,7 @@ cdmInspection <- function (connectionDetails,
                   databaseId = databaseId,
                   databaseDescription = databaseDescription,
                   vocabularyResults = vocabularyResults,
+                  dataTablesResults = dataTablesResults,
                   packinfo=packinfo,
                   hadesPackageVersions = hadesPackageVersions,
                   performanceResults = performanceResults,

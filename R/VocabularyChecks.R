@@ -57,9 +57,16 @@ vocabularyChecks <- function (connectionDetails,
 
   drugMapping  <- executeQuery(outputFolder,"mapping_levels_drugs.sql", "Drug Level Mapping query executed successfully", connectionDetails, sqlOnly,  cmdDatabaseSchema, vocabDatabaseSchema)
   unmappedDrugs<- executeQuery(outputFolder,"unmapped_drugs.sql", "Unmapped drugs query executed successfully", connectionDetails, sqlOnly, cmdDatabaseSchema, vocabDatabaseSchema)
+  unmappedConditions<- executeQuery(outputFolder,"unmapped_conditions.sql", "Unmapped conditions query executed successfully", connectionDetails, sqlOnly, cmdDatabaseSchema, vocabDatabaseSchema)
+  unmappedMeasurements<- executeQuery(outputFolder,"unmapped_measurements.sql", "Unmapped measurements query executed successfully", connectionDetails, sqlOnly, cmdDatabaseSchema, vocabDatabaseSchema)
+  unmappedObservations<- executeQuery(outputFolder,"unmapped_observations.sql", "Unmapped observations query executed successfully", connectionDetails, sqlOnly, cmdDatabaseSchema, vocabDatabaseSchema)
+  unmappedProcedures<- executeQuery(outputFolder,"unmapped_procedures.sql", "Unmapped procedures query executed successfully", connectionDetails, sqlOnly, cmdDatabaseSchema, vocabDatabaseSchema)
+  unmappedDevices<- executeQuery(outputFolder,"unmapped_devices.sql", "Unmapped devices query executed successfully", connectionDetails, sqlOnly, cmdDatabaseSchema, vocabDatabaseSchema)
   vocabularies <- executeQuery(outputFolder,"get_vocabulary_table.sql", "Vocabulary table query executed successfully", connectionDetails, sqlOnly, cmdDatabaseSchema, vocabDatabaseSchema)
   conceptCounts <- executeQuery(outputFolder,"concept_counts.sql", "Concept counts query executed successfully", connectionDetails, sqlOnly, cmdDatabaseSchema, vocabDatabaseSchema)
-  vocabularyCounts <- executeQuery(outputFolder,"vocabulary_tables_count.sql", "Count on vocabulary tables executed successfully", connectionDetails, sqlOnly, cmdDatabaseSchema, vocabDatabaseSchema)
+  vocabularyCounts <- executeQuery(outputFolder,"vocabulary_tables_count.sql", "Count on vocabulary tables query executed successfully", connectionDetails, sqlOnly, cmdDatabaseSchema, vocabDatabaseSchema)
+  sourceConceptFrequency <- executeQuery(outputFolder,"source_to_concept_map_frequency.sql", "Source to concept map breakdown query executed successfully", connectionDetails, sqlOnly, cmdDatabaseSchema, vocabDatabaseSchema)
+  sourceConceptMap <- executeQuery(outputFolder,"get_source_to_concept_map.sql", "Source to concept map query executed successfully", connectionDetails, sqlOnly, cmdDatabaseSchema, vocabDatabaseSchema)
 
   version = vocabularies$result[vocabularies$result$ID=='None',]$VERSION
 
@@ -68,8 +75,15 @@ vocabularyChecks <- function (connectionDetails,
                   mappingCompleteness=mappingCompleteness,
                   drugMapping=drugMapping,
                   unmappedDrugs=unmappedDrugs,
+                  unmappedConditions=unmappedConditions,
+                  unmappedMeasurements=unmappedMeasurements,
+                  unmappedObservations=unmappedObservations,
+                  unmappedProcedures=unmappedProcedures,
+                  unmappedDevices=unmappedDevices,
                   conceptCounts=conceptCounts,
-                  vocabularyCounts=vocabularyCounts)
+                  vocabularyCounts=vocabularyCounts,
+                  sourceConceptFrequency=sourceConceptFrequency,
+                  sourceConceptMap=sourceConceptMap)
   return(results)
 }
 

@@ -22,17 +22,14 @@ generateResultsDocument<- function(results, outputFolder, docTemplate="EHDEN", a
     body_add_par(value = paste0("Authors: ", authors), style = "Centered") %>%
     body_add_break()
 
-
-
-
-
   ## add Table of content
   doc<-doc %>%
     officer::body_add_par(value = "Table of content", style = "heading 1") %>%
     officer::body_add_toc(level = 2) %>%
     body_add_break()
 
-  ## add preample
+
+  ## add genereal section
 
   items <- c("Data Partner",
                  "Database fullname",
@@ -78,9 +75,42 @@ generateResultsDocument<- function(results, outputFolder, docTemplate="EHDEN", a
     body_add_break()
 
 
+  ## ETL Development section
+
+    doc<-doc %>%
+      officer::body_add_par(value = "ETL Development General", style = "heading 1") %>%
+      officer::body_add_par(paste0("This section decribes the ETL development steps and discusses the quality control steps performed by the SME")) %>%
+      officer::body_add_par(value = "ETL Documentation", style = "heading 2") %>%
+      officer::body_add_par("Perform the following checks and discuss the findings here:", style="Highlight") %>%
+
+      officer::body_add_par("Approve the quality of the ETL documentation with respect to its completeness and level of detail per data domain. Ideally it is based on the Rabbit-in-a-Hat mapping definition document. If a staging table approach is used, its creation needs to be described in detail.", style="Highlight") %>%
+      officer::body_add_par("Does it contain enough detail on the applied business rules and are the THEMIS rules followed?", style="Highlight") %>%
+      officer::body_add_par("Compare the ETL documentation with the shared ETL code to make sure it is a correct representation of the implementation. Ideally, end-to-end tests using the Rabbit-in-a-hat testFramework.R is implemented and results are shared. If this is not available explain the quality control mechanism that is applied", style="Highlight") %>%
+      officer::body_add_par("Is the ETL code executable fully automatically or are there manual steps? If there are manual steps these need to be explained.", style="Highlight") %>%
+      officer::body_add_par(value = "ETL Implementation", style = "heading 2") %>%
+      officer::body_add_par("Described the technology used for implementing the ETL (SQL,R, Python etc).", style="Highlight") %>%
+
+      officer::body_add_par("Provide feedback on the level of commenting and code structure. The minimum level of commenting contains an explanation of the sql query, R function, etc. See also the guidance provided by OHDSI. Code structure refers to a logical structure of the SQL/R files. We recommend that the files are name as their target table and contain all code related to that domain, e.g. insert_person.sql, insert_condition_occurence.sql. If another method is applied provide there details.", style="Highlight") %>%
+
+       officer::body_add_par("Is there a version control mechanism in place?", style="Highlight")
+
+
+    ## add Concept counts
+
+    doc<-doc %>%
+      officer::body_add_par(value = "Record counts data tables", style = "heading 2") %>%
+      officer::body_add_par("Table 2. Shows the number of records in all clinical data tables") %>%
+      my_body_add_table(value = results$dataTablesResults$dataTablesCounts$result, style = "EHDEN") %>%
+      officer::body_add_par(" ") %>%
+      officer::body_add_par(paste("Query executed in ",sprintf("%.2f", results$dataTablebResults$dataTablesCounts$duration),"secs"))
+
+
+
+  ## Vocabulary checks section
   doc<-doc %>%
-    officer::body_add_par(value = "Vocabulary Checks", style = "heading 1") %>%
-    officer::body_add_par(paste0("In this section the results of the vocabulary checks are discussed."))
+    officer::body_add_par(value = "Vocabulary Mapping", style = "heading 1") %>%
+    officer::body_add_par(value = "Describe how the vocabulary mapping process was implemented, and what the quality control mechanism are.", style = "Highlight") %>%
+    officer::body_add_par(value = "All the custom mappings need to be shared with the report as Excel file or as source_to_concept map, to allow for random checks by EHDEN’s vocabulary team. Ideally these lists are sorted descending by source code frequency.", style = "Highlight")
 
   vocabResults <-results$vocabularyResults
   #vocabularies table
@@ -133,16 +163,57 @@ generateResultsDocument<- function(results, outputFolder, docTemplate="EHDEN", a
     officer::body_add_par(paste("Query executed in ",sprintf("%.2f", vocabResults$drugMapping$duration),"secs")) %>%
     body_add_break()
 
- ## doc <- doc %>% officer::body_end_section_portrait()
+  ## add top 20 missing mappings
+  doc<-doc %>%
+    officer::body_add_par(value = "Unmapped Codes", style = "heading 2") %>%
+    officer::body_add_par("Table 6. Top 20 of unmapped drugs") %>%
+    my_body_add_table(value = vocabResults$unmappedDrugs$result, style = "EHDEN") %>%
+    officer::body_add_par(" ") %>%
+    officer::body_add_par(paste("Query executed in ",sprintf("%.2f", vocabResults$unmappedDrugs$duration),"secs")) %>%
+    officer::body_add_par("Table 7. Top 20 of unmapped conditions") %>%
+    my_body_add_table(value = vocabResults$unmappedConditions$result, style = "EHDEN") %>%
+    officer::body_add_par(" ") %>%
+    officer::body_add_par(paste("Query executed in ",sprintf("%.2f", vocabResults$unmappedConditions$duration),"secs")) %>%
+    officer::body_add_par("Table 8. Top 20 of unmapped measurements") %>%
+    my_body_add_table(value = vocabResults$unmappedMeasurements$result, style = "EHDEN") %>%
+    officer::body_add_par(" ") %>%
+    officer::body_add_par(paste("Query executed in ",sprintf("%.2f", vocabResults$unmappedMeasurements$duration),"secs")) %>%
+    officer::body_add_par("Table 9. Top 20 of unmapped observations") %>%
+    my_body_add_table(value = vocabResults$unmappedObservations$result, style = "EHDEN") %>%
+    officer::body_add_par(" ") %>%
+    officer::body_add_par(paste("Query executed in ",sprintf("%.2f", vocabResults$unmappedObservations$duration),"secs")) %>%
+    officer::body_add_par("Table 10. Top 20 of unmapped procedures") %>%
+    my_body_add_table(value = vocabResults$unmappedProcedures$result, style = "EHDEN") %>%
+    officer::body_add_par(" ") %>%
+    officer::body_add_par(paste("Query executed in ",sprintf("%.2f", vocabResults$unmappedProcedures$duration),"secs")) %>%
+    officer::body_add_par("Table 11. Top 20 of unmapped devices") %>%
+    my_body_add_table(value = vocabResults$unmappedDevices$result, style = "EHDEN") %>%
+    officer::body_add_par(" ") %>%
+    officer::body_add_par(paste("Query executed in ",sprintf("%.2f", vocabResults$unmappedDevices$duration),"secs"))
+
+  ## add source_to_concept_map breakdown
+  doc<-doc %>%
+    officer::body_add_par(value = "Source to concept map", style = "heading 2") %>%
+    officer::body_add_par("If you did not use the source_to_concept_map table in the ETL the table below will be empty. In that case provide your custom mappings in an Excel file.", style="Highlight") %>%
+    officer::body_add_par("Table 12. Source to concept map breakdown") %>%
+    my_body_add_table(value = vocabResults$sourceConceptFrequency$result, style = "EHDEN") %>%
+    officer::body_add_par(" ") %>%
+    officer::body_add_par(paste("Query executed in ",sprintf("%.2f", vocabResults$sourceConceptFrequency$duration),"secs")) %>%
+    officer::body_add_par("Note that the full source_to_concept_map table is added in the results.zip", style="Highlight") %>%
+
+    body_add_break()
 
   doc<-doc %>%
-    officer::body_add_par(value = "Infrastructure Checks", style = "heading 1")
+    officer::body_add_par(value = "Technical Infrastructure", style = "heading 1") %>%
+    officer::body_add_par("Check that the following tools are available and functional: ATLAS, ACHILLES report. Functionality needs to be tested by design of cohort in Atlas, generation of cohort counts in ATLAS, execution of a simple cohort characterisation in ATLAS.", style="Highlight") %>%
+    officer::body_add_par("Is the data source added in the EHDEN Database Catalogue and has the CatalogUeExport results been uploaded for the visualizations? Also describe if a process has been agreed for updating this information regularly.", style="Highlight") %>%
+    officer::body_add_par(paste0("Add additional relevant information about the local infrastructure here, such as backup facilities, specifications webserver hosting ATLAS, testing environment if available etc."), style="Highlight")
 
   #installed packages
   doc<-doc %>%
 
     officer::body_add_par(value = "HADES packages", style = "heading 2") %>%
-    officer::body_add_par("Table 6. Versions of all installed HADES R packages") %>%
+    officer::body_add_par("Table 13. Versions of all installed HADES R packages") %>%
     my_body_add_table(value = results$hadesPackageVersions, style = "EHDEN")
 
   #system detail
@@ -153,7 +224,7 @@ generateResultsDocument<- function(results, outputFolder, docTemplate="EHDEN", a
   doc<-doc %>%
 
     officer::body_add_par(value = "CDM Source Table", style = "heading 2") %>%
-    officer::body_add_par("Table 7. cdm_source table content") %>%
+    officer::body_add_par("Table 14. cdm_source table content") %>%
     my_body_add_table(value =t_cdmSource, style = "EHDEN",)
 
   doc<-doc %>%
@@ -175,14 +246,10 @@ generateResultsDocument<- function(results, outputFolder, docTemplate="EHDEN", a
 
     doc<-doc %>%
     officer::body_add_par(value = "Catalogue Export Query Performance", style = "heading 2") %>%
-    officer::body_add_par("Table 8. Execution time of queries of the CatalogExport R-Package") %>%
+    officer::body_add_par("Table 15. Execution time of queries of the CatalogExport R-Package") %>%
     my_body_add_table(value =results$performanceResults$catalogueExportTiming$result, style = "EHDEN") %>%
     officer::body_add_par(" ") %>%
     officer::body_add_par(paste("Query executed in ",sprintf("%.2f", results$performanceResults$catalogueExportTiming$duration)," secs"))
-
-    doc<-doc %>%
-    officer::body_add_par(value = "Additional Details", style = "heading 2") %>%
-    officer::body_add_par(paste0("Add additional relevant information about the local infrastructure here, such as backup facilities, specifications webserver hosting ATLAS, testing environment if available etc."), style="Highlight")
 
     doc<-doc %>%
       officer::body_add_par(value = "Scientific Preparedness", style = "heading 1") %>%
@@ -194,18 +261,36 @@ generateResultsDocument<- function(results, outputFolder, docTemplate="EHDEN", a
 
     doc<-doc %>%
       officer::body_add_par(value = "Study execution", style = "heading 2") %>%
-      officer::body_add_par(paste0("Describe if the Data Partner will be able to execute the ongoing OHDSI/EHDEN network studies, e.g. are there governance issues, lack of resources, etc."), style="Highlight") %>%
+      officer::body_add_par(paste0("Describe how the Data Partner will be able to execute the ongoing OHDSI/EHDEN network studies, e.g. are there governance issues, lack of resources, etc."), style="Highlight") %>%
       officer::body_add_par(paste0("Are there plans to initiate research studies?"), style="Highlight") %>%
       officer::body_add_par(paste0("Are there plans to participate in OHDSI Working Groups?"), style="Highlight")
 
+    doc <-  doc %>%
+      body_add_par('Quality Control', style = "heading 1") %>%
+      officer::body_add_par("Show that the Data Quality Dashboard results are 100% and check if the thresholds have been changed by doing a diff with the default.", style="Highlight") %>%
+      officer::body_add_par("Discuss with the Data Partner why the thresholds have been changed and share this information.", style="Highlight") %>%
+      officer::body_add_par("Have the Achilles results been reviewed by the Data Partner?", style="Highlight") %>%
+      officer::body_add_par("How is the ETL code tested? Discuss the quality controls steps or ideally share the code that executes this. Have all checks been passed? For example, is there a comparison available of the person count on the source and CDM and are the differences explained?", style="Highlight")
+
+    doc <-  doc %>%
+      body_add_par('Maintenance', style = "heading 1") %>%
+      body_add_par("Describe briefly the process the Data Partner implemented to keep the data in the OMOP CDM up-to-date when new source data will become available, if the local coding systems are updated, or if new versions of the CDM will be released. Describe how versions of the CDM will be maintained over time.", style="Highlight") %>%
+      body_add_par("Describe the maintenance process put in place by the data partner for the tool updates.", style="Highlight") %>%
+      body_add_break()
 
     doc <-  doc %>%
       body_add_par('Checklist', style = "heading 1") %>%
+
+      body_add_par("Have the following checks been performed?", style = "Normal") %>%
+      addCheckListItem("ATLAS cohort creation, e.g. Type 2 Diabetes") %>%
+      addCheckListItem("Check of Achilles results") %>%
+      body_add_par("Comments:", style = "Normal") %>%
+
       body_add_par("Check that all the items mentioned below are shared with EHDEN in addition to this inspection report. If items cannot be shared, add an explanation in the comments section.", style = "Normal") %>%
       addCheckListItem("ETL Documentation") %>%
+      addCheckListItem("ETL Code") %>%
       addCheckListItem("DQD dashboard json file") %>%
       addCheckListItem("White Rabbit output") %>%
-      addCheckListItem("Source_to_concept map") %>%
       addCheckListItem("CdmInspection results.zip ") %>%
       body_add_par("Comments:", style = "Normal")
 

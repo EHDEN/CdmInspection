@@ -1,6 +1,6 @@
 --Unmapped drugs
 
-select drug_source_value as "Source Value",
+select top 25 drug_source_value as "Source Value",
        count(drug_exposure_id) as "#Records",
        count(distinct person_id) as "#Subjects"
        from @cdmDatabaseSchema.drug_exposure where drug_concept_id = 0
