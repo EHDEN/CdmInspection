@@ -154,6 +154,22 @@ generateResultsDocument<- function(results, outputFolder, docTemplate="EHDEN", a
     officer::body_add_par(value = "Additional Details", style = "heading 2") %>%
     officer::body_add_par(paste0("Add additional relevant information about the local infrastructure here, such as backup facilities, specifications webserver hosting ATLAS, testing environment if available etc."), style="Highlight")
 
+    doc<-doc %>%
+      officer::body_add_par(value = "Scientific Preparedness", style = "heading 1") %>%
+      officer::body_add_par(paste0("This section contains several items related to the interaction with the EHDEN/OHDSI community and training after the mapping process."))
+
+    doc<-doc %>%
+      officer::body_add_par(value = "Staff training", style = "heading 2") %>%
+      officer::body_add_par(paste0("Describe how the Data Partner will train and educate the different users of the system in their organizaton and what the current status is of the expertise in the team. "), style="Highlight")
+
+    doc<-doc %>%
+      officer::body_add_par(value = "Study execution", style = "heading 2") %>%
+      officer::body_add_par(paste0("Describe if the Data Partner will be able to execute the ongoing OHDSI/EHDEN network studies, e.g. are there governance issues, lack of resources, etc."), style="Highlight") %>%
+      officer::body_add_par(paste0("Are there plans to initiate research studies?"), style="Highlight") %>%
+      officer::body_add_par(paste0("Are there plans to participate in OHDSI Working Groups?"), style="Highlight")
+
+
+
 
 
   ## save the doc as a word file
