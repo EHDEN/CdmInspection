@@ -27,6 +27,7 @@ The CdmInspection R Package is part of this SME Inspection procedure and perform
 7. Extraction of CDM_Source table
 
 **Results Document Generation**
+
 Produces a word document in the EHDEN template that contains all the results. This template needs to be completed by the person performing the cdm inspection. The user can also provide a custom template file if required.
 
 Technology
