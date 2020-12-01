@@ -128,10 +128,17 @@ generateResultsDocument<- function(results, outputFolder, docTemplate="EHDEN", a
 
   doc<-doc %>%
     officer::body_add_par(value = "Concept counts", style = "heading 2") %>%
-    officer::body_add_par("Table 2. Shows the content of the concept table") %>%
+    officer::body_add_par("Table 2. Shows the content of the concept table")
+
+  if (!is.null(vocabResults$conceptCounts$result)) {
+    doc<-doc %>%
     my_body_add_table(value = vocabResults$conceptCounts$result, style = "EHDEN") %>%
     officer::body_add_par(" ") %>%
     officer::body_add_par(paste("Query executed in ",sprintf("%.2f", vocabResults$conceptCounts$duration),"secs"))
+  } else {
+    doc<-doc %>%
+    officer::body_add_par("Query did not return results ", style="Highlight")
+  }
 
   ## add vocabulary table counts
 
@@ -246,10 +253,17 @@ generateResultsDocument<- function(results, outputFolder, docTemplate="EHDEN", a
 
     doc<-doc %>%
     officer::body_add_par(value = "Catalogue Export Query Performance", style = "heading 2") %>%
-    officer::body_add_par("Table 15. Execution time of queries of the CatalogExport R-Package") %>%
-    my_body_add_table(value =results$performanceResults$catalogueExportTiming$result, style = "EHDEN") %>%
-    officer::body_add_par(" ") %>%
-    officer::body_add_par(paste("Query executed in ",sprintf("%.2f", results$performanceResults$catalogueExportTiming$duration)," secs"))
+    officer::body_add_par("Table 15. Execution time of queries of the CatalogExport R-Package")
+
+    if (!is.null(results$performanceResults$catalogueExportTiming$result)) {
+      doc<-doc %>%
+        my_body_add_table(value =results$performanceResults$catalogueExportTiming$result, style = "EHDEN") %>%
+        officer::body_add_par(" ") %>%
+        officer::body_add_par(paste("Query executed in ",sprintf("%.2f", results$performanceResults$catalogueExportTiming$duration)," secs"))
+    } else {
+      doc<-doc %>%
+        officer::body_add_par("Query did not return results ", style="Highlight")
+    }
 
     doc<-doc %>%
       officer::body_add_par(value = "Scientific Preparedness", style = "heading 1") %>%
