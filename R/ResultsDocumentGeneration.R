@@ -102,7 +102,7 @@ generateResultsDocument<- function(results, outputFolder, docTemplate="EHDEN", a
       officer::body_add_par("Table 2. Shows the number of records in all clinical data tables") %>%
       my_body_add_table(value = results$dataTablesResults$dataTablesCounts$result, style = "EHDEN") %>%
       officer::body_add_par(" ") %>%
-      officer::body_add_par(paste("Query executed in ",sprintf("%.2f", results$dataTablebResults$dataTablesCounts$duration),"secs"))
+      officer::body_add_par(paste("Query executed in ",sprintf("%.2f", results$dataTableResults$dataTablesCounts$duration),"secs"))
 
 
 
