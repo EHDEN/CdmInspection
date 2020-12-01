@@ -21,7 +21,8 @@ Depends:     R (>= 3.5.0),
     ROhdsiWebApi (>= 1.1.2),
     dplyr,
     officer,
-    data.table
+    data.table,
+    flextable
 Imports: parallel,
          benchmarkme,
          prettyunits,

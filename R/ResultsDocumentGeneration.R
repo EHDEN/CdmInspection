@@ -3,7 +3,7 @@ library(magrittr)
 
 
 #' @export
-generateResultsDocument<- function(results, outputFolder, docTemplate="EHDEN", authors = "Author Names", databaseDescription=NULL, silent=FALSE) {
+generateResultsDocument<- function(results, outputFolder, docTemplate="EHDEN", authors = "Author Names", databaseDescription, databaseName, databaseId,silent=FALSE) {
 
   if (docTemplate=="EHDEN"){
     docTemplate <- system.file("templates", "Template-EHDEN.docx", package="CdmInspection")
@@ -22,35 +22,65 @@ generateResultsDocument<- function(results, outputFolder, docTemplate="EHDEN", a
     body_add_par(value = paste0("Authors: ", authors), style = "Centered") %>%
     body_add_break()
 
+
+
+
+
   ## add Table of content
   doc<-doc %>%
     officer::body_add_par(value = "Table of content", style = "heading 1") %>%
     officer::body_add_toc(level = 2) %>%
     body_add_break()
 
+  ## add preample
 
-  ## add introduction section
+  items <- c("Data Partner",
+                 "Database fullname",
+                 "Database acronym",
+                 "Contact Person",
+                 "Email",
+                 "SME",
+                 "Contact Person",
+                 "Email SME"
+                 )
+  answers <- c("",databaseName, databaseId,"","","","","")
+  preample <- data.frame(items,answers)
+  ft <- qflextable(preample)
+  ft<-set_table_properties(ft, width = 1, layout = "fixed")
+  ft <- bold(ft, bold = TRUE, part = "header")
+  border_v = fp_border(color="gray")
+  border_h = fp_border(color="gray")
+  ft<-border_inner_v(ft, part="all", border = border_v )
+
   doc<-doc %>%
-    officer::body_add_par(value = "Introduction", style = "heading 1") %>%
-    officer::body_add_par(value = paste0("This inspection report has been created for the ",
-            databaseName, " database",
-            " as part of the inspection task performed by: ")) %>%
-    officer::body_add_par(paste0("Add details of the responsible company and persons"), style="Highlight")
+    officer::body_add_par(value = "General Information", style = "heading 1") %>%
 
-  if (is.null(databaseDescription)){
-    doc<-doc %>%
-      officer::body_add_par(value = paste0("Provide a short description of the database"), style="Highlight")
-  } else
-    doc<-doc %>%
-      officer::body_add_par(value = databaseDescription)
+    officer::body_add_par(value = "The goal of the inspection report is to provide insight into the completeness, transparency and quality of the performed Extraction Transform, and Load (ETL) process and the readiness of the data source to be onboarded in the data network to participate in research studies.") %>%
+
+    officer::body_add_par(value = "Contact Details", style = "heading 2") %>%
+    body_add_par(value = "Fill in the table below",style="Highlight") %>%
+
+    flextable::body_add_flextable(value = ft, align = "left")
+  doc<-doc %>%
+    officer::body_add_par(value = "Database Description", style = "heading 2")
+
+    if (is.null(databaseDescription)){
+      doc<-doc %>%
+        officer::body_add_par(value = paste0("Provide a short description of the database"), style="Highlight")
+    } else {
+      doc<-doc %>%
+        officer::body_add_par(value = databaseDescription)
+    }
+
+    doc<-doc %>% officer::body_add_par(value = "SME Role", style = "heading 2") %>%
+
+    body_add_par(value = "Describe the involvement of the SME in the ETL Delopment process",style="Highlight") %>%
+    body_add_break()
 
 
   doc<-doc %>%
-
-    officer::body_add_par(value = "The goal of the inspection report is to provide insight into the completeness, transparency and quality of the performed Extraction Transform, and Load (ETL) process and the readiness of the data source to be onboarded in the data network to participate in research studies.")
-
-  doc<-doc %>%
-    officer::body_add_par(value = "Vocabulary Checks", style = "heading 1")
+    officer::body_add_par(value = "Vocabulary Checks", style = "heading 1") %>%
+    officer::body_add_par(paste0("In this section the results of the vocabulary checks are discussed."))
 
   vocabResults <-results$vocabularyResults
   #vocabularies table
@@ -59,7 +89,7 @@ generateResultsDocument<- function(results, outputFolder, docTemplate="EHDEN", a
     officer::body_add_par(value = "Vocabularies", style = "heading 2") %>%
     officer::body_add_par(paste0("Vocabulary version: ",results$vocabularyResults$version)) %>%
     officer::body_add_par("Table 1. The vocabularies available in the CDM") %>%
-    officer::body_add_table(value = vocabResults$vocabularies$result, style = "EHDEN") %>%
+    my_body_add_table(value = vocabResults$vocabularies$result, style = "EHDEN") %>%
     officer::body_add_par(" ") %>%
     officer::body_add_par(paste("Query executed in ",sprintf("%.2f", vocabResults$vocabularies$duration),"secs"))
   ##%>% body_end_section_landscape()
@@ -69,7 +99,7 @@ generateResultsDocument<- function(results, outputFolder, docTemplate="EHDEN", a
   doc<-doc %>%
     officer::body_add_par(value = "Concept counts", style = "heading 2") %>%
     officer::body_add_par("Table 2. Shows the content of the concept table") %>%
-    officer::body_add_table(value = vocabResults$conceptCounts$result, style = "EHDEN") %>%
+    my_body_add_table(value = vocabResults$conceptCounts$result, style = "EHDEN") %>%
     officer::body_add_par(" ") %>%
     officer::body_add_par(paste("Query executed in ",sprintf("%.2f", vocabResults$conceptCounts$duration),"secs"))
 
@@ -78,7 +108,7 @@ generateResultsDocument<- function(results, outputFolder, docTemplate="EHDEN", a
   doc<-doc %>%
     officer::body_add_par(value = "Table counts", style = "heading 2") %>%
     officer::body_add_par("Table 3. Shows the number of records in all vocabulary tables") %>%
-    officer::body_add_table(value = vocabResults$vocabularyCounts$result, style = "EHDEN") %>%
+    my_body_add_table(value = vocabResults$vocabularyCounts$result, style = "EHDEN") %>%
     officer::body_add_par(" ") %>%
     officer::body_add_par(paste("Query executed in ",sprintf("%.2f", vocabResults$vocabularyCounts$duration),"secs"))
 
@@ -89,7 +119,7 @@ generateResultsDocument<- function(results, outputFolder, docTemplate="EHDEN", a
   doc<-doc %>%
     officer::body_add_par(value = "Mapping Completeness", style = "heading 2") %>%
     officer::body_add_par("Table 4. Shows the percentage of codes that are mapped to the standardized vocabularies as well as the percentage of records.") %>%
-    officer::body_add_table(value = vocabResults$mappingCompleteness$result, style = "EHDEN") %>%
+    my_body_add_table(value = vocabResults$mappingCompleteness$result, style = "EHDEN") %>%
     officer::body_add_par(" ") %>%
     officer::body_add_par(paste("Query executed in ",sprintf("%.2f", vocabResults$mappingCompleteness$duration),"secs")) %>%
     body_add_break()
@@ -98,7 +128,7 @@ generateResultsDocument<- function(results, outputFolder, docTemplate="EHDEN", a
   doc<-doc %>%
     officer::body_add_par(value = "Drug Mappings", style = "heading 2") %>%
     officer::body_add_par("Table 5. The level of the drug mappings") %>%
-    officer::body_add_table(value = vocabResults$drugMapping$result, style = "EHDEN") %>%
+    my_body_add_table(value = vocabResults$drugMapping$result, style = "EHDEN") %>%
     officer::body_add_par(" ") %>%
     officer::body_add_par(paste("Query executed in ",sprintf("%.2f", vocabResults$drugMapping$duration),"secs")) %>%
     body_add_break()
@@ -113,7 +143,7 @@ generateResultsDocument<- function(results, outputFolder, docTemplate="EHDEN", a
 
     officer::body_add_par(value = "HADES packages", style = "heading 2") %>%
     officer::body_add_par("Table 6. Versions of all installed HADES R packages") %>%
-    officer::body_add_table(value = results$hadesPackageVersions, style = "EHDEN")
+    my_body_add_table(value = results$hadesPackageVersions, style = "EHDEN")
 
   #system detail
   t_cdmSource <- transpose(results$cdmSource)
@@ -124,7 +154,7 @@ generateResultsDocument<- function(results, outputFolder, docTemplate="EHDEN", a
 
     officer::body_add_par(value = "CDM Source Table", style = "heading 2") %>%
     officer::body_add_par("Table 7. cdm_source table content") %>%
-    officer::body_add_table(value =t_cdmSource, style = "EHDEN",)
+    my_body_add_table(value =t_cdmSource, style = "EHDEN",)
 
   doc<-doc %>%
     officer::body_add_par(value = "System Information", style = "heading 2") %>%
@@ -146,7 +176,7 @@ generateResultsDocument<- function(results, outputFolder, docTemplate="EHDEN", a
     doc<-doc %>%
     officer::body_add_par(value = "Catalogue Export Query Performance", style = "heading 2") %>%
     officer::body_add_par("Table 8. Execution time of queries of the CatalogExport R-Package") %>%
-    officer::body_add_table(value =results$performanceResults$catalogueExportTiming$result, style = "EHDEN") %>%
+    my_body_add_table(value =results$performanceResults$catalogueExportTiming$result, style = "EHDEN") %>%
     officer::body_add_par(" ") %>%
     officer::body_add_par(paste("Query executed in ",sprintf("%.2f", results$performanceResults$catalogueExportTiming$duration)," secs"))
 
@@ -169,7 +199,15 @@ generateResultsDocument<- function(results, outputFolder, docTemplate="EHDEN", a
       officer::body_add_par(paste0("Are there plans to participate in OHDSI Working Groups?"), style="Highlight")
 
 
-
+    doc <-  doc %>%
+      body_add_par('Checklist', style = "heading 1") %>%
+      body_add_par("Check that all the items mentioned below are shared with EHDEN in addition to this inspection report. If items cannot be shared, add an explanation in the comments section.", style = "Normal") %>%
+      addCheckListItem("ETL Documentation") %>%
+      addCheckListItem("DQD dashboard json file") %>%
+      addCheckListItem("White Rabbit output") %>%
+      addCheckListItem("Source_to_concept map") %>%
+      addCheckListItem("CdmInspection results.zip ") %>%
+      body_add_par("Comments:", style = "Normal")
 
 
   ## save the doc as a word file
