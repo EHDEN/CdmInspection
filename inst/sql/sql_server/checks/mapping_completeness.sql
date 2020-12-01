@@ -27,6 +27,21 @@ from @cdmDatabaseSchema.procedure_occurrence
 group by procedure_source_value, case when procedure_concept_id > 0 then 1 else 0 end
 ) t1
 
+union
+
+select 'device' as domain, count_big(distinct source_value) as num_source_concepts,
+       sum(case when is_mapped > 0 then 1 else 0 end) as num_mapped_codes,
+       1.0*sum(case when is_mapped > 0 then 1 else 0 end) / count_big(distinct source_value) as pct_mapped_codes,
+       sum(num_records) as num_records,
+       sum(case when is_mapped > 0 then num_records else 0 end) as num_mapped_records,
+       1.0*sum(case when is_mapped > 0 then num_records else 0 end)/sum(num_records) as pct_mapped_records
+from
+(
+select device_source_value as source_value, case when device_concept_id > 0 then 1 else 0 end as is_mapped, count_big(person_id) as num_records
+from @cdmDatabaseSchema.device_exposure
+group by device_source_value, case when device_concept_id > 0 then 1 else 0 end
+) t1
+
 
 union
 
