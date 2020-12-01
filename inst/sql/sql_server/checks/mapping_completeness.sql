@@ -76,3 +76,20 @@ select measurement_source_value as source_value, case when measurement_concept_i
 from @cdmDatabaseSchema.measurement
 group by measurement_source_value, case when measurement_concept_id > 0 then 1 else 0 end
 ) t1
+
+union
+
+select 'visit_occurrence' as domain, count(distinct source_value) as num_source_concepts,
+       sum(case when is_mapped > 0 then 1 else 0 end) as num_mapped_codes,
+       1.0*sum(case when is_mapped > 0 then 1 else 0 end) / count(distinct source_value) as pct_mapped_codes,
+       sum(num_records) as num_records,
+       sum(case when is_mapped > 0 then num_records else 0 end) as num_mapped_records,
+       1.0*sum(case when is_mapped > 0 then num_records else 0 end)/sum(num_records) as pct_mapped_records
+from
+(
+select visit_source_value as source_value, case when visit_concept_id > 0 then 1 else 0 end as is_mapped, count(person_id) as num_records
+from @cdmDatabaseSchema.visit_occurrence
+group by visit_source_value, case when visit_concept_id > 0 then 1 else 0 end
+) t1
+
+

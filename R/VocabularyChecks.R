@@ -59,15 +59,17 @@ vocabularyChecks <- function (connectionDetails,
   unmappedDrugs<- executeQuery(outputFolder,"unmapped_drugs.sql", "Unmapped drugs query executed successfully", connectionDetails, sqlOnly, cmdDatabaseSchema, vocabDatabaseSchema)
   vocabularies <- executeQuery(outputFolder,"get_vocabulary_table.sql", "Vocabulary table query executed successfully", connectionDetails, sqlOnly, cmdDatabaseSchema, vocabDatabaseSchema)
   conceptCounts <- executeQuery(outputFolder,"concept_counts.sql", "Concept counts query executed successfully", connectionDetails, sqlOnly, cmdDatabaseSchema, vocabDatabaseSchema)
+  vocabularyCounts <- executeQuery(outputFolder,"vocabulary_tables_count.sql", "Count on vocabulary tables executed successfully", connectionDetails, sqlOnly, cmdDatabaseSchema, vocabDatabaseSchema)
 
-  version = vocabularies$data[vocabularies$data$ID=='None',]$VOCABULARY_VERSION
+  version = vocabularies$result[vocabularies$result$ID=='None',]$VERSION
 
   results <- list(version=version,
                   vocabularies=vocabularies,
                   mappingCompleteness=mappingCompleteness,
                   drugMapping=drugMapping,
                   unmappedDrugs=unmappedDrugs,
-                  conceptCounts=conceptCounts)
+                  conceptCounts=conceptCounts,
+                  vocabularyCounts=vocabularyCounts)
   return(results)
 }
 

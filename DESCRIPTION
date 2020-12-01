@@ -18,12 +18,13 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
 Depends:     R (>= 3.5.0),
     DatabaseConnector (>= 3.0.0),
-    ROhdsiWebApi (>= 1.1.2)
+    ROhdsiWebApi (>= 1.1.2),
+    dplyr,
+    officer,
+    data.table
 Imports: parallel,
          benchmarkme,
          prettyunits,
-         officer,
          magrittr,
-         tools,
-         dplyr,
-         data.table
+         tools
+         

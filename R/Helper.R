@@ -38,7 +38,7 @@ executeQuery <- function(outputFolder,sqlFileName, successMessage, connectionDet
       start_time <- Sys.time()
       connection <- DatabaseConnector::connect(connectionDetails = connectionDetails,)
       result<- DatabaseConnector::querySql(connection = connection, sql = sql, errorReportFile = file.path(outputFolder, paste0(tools::file_path_sans_ext(sqlFileName),"Err.txt")))
-      duration <- Sys.time() -  start_time
+      duration <- as.numeric(difftime(Sys.time(),start_time), units="secs")
       ParallelLogger::logInfo(paste("> ",successMessage, "in", sprintf("%.2f", duration),"secs"))
     },
     error = function (e) {

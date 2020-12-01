@@ -57,7 +57,7 @@ generateResultsDocument<- function(results, outputFolder, docTemplate="EHDEN", a
   doc<-doc %>%
 
     officer::body_add_par(value = "Vocabularies", style = "heading 2") %>%
-    officer::body_add_par(paste0("Vocabulary version: ",results$vocabversion)) %>%
+    officer::body_add_par(paste0("Vocabulary version: ",results$vocabularyResults$version)) %>%
     officer::body_add_par("Table 1. The vocabularies available in the CDM") %>%
     officer::body_add_table(value = vocabResults$vocabularies$result, style = "EHDEN") %>%
     officer::body_add_par(" ") %>%
@@ -73,13 +73,22 @@ generateResultsDocument<- function(results, outputFolder, docTemplate="EHDEN", a
     officer::body_add_par(" ") %>%
     officer::body_add_par(paste("Query executed in ",sprintf("%.2f", vocabResults$conceptCounts$duration),"secs"))
 
+  ## add vocabulary table counts
+
+  doc<-doc %>%
+    officer::body_add_par(value = "Table counts", style = "heading 2") %>%
+    officer::body_add_par("Table 3. Shows the number of records in all vocabulary tables") %>%
+    officer::body_add_table(value = vocabResults$vocabularyCounts$result, style = "EHDEN") %>%
+    officer::body_add_par(" ") %>%
+    officer::body_add_par(paste("Query executed in ",sprintf("%.2f", vocabResults$vocabularyCounts$duration),"secs"))
+
   ## add Mapping Completeness
   vocabResults$mappingCompleteness$result$'%Codes Mapped' <- prettyHr(vocabResults$mappingCompleteness$result$'%Codes Mapped')
   vocabResults$mappingCompleteness$result$'%Records Mapped' <- prettyHr(vocabResults$mappingCompleteness$result$'%Records Mapped')
 
   doc<-doc %>%
     officer::body_add_par(value = "Mapping Completeness", style = "heading 2") %>%
-    officer::body_add_par("Table 3. Shows the percentage of codes that are mapped to the standardized vocabularies as well as the percentage of records.") %>%
+    officer::body_add_par("Table 4. Shows the percentage of codes that are mapped to the standardized vocabularies as well as the percentage of records.") %>%
     officer::body_add_table(value = vocabResults$mappingCompleteness$result, style = "EHDEN") %>%
     officer::body_add_par(" ") %>%
     officer::body_add_par(paste("Query executed in ",sprintf("%.2f", vocabResults$mappingCompleteness$duration),"secs")) %>%
@@ -88,7 +97,7 @@ generateResultsDocument<- function(results, outputFolder, docTemplate="EHDEN", a
   ## add Drug Level Mappings
   doc<-doc %>%
     officer::body_add_par(value = "Drug Mappings", style = "heading 2") %>%
-    officer::body_add_par("Table 4. The level of the drug mappings") %>%
+    officer::body_add_par("Table 5. The level of the drug mappings") %>%
     officer::body_add_table(value = vocabResults$drugMapping$result, style = "EHDEN") %>%
     officer::body_add_par(" ") %>%
     officer::body_add_par(paste("Query executed in ",sprintf("%.2f", vocabResults$drugMapping$duration),"secs")) %>%
@@ -103,7 +112,7 @@ generateResultsDocument<- function(results, outputFolder, docTemplate="EHDEN", a
   doc<-doc %>%
 
     officer::body_add_par(value = "HADES packages", style = "heading 2") %>%
-    officer::body_add_par("Table 5. Versions of all installed HADES R packages") %>%
+    officer::body_add_par("Table 6. Versions of all installed HADES R packages") %>%
     officer::body_add_table(value = results$hadesPackageVersions, style = "EHDEN")
 
   #system detail
@@ -114,7 +123,7 @@ generateResultsDocument<- function(results, outputFolder, docTemplate="EHDEN", a
   doc<-doc %>%
 
     officer::body_add_par(value = "CDM Source Table", style = "heading 2") %>%
-    officer::body_add_par("Table 6. cdm_source table content") %>%
+    officer::body_add_par("Table 7. cdm_source table content") %>%
     officer::body_add_table(value =t_cdmSource, style = "EHDEN",)
 
   doc<-doc %>%
@@ -136,7 +145,7 @@ generateResultsDocument<- function(results, outputFolder, docTemplate="EHDEN", a
 
     doc<-doc %>%
     officer::body_add_par(value = "Catalogue Export Query Performance", style = "heading 2") %>%
-    officer::body_add_par("Table 7. Execution time of queries of the CatalogExport R-Package") %>%
+    officer::body_add_par("Table 8. Execution time of queries of the CatalogExport R-Package") %>%
     officer::body_add_table(value =results$performanceResults$catalogueExportTiming$result, style = "EHDEN") %>%
     officer::body_add_par(" ") %>%
     officer::body_add_par(paste("Query executed in ",sprintf("%.2f", results$performanceResults$catalogueExportTiming$duration)," secs"))
