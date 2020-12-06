@@ -280,7 +280,7 @@ generateResultsDocument<- function(results, outputFolder, docTemplate="EHDEN", a
     officer::body_add_par(paste0("WebAPI version: ",results$webAPIversion)) %>%
     officer::body_add_par(" ")
 
-  if (!is.null(performanceResults)) {
+  if (!is.null(results$performanceResults)) {
     doc<-doc %>%
       officer::body_add_par(value = "Vocabulary Query Performance", style = "heading 2") %>%
       officer::body_add_par(paste0("The number of 'Maps To' relations is equal to ", results$performanceResults$performanceBenchmark$result,
