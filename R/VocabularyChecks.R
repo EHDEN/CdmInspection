@@ -62,6 +62,12 @@ vocabularyChecks <- function (connectionDetails,
   unmappedObservations<- executeQuery(outputFolder,"unmapped_observations.sql", "Unmapped observations query executed successfully", connectionDetails, sqlOnly, cmdDatabaseSchema, vocabDatabaseSchema)
   unmappedProcedures<- executeQuery(outputFolder,"unmapped_procedures.sql", "Unmapped procedures query executed successfully", connectionDetails, sqlOnly, cmdDatabaseSchema, vocabDatabaseSchema)
   unmappedDevices<- executeQuery(outputFolder,"unmapped_devices.sql", "Unmapped devices query executed successfully", connectionDetails, sqlOnly, cmdDatabaseSchema, vocabDatabaseSchema)
+  mappedDrugs<- executeQuery(outputFolder,"mapped_drugs.sql", "Mapped drugs query executed successfully", connectionDetails, sqlOnly, cmdDatabaseSchema, vocabDatabaseSchema)
+  mappedConditions<- executeQuery(outputFolder,"mapped_conditions.sql", "Mapped conditions query executed successfully", connectionDetails, sqlOnly, cmdDatabaseSchema, vocabDatabaseSchema)
+  mappedMeasurements<- executeQuery(outputFolder,"mapped_measurements.sql", "Mapped measurements query executed successfully", connectionDetails, sqlOnly, cmdDatabaseSchema, vocabDatabaseSchema)
+  mappedObservations<- executeQuery(outputFolder,"mapped_observations.sql", "Mapped observations query executed successfully", connectionDetails, sqlOnly, cmdDatabaseSchema, vocabDatabaseSchema)
+  mappedProcedures<- executeQuery(outputFolder,"mapped_procedures.sql", "Mapped procedures query executed successfully", connectionDetails, sqlOnly, cmdDatabaseSchema, vocabDatabaseSchema)
+  mappedDevices<- executeQuery(outputFolder,"mapped_devices.sql", "Mapped devices query executed successfully", connectionDetails, sqlOnly, cmdDatabaseSchema, vocabDatabaseSchema)
   vocabularies <- executeQuery(outputFolder,"get_vocabulary_table.sql", "Vocabulary table query executed successfully", connectionDetails, sqlOnly, cmdDatabaseSchema, vocabDatabaseSchema)
   conceptCounts <- executeQuery(outputFolder,"concept_counts.sql", "Concept counts query executed successfully", connectionDetails, sqlOnly, cmdDatabaseSchema, vocabDatabaseSchema)
   vocabularyCounts <- executeQuery(outputFolder,"vocabulary_tables_count.sql", "Count on vocabulary tables query executed successfully", connectionDetails, sqlOnly, cmdDatabaseSchema, vocabDatabaseSchema)
@@ -80,6 +86,12 @@ vocabularyChecks <- function (connectionDetails,
                   unmappedObservations=unmappedObservations,
                   unmappedProcedures=unmappedProcedures,
                   unmappedDevices=unmappedDevices,
+                  mappedDrugs=mappedDrugs,
+                  mappedConditions=mappedConditions,
+                  mappedMeasurements=mappedMeasurements,
+                  mappedObservations=mappedObservations,
+                  mappedProcedures=mappedProcedures,
+                  mappedDevices=mappedDevices,
                   conceptCounts=conceptCounts,
                   vocabularyCounts=vocabularyCounts,
                   sourceConceptFrequency=sourceConceptFrequency,
