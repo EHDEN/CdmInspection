@@ -53,7 +53,6 @@ dataTablesChecks <- function (connectionDetails,
 
   ## run all queries
   dataTablesCounts <- executeQuery(outputFolder,"data_tables_count.sql", "Data tables count query executed successfully", connectionDetails, sqlOnly, cmdDatabaseSchema, vocabDatabaseSchema)
-  dataTablesCounts <- executeQuery(outputFolder,"data_tables_count.sql", "Data tables count query executed successfully", connectionDetails, sqlOnly, cmdDatabaseSchema, vocabDatabaseSchema)
 
   results <- list(dataTablesCounts=dataTablesCounts)
   return(results)
