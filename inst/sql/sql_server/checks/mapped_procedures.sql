@@ -4,8 +4,8 @@ SELECT *
 FROM (
 	select ROW_NUMBER() OVER(ORDER BY count_big(procedure_occurrence_id) DESC) AS ROW_NUM,
        Cr.concept_name as "Concept Name",
-       ceiling(count_big(procedure_occurrence_id)/100)*100 as "#Records",
-       ceiling(count_big(distinct person_id)/100)*100 as "#Subjects"
+       floor((count_big(procedure_occurrence_id)+99)/100)*100 as "#Records",
+       floor((count_big(distinct person_id)+99)/100)*100 as "#Subjects"
        from @cdmDatabaseSchema.procedure_occurrence C
 JOIN @vocabDatabaseSchema.CONCEPT CR
 ON C.procedure_concept_id = CR.CONCEPT_ID
