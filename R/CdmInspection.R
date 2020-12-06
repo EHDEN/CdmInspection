@@ -57,7 +57,6 @@ cdmInspection <- function (connectionDetails,
                              analysisIds = "",
                              createTable = TRUE,
                              smallCellCount = 5,
-                             runSchemaChecks = TRUE,
                              runVocabularyChecks = TRUE,
                              runDataTablesChecks = TRUE,
                              runPerformanceChecks = TRUE,
@@ -114,19 +113,8 @@ cdmInspection <- function (connectionDetails,
     ParallelLogger::logInfo(paste0("CDM Inspection of database ",sourceName, " started (cdm_version=",cdmVersion,")"))
 
     # run all the checks ------------------------------------------------------------------------------------------------------------
-    schemaValid <- FALSE
-
-    if (runSchemaChecks) {
-      ParallelLogger::logInfo(paste0("Running Schema Checks"))
-      schemaValid <- validateSchema(connectionDetails = connectionDetails,
-                     cdmDatabaseSchema = cdmDatabaseSchema,
-                     resultsDatabaseSchema = resultsDatabaseSchema,
-                     runCostAnalysis = FALSE,
-                     cdmVersion = cdmVersion,
-                     outputFolder = outputFolder,
-                     sqlOnly = sqlOnly)
-      cdmSource<- .getCdmSource(connectionDetails, cdmDatabaseSchema,sqlOnly)
-    }
+    dataTablesResults <- NULL
+    cdmSource<-NULL
 
     if (runDataTablesChecks) {
       ParallelLogger::logInfo(paste0("Running Data Table Checks"))
@@ -135,8 +123,11 @@ cdmInspection <- function (connectionDetails,
                                     resultsDatabaseSchema = resultsDatabaseSchema,
                                     outputFolder = outputFolder,
                                     sqlOnly = sqlOnly)
+      cdmSource<- .getCdmSource(connectionDetails, cdmDatabaseSchema,sqlOnly)
     }
 
+
+    vocabularyResults <- NULL
     if (runVocabularyChecks) {
       ParallelLogger::logInfo(paste0("Running Vocabulary Checks"))
       vocabularyResults<-vocabularyChecks(connectionDetails = connectionDetails,
@@ -160,7 +151,8 @@ cdmInspection <- function (connectionDetails,
       #   ParallelLogger::logInfo(paste0("> All required standard vocabularies are found"))
 
     }
-
+    hadesPackageVersions <- NULL
+    performanceResults <- NULL
     if (runPerformanceChecks) {
 
       ParallelLogger::logInfo(paste0("Check installed R Packages"))
@@ -194,6 +186,7 @@ cdmInspection <- function (connectionDetails,
 
     }
 
+    webAPIversion <- "unknown"
     if (runWebAPIChecks){
       ParallelLogger::logInfo(paste0("Running WebAPIChecks"))
 
@@ -222,7 +215,6 @@ cdmInspection <- function (connectionDetails,
                   hadesPackageVersions = hadesPackageVersions,
                   performanceResults = performanceResults,
                   sys_details= sys_details,
-                  schemaValid = schemaValid,
                   webAPIversion = webAPIversion,
                   cdmSource = cdmSource,
                   dms=connectionDetails$dbms)
@@ -300,7 +292,7 @@ cdmInspection <- function (connectionDetails,
 #' Validate the CDM schema
 #'
 #' @details
-#' Runs a validation script to ensure the CDM is valid based on v5.x
+#' Runs a validation script to ensure the CDM is valid based on v5.x (NOT USED CURRENTLY)
 #'
 #' @param connectionDetails                An R object of type \code{connectionDetails} created using the function \code{createConnectionDetails} in the \code{DatabaseConnector} package.
 #' @param cdmDatabaseSchema    	           string name of database schema that contains OMOP CDM. On SQL Server, this should specifiy both the database and the schema, so for example 'cdm_instance.dbo'.

@@ -10,4 +10,4 @@ ON C.observation_concept_id = CR.CONCEPT_ID
 where c. observation_concept_id != 0
 group by CR.concept_name
 having count_big(observation_id)>10
-order by count_big(observatione_id) DESC
+order by count_big(observation_id) DESC

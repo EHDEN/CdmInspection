@@ -10,4 +10,4 @@ ON C.procedure_concept_id = CR.CONCEPT_ID
 where c. procedure_concept_id != 0
 group by CR.concept_name
 having count_big(procedure_occurrence_id)>10
-order by count_big(procedure_occurrencee_id) DESC
+order by count_big(procedure_occurrence_id) DESC
