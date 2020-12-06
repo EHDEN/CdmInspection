@@ -1,10 +1,14 @@
 -- Unmapped observations
 
-select top 25
+SELECT *
+FROM (
+	select ROW_NUMBER() OVER(ORDER BY count_big(observation_id) DESC) AS ROW_NUM,
        observation_source_value as "Source Value",
        count_big(observation_id) as "#Records",
        count_big(distinct person_id) as "#Subjects"
        from @cdmDatabaseSchema.observation where observation_concept_id = 0
 group by observation_source_value
 having count_big(observation_id)>10
-order by count_big(observation_id) DESC
+) z
+WHERE z.ROW_NUM <= 25
+ORDER BY z.ROW_NUM

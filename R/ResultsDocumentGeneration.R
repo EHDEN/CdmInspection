@@ -280,7 +280,7 @@ generateResultsDocument<- function(results, outputFolder, docTemplate="EHDEN", a
     officer::body_add_par(paste0("WebAPI version: ",results$webAPIversion)) %>%
     officer::body_add_par(" ")
 
-  if (!is.null(vocabResults)) {
+  if (!is.null(performanceResults)) {
     doc<-doc %>%
       officer::body_add_par(value = "Vocabulary Query Performance", style = "heading 2") %>%
       officer::body_add_par(paste0("The number of 'Maps To' relations is equal to ", results$performanceResults$performanceBenchmark$result,
@@ -335,16 +335,16 @@ generateResultsDocument<- function(results, outputFolder, docTemplate="EHDEN", a
       body_add_par('Checklist', style = "heading 1") %>%
 
       body_add_par("Have the following checks been performed?", style = "Normal") %>%
-      addCheckListItem("ATLAS cohort creation, e.g. Type 2 Diabetes") %>%
-      addCheckListItem("Check of Achilles results") %>%
+      body_add_par("[ ] ATLAS cohort creation, e.g. Type 2 Diabetes", style = "Normal") %>%
+      body_add_par("[ ] Check of Achilles results", style = "Normal") %>%
       body_add_par("Comments:", style = "Normal") %>%
 
       body_add_par("Check that all the items mentioned below are shared with EHDEN in addition to this inspection report. If items cannot be shared, add an explanation in the comments section.", style = "Normal") %>%
-      addCheckListItem("ETL Documentation") %>%
-      addCheckListItem("ETL Code") %>%
-      addCheckListItem("DQD dashboard json file") %>%
-      addCheckListItem("White Rabbit output") %>%
-      addCheckListItem("CdmInspection results.zip ") %>%
+      body_add_par("[ ] ETL Documentation", style = "Normal") %>%
+      body_add_par("[ ] ETL Code", style = "Normal") %>%
+      body_add_par("[ ] DQD dashboard json file", style = "Normal") %>%
+      body_add_par("[ ] White Rabbit output", style = "Normal") %>%
+      body_add_par("[ ] CdmInspection results.zip ", style = "Normal") %>%
       body_add_par("Comments:", style = "Normal")
 
 

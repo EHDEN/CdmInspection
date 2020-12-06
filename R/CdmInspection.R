@@ -87,6 +87,7 @@ cdmInspection <- function (connectionDetails,
                                          appenders = appenders)
   ParallelLogger::registerLogger(logger)
 
+  start_time <- Sys.time()
 
   cdmVersion <- .getCdmVersion(connectionDetails, cdmDatabaseSchema)
 
@@ -203,9 +204,12 @@ cdmInspection <- function (connectionDetails,
 
     ParallelLogger::logInfo(paste0("Done."))
 
+    duration <- as.numeric(difftime(Sys.time(),start_time), units="mins")
+    ParallelLogger::logInfo(paste("Complete CdmInspection took ", sprintf("%.2f", duration)," minutes"))
     # save results  ------------------------------------------------------------------------------------------------------------
 
     results<-list(executionDate = date(),
+                  executionDuration = as.numeric(difftime(Sys.time(),start_time), units="secs"),
                   databaseName = databaseName,
                   databaseId = databaseId,
                   databaseDescription = databaseDescription,
@@ -218,9 +222,14 @@ cdmInspection <- function (connectionDetails,
                   webAPIversion = webAPIversion,
                   cdmSource = cdmSource,
                   dms=connectionDetails$dbms)
+
+
+
     saveRDS(results, file.path(outputFolder,"inspection_results.rds"))
     ParallelLogger::logInfo(sprintf("The cdm inspection results have been exported to: %s", outputFolder))
 
+    duration <- as.numeric(difftime(Sys.time(),start_time), units="secs")
+    ParallelLogger::logInfo(paste("CdmInspection run took", sprintf("%.2f", duration),"secs"))
     return(results)
 
   }
