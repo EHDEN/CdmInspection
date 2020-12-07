@@ -63,17 +63,23 @@ prettyHr <- function(x) {
 
 
 my_body_add_table <- function (x, value, style = NULL, pos = "after", header = TRUE,
-          stylenames = table_stylenames(), first_row = TRUE,
+          alignment = NULL, stylenames = table_stylenames(), first_row = TRUE,
           first_column = FALSE, last_row = FALSE, last_column = FALSE,
           no_hband = FALSE, no_vband = TRUE, align = "left")
 {
   pt <- prop_table(style = style, layout = table_layout(),
-                   width = table_width(), stylenames = stylenames, tcf = table_conditional_formatting(first_row = first_row,
-                                                                                                      first_column = first_column, last_row = last_row,
-                                                                                                      last_column = last_column, no_hband = no_hband, no_vband = no_vband), align = align)
-  alignment <- rep('l', ncol(value))
+                   width = table_width(), stylenames = stylenames,
+                   tcf = table_conditional_formatting(first_row = first_row,
+                                                      first_column = first_column, last_row = last_row,
+                                                      last_column = last_column, no_hband = no_hband, no_vband = no_vband),
+                   align = align)
 
-  # Formatting numeric columns: formatting. Align right and add thousands separator.
+  # Align left if no alignment is given
+  if (is.null(alignment)) {
+    alignment <- rep('l', ncol(value))
+  }
+
+  # Formatting numeric columns: align right and add thousands separator.
   for (i in 1:ncol(value)) {
     if (is.numeric(value[,i])) {
       value[,i] <- format(value[,i], big.mark=",")
