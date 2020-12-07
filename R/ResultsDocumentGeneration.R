@@ -96,14 +96,14 @@ generateResultsDocument<- function(results, outputFolder, docTemplate="EHDEN", a
 
 
     ## add Concept counts
-
+  if (!is.null(results$dataTablesResults)) {
     doc<-doc %>%
       officer::body_add_par(value = "Record counts data tables", style = "heading 2") %>%
       officer::body_add_par("Table 2. Shows the number of records in all clinical data tables") %>%
       my_body_add_table(value = results$dataTablesResults$dataTablesCounts$result, style = "EHDEN") %>%
       officer::body_add_par(" ") %>%
       officer::body_add_par(paste("Query executed in ",sprintf("%.2f", results$dataTablesResults$dataTablesCounts$duration),"secs"))
-
+  }
 
 
   ## Vocabulary checks section
@@ -235,36 +235,38 @@ generateResultsDocument<- function(results, outputFolder, docTemplate="EHDEN", a
     officer::body_add_par("Is the data source added in the EHDEN Database Catalogue and has the CatalogUeExport results been uploaded for the visualizations? Also describe if a process has been agreed for updating this information regularly.", style="Highlight") %>%
     officer::body_add_par(paste0("Add additional relevant information about the local infrastructure here, such as backup facilities, specifications webserver hosting ATLAS, testing environment if available etc."), style="Highlight")
 
-  #installed packages
-  doc<-doc %>%
-
-    officer::body_add_par(value = "HADES packages", style = "heading 2") %>%
-    officer::body_add_par("Table 19. Versions of all installed HADES R packages") %>%
-    my_body_add_table(value = results$hadesPackageVersions, style = "EHDEN")
-
-  #system detail
-  t_cdmSource <- transpose(results$cdmSource)
-  colnames(t_cdmSource) <- rownames(results$cdmSource)
-  field <- colnames(results$cdmSource)
-  t_cdmSource <- cbind(field, t_cdmSource)
-  doc<-doc %>%
-
-    officer::body_add_par(value = "CDM Source Table", style = "heading 2") %>%
-    officer::body_add_par("Table 20. cdm_source table content") %>%
-    my_body_add_table(value =t_cdmSource, style = "EHDEN",)
-
-  doc<-doc %>%
-    officer::body_add_par(value = "System Information", style = "heading 2") %>%
-    officer::body_add_par(paste0("Installed R version: ",results$sys_details$r_version$version.string)) %>%
-    officer::body_add_par(paste0("System CPU vendor: ",results$sys_details$cpu$vendor_id)) %>%
-    officer::body_add_par(paste0("System CPU model: ",results$sys_details$cpu$model_name)) %>%
-    officer::body_add_par(paste0("System CPU number of cores: ",results$sys_details$cpu$no_of_cores)) %>%
-    officer::body_add_par(paste0("System RAM: ",prettyunits::pretty_bytes(as.numeric(results$sys_details$ram)))) %>%
-    officer::body_add_par(paste0("DBMS: ",results$dms)) %>%
-    officer::body_add_par(paste0("WebAPI version: ",results$webAPIversion)) %>%
-    officer::body_add_par(" ")
+  if (!is.null(results$dataTablesResults)) {
+    #cdm source
+    t_cdmSource <- transpose(results$cdmSource)
+    colnames(t_cdmSource) <- rownames(results$cdmSource)
+    field <- colnames(results$cdmSource)
+    t_cdmSource <- cbind(field, t_cdmSource)
+    doc<-doc %>%
+      officer::body_add_par(value = "CDM Source Table", style = "heading 2") %>%
+      officer::body_add_par("Table 20. cdm_source table content") %>%
+      my_body_add_table(value =t_cdmSource, style = "EHDEN")
+  }
 
   if (!is.null(results$performanceResults)) {
+    #installed packages
+    doc<-doc %>%
+      officer::body_add_par(value = "HADES packages", style = "heading 2") %>%
+      officer::body_add_par("Table 20. Versions of all installed HADES R packages") %>%
+      my_body_add_table(value = results$hadesPackageVersions, style = "EHDEN")
+
+    #system detail
+    doc<-doc %>%
+      officer::body_add_par(value = "System Information", style = "heading 2") %>%
+      officer::body_add_par(paste0("Installed R version: ",results$sys_details$r_version$version.string)) %>%
+      officer::body_add_par(paste0("System CPU vendor: ",results$sys_details$cpu$vendor_id)) %>%
+      officer::body_add_par(paste0("System CPU model: ",results$sys_details$cpu$model_name)) %>%
+      officer::body_add_par(paste0("System CPU number of cores: ",results$sys_details$cpu$no_of_cores)) %>%
+      officer::body_add_par(paste0("System RAM: ",prettyunits::pretty_bytes(as.numeric(results$sys_details$ram)))) %>%
+      officer::body_add_par(paste0("DBMS: ",results$dms)) %>%
+      officer::body_add_par(paste0("WebAPI version: ",results$webAPIversion)) %>%
+      officer::body_add_par(" ")
+
+
     doc<-doc %>%
       officer::body_add_par(value = "Vocabulary Query Performance", style = "heading 2") %>%
       officer::body_add_par(paste0("The number of 'Maps To' relations is equal to ", results$performanceResults$performanceBenchmark$result,
