@@ -290,7 +290,7 @@ generateResultsDocument<- function(results, outputFolder, docTemplate="EHDEN", a
       officer::body_add_par(value = "Achilles Query Performance", style = "heading 2") %>%
       officer::body_add_par("Table 21. Execution time of queries of the Achilles R-Package")
 
-    if (!is.null(results$performanceResults$achllesTiming$result)) {
+    if (!is.null(results$performanceResults$achillesTiming$result)) {
       doc<-doc %>%
         my_body_add_table(value =results$performanceResults$achillesTiming$result, style = "EHDEN") %>%
         officer::body_add_par(" ") %>%
