@@ -32,7 +32,7 @@ The CdmInspection R Package is part of this SME Inspection procedure and perform
 
 **Results Document Generation**
 
-Produces a word document in the EHDEN template that contains all the results. This template needs to be completed by the person performing the cdm inspection. The user can also provide a custom template file if required.
+Produces a word document in the EHDEN template that contains all the results. This template needs to be completed by the person performing the cdm inspection. 
 
 Technology
 ==========
@@ -56,9 +56,12 @@ Installation
 User Documentation
 ==================
 
+You should run the cdmInspection package ideally on the same machine you will perform actual anlyses so we can test its performance.
+
+Make sure that Achilles has run in the results schema you select when calling the cdmInspection function.
+
 PDF versions of the documentation are available:
 * Package manual: 
-* Vignette: 
 * CodeToRun Example: [Link](https://github.com/EHDEN/CdmInspection/blob/master/extras/CodeToRun.R)
 
 Support
