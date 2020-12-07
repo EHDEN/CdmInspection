@@ -1,7 +1,7 @@
 --Query 2 Completeness of Mappings per Entity
-select 'condition' as domain, count_big(distinct source_value) as num_source_concepts,
+select 'condition' as domain, count_big(*) as num_source_concepts,
        sum(case when is_mapped > 0 then 1 else 0 end) as num_mapped_codes,
-       1.0*sum(case when is_mapped > 0 then 1 else 0 end) / count_big(distinct source_value) as pct_mapped_codes,
+       1.0*sum(case when is_mapped > 0 then 1 else 0 end) / count_big(*) as pct_mapped_codes,
        sum(num_records) as num_records,
        sum(case when is_mapped > 0 then num_records else 0 end) as num_mapped_records,
        1.0*sum(case when is_mapped > 0 then num_records else 0 end)/sum(num_records) as pct_mapped_records
@@ -14,9 +14,9 @@ group by condition_source_value, case when condition_concept_id > 0 then 1 else 
 
 union
 
-select 'procedure' as domain, count_big(distinct source_value) as num_source_concepts,
+select 'procedure' as domain, count_big(*) as num_source_concepts,
        sum(case when is_mapped > 0 then 1 else 0 end) as num_mapped_codes,
-       1.0*sum(case when is_mapped > 0 then 1 else 0 end) / count_big(distinct source_value) as pct_mapped_codes,
+       1.0*sum(case when is_mapped > 0 then 1 else 0 end) / count_big(*) as pct_mapped_codes,
        sum(num_records) as num_records,
        sum(case when is_mapped > 0 then num_records else 0 end) as num_mapped_records,
        1.0*sum(case when is_mapped > 0 then num_records else 0 end)/sum(num_records) as pct_mapped_records
@@ -29,9 +29,9 @@ group by procedure_source_value, case when procedure_concept_id > 0 then 1 else 
 
 union
 
-select 'device' as domain, count_big(distinct source_value) as num_source_concepts,
+select 'device' as domain, count_big(*) as num_source_concepts,
        sum(case when is_mapped > 0 then 1 else 0 end) as num_mapped_codes,
-       1.0*sum(case when is_mapped > 0 then 1 else 0 end) / count_big(distinct source_value) as pct_mapped_codes,
+       1.0*sum(case when is_mapped > 0 then 1 else 0 end) / count_big(*) as pct_mapped_codes,
        sum(num_records) as num_records,
        sum(case when is_mapped > 0 then num_records else 0 end) as num_mapped_records,
        1.0*sum(case when is_mapped > 0 then num_records else 0 end)/sum(num_records) as pct_mapped_records
@@ -45,9 +45,9 @@ group by device_source_value, case when device_concept_id > 0 then 1 else 0 end
 
 union
 
-select 'drug' as domain, count_big(distinct source_value) as num_source_concepts,
+select 'drug' as domain, count_big(*) as num_source_concepts,
        sum(case when is_mapped > 0 then 1 else 0 end) as num_mapped_codes,
-       1.0*sum(case when is_mapped > 0 then 1 else 0 end) / count_big(distinct source_value) as pct_mapped_codes,
+       1.0*sum(case when is_mapped > 0 then 1 else 0 end) / count_big(*) as pct_mapped_codes,
        sum(num_records) as num_records,
        sum(case when is_mapped > 0 then num_records else 0 end) as num_mapped_records,
        1.0*sum(case when is_mapped > 0 then num_records else 0 end)/sum(num_records) as pct_mapped_records
@@ -62,9 +62,9 @@ group by drug_source_value, case when drug_concept_id > 0 then 1 else 0 end
 
 union
 
-select 'observation' as domain, count_big(distinct source_value) as num_source_concepts,
+select 'observation' as domain, count_big(*) as num_source_concepts,
        sum(case when is_mapped > 0 then 1 else 0 end) as num_mapped_codes,
-       1.0*sum(case when is_mapped > 0 then 1 else 0 end) / count_big(distinct source_value) as pct_mapped_codes,
+       1.0*sum(case when is_mapped > 0 then 1 else 0 end) / count_big(*) as pct_mapped_codes,
        sum(num_records) as num_records,
        sum(case when is_mapped > 0 then num_records else 0 end) as num_mapped_records,
        1.0*sum(case when is_mapped > 0 then num_records else 0 end)/sum(num_records) as pct_mapped_records
@@ -79,9 +79,9 @@ group by observation_source_value, case when observation_concept_id > 0 then 1 e
 
 union
 
-select 'measurement' as domain, count_big(distinct source_value) as num_source_concepts,
+select 'measurement' as domain, count_big(*) as num_source_concepts,
        sum(case when is_mapped > 0 then 1 else 0 end) as num_mapped_codes,
-       1.0*sum(case when is_mapped > 0 then 1 else 0 end) / count_big(distinct source_value) as pct_mapped_codes,
+       1.0*sum(case when is_mapped > 0 then 1 else 0 end) / count_big(*) as pct_mapped_codes,
        sum(num_records) as num_records,
        sum(case when is_mapped > 0 then num_records else 0 end) as num_mapped_records,
        1.0*sum(case when is_mapped > 0 then num_records else 0 end)/sum(num_records) as pct_mapped_records
@@ -94,9 +94,9 @@ group by measurement_source_value, case when measurement_concept_id > 0 then 1 e
 
 union
 
-select 'visit_occurrence' as domain, count_big(distinct source_value) as num_source_concepts,
+select 'visit_occurrence' as domain, count_big(*) as num_source_concepts,
        sum(case when is_mapped > 0 then 1 else 0 end) as num_mapped_codes,
-       1.0*sum(case when is_mapped > 0 then 1 else 0 end) / count_big(distinct source_value) as pct_mapped_codes,
+       1.0*sum(case when is_mapped > 0 then 1 else 0 end) / count_big(*) as pct_mapped_codes,
        sum(num_records) as num_records,
        sum(case when is_mapped > 0 then num_records else 0 end) as num_mapped_records,
        1.0*sum(case when is_mapped > 0 then num_records else 0 end)/sum(num_records) as pct_mapped_records
