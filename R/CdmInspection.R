@@ -160,6 +160,7 @@ cdmInspection <- function (connectionDetails,
     sys_details <- NULL
     hadesPackageVersions <- NULL
     performanceResults <- NULL
+    missingPackages <- NULL
     if (runPerformanceChecks) {
 
       ParallelLogger::logInfo(paste0("Check installed R Packages"))
