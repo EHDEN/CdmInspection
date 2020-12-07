@@ -99,7 +99,7 @@ generateResultsDocument<- function(results, outputFolder, docTemplate="EHDEN", a
   if (!is.null(results$dataTablesResults)) {
     doc<-doc %>%
       officer::body_add_par(value = "Record counts data tables", style = "heading 2") %>%
-      officer::body_add_par("Table 2. Shows the number of records in all clinical data tables") %>%
+      officer::body_add_par("Table 1. Shows the number of records in all clinical data tables") %>%
       my_body_add_table(value = results$dataTablesResults$dataTablesCounts$result, style = "EHDEN") %>%
       officer::body_add_par(" ") %>%
       officer::body_add_par(paste("Query executed in ",sprintf("%.2f", results$dataTablesResults$dataTablesCounts$duration),"secs"))
@@ -243,7 +243,7 @@ generateResultsDocument<- function(results, outputFolder, docTemplate="EHDEN", a
     t_cdmSource <- cbind(field, t_cdmSource)
     doc<-doc %>%
       officer::body_add_par(value = "CDM Source Table", style = "heading 2") %>%
-      officer::body_add_par("Table 20. cdm_source table content") %>%
+      officer::body_add_par("Table 18. cdm_source table content") %>%
       my_body_add_table(value =t_cdmSource, style = "EHDEN")
   }
 
@@ -251,7 +251,7 @@ generateResultsDocument<- function(results, outputFolder, docTemplate="EHDEN", a
     #installed packages
     doc<-doc %>%
       officer::body_add_par(value = "HADES packages", style = "heading 2") %>%
-      officer::body_add_par("Table 20. Versions of all installed HADES R packages") %>%
+      officer::body_add_par("Table 19. Versions of all installed HADES R packages") %>%
       my_body_add_table(value = results$hadesPackageVersions, style = "EHDEN")
 
     if (is.null(results$missingPackage)) {
@@ -282,7 +282,7 @@ generateResultsDocument<- function(results, outputFolder, docTemplate="EHDEN", a
 
     doc<-doc %>%
       officer::body_add_par(value = "Achilles Query Performance", style = "heading 2") %>%
-      officer::body_add_par("Table 21. Execution time of queries of the Achilles R-Package")
+      officer::body_add_par("Table 20. Execution time of queries of the Achilles R-Package")
 
     if (!is.null(results$performanceResults$achillesTiming$result)) {
       doc<-doc %>%
