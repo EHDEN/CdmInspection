@@ -164,10 +164,11 @@ cdmInspection <- function (connectionDetails,
       packages <- c("SqlRender", "DatabaseConnector", "DatabaseConnectorJars", "PatientLevelPrediction", "CohortDiagnostics", "CohortMethod", "Cyclops","ParallelLogger","FeatureExtraction","Andromeda",
                     "ROhdsiWebApi","OhdsiSharing","Hydra","Eunomia","EmpiricalCalibration","MethodEvaluation","EvidenceSynthesis","SelfControlledCaseSeries","SelfControlledCohort")
       diffPackages <- setdiff(packages, rownames(installed.packages()))
+      missingPackages <- paste(diffPackages, collapse=', ')
 
       if (length(diffPackages)>0){
         ParallelLogger::logInfo(paste0("Not all the HADES packages are installed, see https://ohdsi.github.io/Hades/installingHades.html for more information"))
-        ParallelLogger::logInfo(paste0("Missing:", paste(diffPackages, collapse=', ')))
+        ParallelLogger::logInfo(paste0("Missing:", missingPackages))
       } else
         ParallelLogger::logInfo(paste0("> All HADES packages are installed"))
 
@@ -221,6 +222,7 @@ cdmInspection <- function (connectionDetails,
                   dataTablesResults = dataTablesResults,
                   packinfo=packinfo,
                   hadesPackageVersions = hadesPackageVersions,
+                  missingPackages = missingPackages,
                   performanceResults = performanceResults,
                   sys_details= sys_details,
                   webAPIversion = webAPIversion,

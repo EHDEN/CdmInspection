@@ -258,6 +258,14 @@ generateResultsDocument<- function(results, outputFolder, docTemplate="EHDEN", a
     officer::body_add_par("Table 19. Versions of all installed HADES R packages") %>%
     my_body_add_table(value = results$hadesPackageVersions, style = "EHDEN")
 
+  if (is.null(results$missingPackage)) {
+    doc<-doc %>%
+    officer::body_add_par("All HADES packages were available")
+  } else {
+    doc<-doc %>%
+    officer::body_add_par(paste0("Missing HADES packages: ",results$missingPackages))
+  }
+
   #system detail
   t_cdmSource <- transpose(results$cdmSource)
   colnames(t_cdmSource) <- rownames(results$cdmSource)
