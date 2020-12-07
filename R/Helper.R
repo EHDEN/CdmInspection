@@ -92,3 +92,10 @@ my_body_add_table <- function (x, value, style = NULL, pos = "after", header = T
   xml_elt <- to_wml(bt, add_ns = TRUE, base_document = x)
   body_add_xml(x = x, str = xml_elt, pos = pos)
 }
+
+recordsCountPlot <- function(results){
+  temp <- results %>%
+    rename(Date=X_CALENDAR_MONTH,Domain=SERIES_NAME, Count=Y_RECORD_COUNT) %>%
+    mutate(Date=parse_date_time(Date, "ym"))
+  plot <- ggplot(temp, aes(x = Date, y = Count)) + geom_line(aes(color = Domain))
+}
