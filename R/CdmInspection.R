@@ -125,6 +125,10 @@ cdmInspection <- function (connectionDetails,
                                     outputFolder = outputFolder,
                                     sqlOnly = sqlOnly)
       cdmSource<- .getCdmSource(connectionDetails, cdmDatabaseSchema,sqlOnly)
+      temp <- cdmSource
+      temp$CDM_RELEASE_DATE <- as.character(cdmSource$CDM_RELEASE_DATE)
+      temp$SOURCE_RELEASE_DATE <- as.character(cdmSource$SOURCE_RELEASE_DATE)
+      cdmSource <- temp
     }
 
 
