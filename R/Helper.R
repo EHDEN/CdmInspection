@@ -65,12 +65,23 @@ prettyHr <- function(x) {
 my_body_add_table <- function (x, value, style = NULL, pos = "after", header = TRUE,
           alignment = NULL, stylenames = table_stylenames(), first_row = TRUE,
           first_column = FALSE, last_row = FALSE, last_column = FALSE,
-          no_hband = FALSE, no_vband = TRUE, align = "left")
+          no_hband = FALSE, no_vband = TRUE, align = "left", numeric_cols=NULL)
 {
   pt <- prop_table(style = style, layout = table_layout(),
                    width = table_width(), stylenames = stylenames, tcf = table_conditional_formatting(first_row = first_row,
                                                                                                       first_column = first_column, last_row = last_row,
                                                                                                       last_column = last_column, no_hband = no_hband, no_vband = no_vband), align = align)
+  # Number formatting. Align right, add thousands separator
+  if (!is.null(numeric_cols)) {
+    alignment <- rep('l', ncol(value))
+    for (i in numeric_cols) {
+      print(value[,i])
+      value[,i] <- format(as.numeric(value[,i]), big.mark=",")
+      alignment[i] <- 'r'
+      print(value[,i])
+    }
+  }
+
   bt <- block_table(x = value, header = header, properties = pt,
                     alignment = alignment)
   xml_elt <- to_wml(bt, add_ns = TRUE, base_document = x)
