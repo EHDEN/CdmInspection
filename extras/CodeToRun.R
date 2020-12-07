@@ -106,7 +106,7 @@ oracleTempSchema <- NULL
 # Details for connecting to the CDM and storing the results
 outputFolder <- file.path(getwd(), "results",databaseId)
 cdmDatabaseSchema <- "synpuf"
-resultsDatabaseSchema <- "prijnbeek"
+resultsDatabaseSchema <- "prijnbeek" #Make sure the Achilles results are in this schema!
 vocabDatabaseSchema = "synpuf"
 
 smallCellCount <- 5
