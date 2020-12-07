@@ -73,10 +73,9 @@ vocabularyChecks <- function (connectionDetails,
   sourceConceptFrequency <- executeQuery(outputFolder,"source_to_concept_map_frequency.sql", "Source to concept map breakdown query executed successfully", connectionDetails, sqlOnly, cmdDatabaseSchema, vocabDatabaseSchema)
   sourceConceptMap <- executeQuery(outputFolder,"get_source_to_concept_map.sql", "Source to concept map query executed successfully", connectionDetails, sqlOnly, cmdDatabaseSchema, vocabDatabaseSchema)
 
-  version <- vocabularies$result[conceptCounts$result$ID=='None',]$VERSION
+  version <- conceptCounts$result[conceptCounts$result$ID=='None',]$VERSION
 
   results <- list(version=version,
-                  vocabularies=vocabularies,
                   mappingCompleteness=mappingCompleteness,
                   drugMapping=drugMapping,
                   unmappedDrugs=unmappedDrugs,
