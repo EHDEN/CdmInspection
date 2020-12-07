@@ -109,7 +109,7 @@ group by visit_source_value, case when visit_concept_id > 0 then 1 else 0 end
 
 union
 
- select 'measurement-unit' as domain, count(distinct source_value) as num_source_concepts,
+ select 'measurement-unit' as domain, count_big(*) as num_source_concepts,
         sum(is_mapped) as num_mapped_codes,
         100.0*sum(is_mapped) / count_big(*) as pct_mapped_codes,
         sum(num_records) as num_records,
@@ -125,7 +125,7 @@ union
 
  union
 
- select 'observation-unit' as domain, count(distinct source_value) as num_source_concepts,
+ select 'observation-unit' as domain, count_big(*) as num_source_concepts,
         sum(is_mapped) as num_mapped_codes,
         100.0*sum(is_mapped) / count_big(*) as pct_mapped_codes,
         sum(num_records) as num_records,
@@ -141,7 +141,7 @@ union
 
  union
 
- select 'measurement-value' as domain, count(distinct source_value) as num_source_concepts,
+ select 'measurement-value' as domain, count_big(*) as num_source_concepts,
         sum(is_mapped) as num_mapped_codes,
         100.0*sum(is_mapped) / count_big(*) as pct_mapped_codes,
         sum(num_records) as num_records,
@@ -157,7 +157,7 @@ union
 
  union
 
- select 'observation-value' as domain, count(distinct source_value) as num_source_concepts,
+ select 'observation-value' as domain, count_big(*) as num_source_concepts,
         sum(is_mapped) as num_mapped_codes,
         100.0*sum(is_mapped) / count_big(*) as pct_mapped_codes,
         sum(num_records) as num_records,

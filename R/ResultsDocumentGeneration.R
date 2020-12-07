@@ -96,14 +96,14 @@ generateResultsDocument<- function(results, outputFolder, docTemplate="EHDEN", a
 
 
     ## add Concept counts
-
+  if (!is.null(results$dataTablesResults)) {
     doc<-doc %>%
       officer::body_add_par(value = "Record counts data tables", style = "heading 2") %>%
-      officer::body_add_par("Table 2. Shows the number of records in all clinical data tables") %>%
+      officer::body_add_par("Table 1. Shows the number of records in all clinical data tables") %>%
       my_body_add_table(value = results$dataTablesResults$dataTablesCounts$result, style = "EHDEN") %>%
       officer::body_add_par(" ") %>%
       officer::body_add_par(paste("Query executed in ",sprintf("%.2f", results$dataTablesResults$dataTablesCounts$duration),"secs"))
-
+  }
 
 
   ## Vocabulary checks section
@@ -119,33 +119,17 @@ generateResultsDocument<- function(results, outputFolder, docTemplate="EHDEN", a
 
       officer::body_add_par(value = "Vocabularies", style = "heading 2") %>%
       officer::body_add_par(paste0("Vocabulary version: ",results$vocabularyResults$version)) %>%
-      officer::body_add_par("Table 1. The vocabularies available in the CDM") %>%
-      my_body_add_table(value = vocabResults$vocabularies$result, style = "EHDEN") %>%
+      officer::body_add_par("Table 1. The vocabularies available in the CDM with concept count") %>%
+      my_body_add_table(value = vocabResults$conceptCounts$result, style = "EHDEN") %>%
       officer::body_add_par(" ") %>%
-      officer::body_add_par(paste("Query executed in ",sprintf("%.2f", vocabResults$vocabularies$duration),"secs"))
+      officer::body_add_par(paste("Query executed in ",sprintf("%.2f", vocabResults$conceptCounts$duration),"secs"))
     ##%>% body_end_section_landscape()
-
-    ## add Concept counts
-
-    doc<-doc %>%
-      officer::body_add_par(value = "Concept counts", style = "heading 2") %>%
-      officer::body_add_par("Table 2. Shows the content of the concept table")
-
-    if (!is.null(vocabResults$conceptCounts$result)) {
-      doc<-doc %>%
-        my_body_add_table(value = vocabResults$conceptCounts$result, style = "EHDEN") %>%
-        officer::body_add_par(" ") %>%
-        officer::body_add_par(paste("Query executed in ",sprintf("%.2f", vocabResults$conceptCounts$duration),"secs"))
-    } else {
-      doc<-doc %>%
-        officer::body_add_par("Query did not return results ", style="Highlight")
-    }
 
     ## add vocabulary table counts
 
     doc<-doc %>%
       officer::body_add_par(value = "Table counts", style = "heading 2") %>%
-      officer::body_add_par("Table 3. Shows the number of records in all vocabulary tables") %>%
+      officer::body_add_par("Table 2. Shows the number of records in all vocabulary tables") %>%
       my_body_add_table(value = vocabResults$vocabularyCounts$result, style = "EHDEN") %>%
       officer::body_add_par(" ") %>%
       officer::body_add_par(paste("Query executed in ",sprintf("%.2f", vocabResults$vocabularyCounts$duration),"secs"))
@@ -156,7 +140,7 @@ generateResultsDocument<- function(results, outputFolder, docTemplate="EHDEN", a
 
     doc<-doc %>%
       officer::body_add_par(value = "Mapping Completeness", style = "heading 2") %>%
-      officer::body_add_par("Table 4. Shows the percentage of codes that are mapped to the standardized vocabularies as well as the percentage of records.") %>%
+      officer::body_add_par("Table 3. Shows the percentage of codes that are mapped to the standardized vocabularies as well as the percentage of records.") %>%
       my_body_add_table(value = vocabResults$mappingCompleteness$result, style = "EHDEN", alignment = c('l', rep('r',6))) %>%
       officer::body_add_par(" ") %>%
       officer::body_add_par(paste("Query executed in ",sprintf("%.2f", vocabResults$mappingCompleteness$duration),"secs")) %>%
@@ -165,7 +149,7 @@ generateResultsDocument<- function(results, outputFolder, docTemplate="EHDEN", a
     ## add Drug Level Mappings
     doc<-doc %>%
       officer::body_add_par(value = "Drug Mappings", style = "heading 2") %>%
-      officer::body_add_par("Table 5. The level of the drug mappings") %>%
+      officer::body_add_par("Table 4. The level of the drug mappings") %>%
       my_body_add_table(value = vocabResults$drugMapping$result, style = "EHDEN") %>%
       officer::body_add_par(" ") %>%
       officer::body_add_par(paste("Query executed in ",sprintf("%.2f", vocabResults$drugMapping$duration),"secs")) %>%
@@ -174,27 +158,27 @@ generateResultsDocument<- function(results, outputFolder, docTemplate="EHDEN", a
     ## add Top 25 missing mappings
     doc<-doc %>%
       officer::body_add_par(value = "Unmapped Codes", style = "heading 2") %>%
-      officer::body_add_par("Table 6. Top 25 of unmapped drugs") %>%
+      officer::body_add_par("Table 5. Top 25 of unmapped drugs") %>%
       my_body_add_table(value = vocabResults$unmappedDrugs$result, style = "EHDEN") %>%
       officer::body_add_par(" ") %>%
       officer::body_add_par(paste("Query executed in ",sprintf("%.2f", vocabResults$unmappedDrugs$duration),"secs")) %>%
-      officer::body_add_par("Table 7. Top 25 of unmapped conditions") %>%
+      officer::body_add_par("Table 6. Top 25 of unmapped conditions") %>%
       my_body_add_table(value = vocabResults$unmappedConditions$result, style = "EHDEN") %>%
       officer::body_add_par(" ") %>%
       officer::body_add_par(paste("Query executed in ",sprintf("%.2f", vocabResults$unmappedConditions$duration),"secs")) %>%
-      officer::body_add_par("Table 8. Top 25 of unmapped measurements") %>%
+      officer::body_add_par("Table 7. Top 25 of unmapped measurements") %>%
       my_body_add_table(value = vocabResults$unmappedMeasurements$result, style = "EHDEN") %>%
       officer::body_add_par(" ") %>%
       officer::body_add_par(paste("Query executed in ",sprintf("%.2f", vocabResults$unmappedMeasurements$duration),"secs")) %>%
-      officer::body_add_par("Table 9. Top 25 of unmapped observations") %>%
+      officer::body_add_par("Table 8. Top 25 of unmapped observations") %>%
       my_body_add_table(value = vocabResults$unmappedObservations$result, style = "EHDEN") %>%
       officer::body_add_par(" ") %>%
       officer::body_add_par(paste("Query executed in ",sprintf("%.2f", vocabResults$unmappedObservations$duration),"secs")) %>%
-      officer::body_add_par("Table 10. Top 25 of unmapped procedures") %>%
+      officer::body_add_par("Table 9. Top 25 of unmapped procedures") %>%
       my_body_add_table(value = vocabResults$unmappedProcedures$result, style = "EHDEN") %>%
       officer::body_add_par(" ") %>%
       officer::body_add_par(paste("Query executed in ",sprintf("%.2f", vocabResults$unmappedProcedures$duration),"secs")) %>%
-      officer::body_add_par("Table 11. Top 25 of unmapped devices") %>%
+      officer::body_add_par("Table 10. Top 25 of unmapped devices") %>%
       my_body_add_table(value = vocabResults$unmappedDevices$result, style = "EHDEN") %>%
       officer::body_add_par(" ") %>%
       officer::body_add_par(paste("Query executed in ",sprintf("%.2f", vocabResults$unmappedDevices$duration),"secs"))
@@ -202,27 +186,27 @@ generateResultsDocument<- function(results, outputFolder, docTemplate="EHDEN", a
     ## add top 25 mapped codes
     doc<-doc %>%
       officer::body_add_par(value = "Mapped Codes", style = "heading 2") %>%
-      officer::body_add_par("Table 12. Top 25 of mapped drugs") %>%
+      officer::body_add_par("Table 11. Top 25 of mapped drugs") %>%
       my_body_add_table(value = vocabResults$mappedDrugs$result, style = "EHDEN") %>%
       officer::body_add_par(" ") %>%
       officer::body_add_par(paste("Query executed in ",sprintf("%.2f", vocabResults$mappedDrugs$duration),"secs")) %>%
-      officer::body_add_par("Table 13. Top 25 of mapped conditions") %>%
+      officer::body_add_par("Table 12. Top 25 of mapped conditions") %>%
       my_body_add_table(value = vocabResults$mappedConditions$result, style = "EHDEN") %>%
       officer::body_add_par(" ") %>%
       officer::body_add_par(paste("Query executed in ",sprintf("%.2f", vocabResults$mappedConditions$duration),"secs")) %>%
-      officer::body_add_par("Table 14. Top 25 of mapped measurements") %>%
+      officer::body_add_par("Table 13. Top 25 of mapped measurements") %>%
       my_body_add_table(value = vocabResults$mappedMeasurements$result, style = "EHDEN") %>%
       officer::body_add_par(" ") %>%
       officer::body_add_par(paste("Query executed in ",sprintf("%.2f", vocabResults$mappedMeasurements$duration),"secs")) %>%
-      officer::body_add_par("Table 15. Top 25 of mapped observations") %>%
+      officer::body_add_par("Table 14. Top 25 of mapped observations") %>%
       my_body_add_table(value = vocabResults$mappedObservations$result, style = "EHDEN") %>%
       officer::body_add_par(" ") %>%
       officer::body_add_par(paste("Query executed in ",sprintf("%.2f", vocabResults$mappedObservations$duration),"secs")) %>%
-      officer::body_add_par("Table 16. Top 25 of mapped procedures") %>%
+      officer::body_add_par("Table 15. Top 25 of mapped procedures") %>%
       my_body_add_table(value = vocabResults$mappedProcedures$result, style = "EHDEN") %>%
       officer::body_add_par(" ") %>%
       officer::body_add_par(paste("Query executed in ",sprintf("%.2f", vocabResults$mappedProcedures$duration),"secs")) %>%
-      officer::body_add_par("Table 17. Top 25 of mapped devices") %>%
+      officer::body_add_par("Table 16. Top 25 of mapped devices") %>%
       my_body_add_table(value = vocabResults$mappedDevices$result, style = "EHDEN") %>%
       officer::body_add_par(" ") %>%
       officer::body_add_par(paste("Query executed in ",sprintf("%.2f", vocabResults$mappedDevices$duration),"secs"))
@@ -231,7 +215,7 @@ generateResultsDocument<- function(results, outputFolder, docTemplate="EHDEN", a
     doc<-doc %>%
       officer::body_add_par(value = "Source to concept map", style = "heading 2") %>%
       officer::body_add_par("If you did not use the source_to_concept_map table in the ETL the table below will be empty. In that case provide your custom mappings in an Excel file.", style="Highlight") %>%
-      officer::body_add_par("Table 18. Source to concept map breakdown") %>%
+      officer::body_add_par("Table 17. Source to concept map breakdown") %>%
       my_body_add_table(value = vocabResults$sourceConceptFrequency$result, style = "EHDEN") %>%
       officer::body_add_par(" ") %>%
       officer::body_add_par(paste("Query executed in ",sprintf("%.2f", vocabResults$sourceConceptFrequency$duration),"secs")) %>%
@@ -251,44 +235,46 @@ generateResultsDocument<- function(results, outputFolder, docTemplate="EHDEN", a
     officer::body_add_par("Is the data source added in the EHDEN Database Catalogue and has the CatalogUeExport results been uploaded for the visualizations? Also describe if a process has been agreed for updating this information regularly.", style="Highlight") %>%
     officer::body_add_par(paste0("Add additional relevant information about the local infrastructure here, such as backup facilities, specifications webserver hosting ATLAS, testing environment if available etc."), style="Highlight")
 
-  #installed packages
-  doc<-doc %>%
-
-    officer::body_add_par(value = "HADES packages", style = "heading 2") %>%
-    officer::body_add_par("Table 19. Versions of all installed HADES R packages") %>%
-    my_body_add_table(value = results$hadesPackageVersions, style = "EHDEN")
-
-  if (is.null(results$missingPackage)) {
+  if (!is.null(results$dataTablesResults)) {
+    #cdm source
+    t_cdmSource <- transpose(results$cdmSource)
+    colnames(t_cdmSource) <- rownames(results$cdmSource)
+    field <- colnames(results$cdmSource)
+    t_cdmSource <- cbind(field, t_cdmSource)
     doc<-doc %>%
-    officer::body_add_par("All HADES packages were available")
-  } else {
-    doc<-doc %>%
-    officer::body_add_par(paste0("Missing HADES packages: ",results$missingPackages))
+      officer::body_add_par(value = "CDM Source Table", style = "heading 2") %>%
+      officer::body_add_par("Table 18. cdm_source table content") %>%
+      my_body_add_table(value =t_cdmSource, style = "EHDEN")
   }
 
-  #system detail
-  t_cdmSource <- transpose(results$cdmSource)
-  colnames(t_cdmSource) <- rownames(results$cdmSource)
-  field <- colnames(results$cdmSource)
-  t_cdmSource <- cbind(field, t_cdmSource)
-  doc<-doc %>%
-
-    officer::body_add_par(value = "CDM Source Table", style = "heading 2") %>%
-    officer::body_add_par("Table 20. cdm_source table content") %>%
-    my_body_add_table(value =t_cdmSource, style = "EHDEN",)
-
-  doc<-doc %>%
-    officer::body_add_par(value = "System Information", style = "heading 2") %>%
-    officer::body_add_par(paste0("Installed R version: ",results$sys_details$r_version$version.string)) %>%
-    officer::body_add_par(paste0("System CPU vendor: ",results$sys_details$cpu$vendor_id)) %>%
-    officer::body_add_par(paste0("System CPU model: ",results$sys_details$cpu$model_name)) %>%
-    officer::body_add_par(paste0("System CPU number of cores: ",results$sys_details$cpu$no_of_cores)) %>%
-    officer::body_add_par(paste0("System RAM: ",prettyunits::pretty_bytes(as.numeric(results$sys_details$ram)))) %>%
-    officer::body_add_par(paste0("DBMS: ",results$dms)) %>%
-    officer::body_add_par(paste0("WebAPI version: ",results$webAPIversion)) %>%
-    officer::body_add_par(" ")
-
   if (!is.null(results$performanceResults)) {
+    #installed packages
+    doc<-doc %>%
+      officer::body_add_par(value = "HADES packages", style = "heading 2") %>%
+      officer::body_add_par("Table 19. Versions of all installed HADES R packages") %>%
+      my_body_add_table(value = results$hadesPackageVersions, style = "EHDEN")
+
+    if (is.null(results$missingPackage)) {
+      doc<-doc %>%
+      officer::body_add_par("All HADES packages were available")
+    } else {
+      doc<-doc %>%
+      officer::body_add_par(paste0("Missing HADES packages: ",results$missingPackages))
+    }
+
+    #system detail
+    doc<-doc %>%
+      officer::body_add_par(value = "System Information", style = "heading 2") %>%
+      officer::body_add_par(paste0("Installed R version: ",results$sys_details$r_version$version.string)) %>%
+      officer::body_add_par(paste0("System CPU vendor: ",results$sys_details$cpu$vendor_id)) %>%
+      officer::body_add_par(paste0("System CPU model: ",results$sys_details$cpu$model_name)) %>%
+      officer::body_add_par(paste0("System CPU number of cores: ",results$sys_details$cpu$no_of_cores)) %>%
+      officer::body_add_par(paste0("System RAM: ",prettyunits::pretty_bytes(as.numeric(results$sys_details$ram)))) %>%
+      officer::body_add_par(paste0("DBMS: ",results$dms)) %>%
+      officer::body_add_par(paste0("WebAPI version: ",results$webAPIversion)) %>%
+      officer::body_add_par(" ")
+
+
     doc<-doc %>%
       officer::body_add_par(value = "Vocabulary Query Performance", style = "heading 2") %>%
       officer::body_add_par(paste0("The number of 'Maps To' relations is equal to ", results$performanceResults$performanceBenchmark$result,
@@ -296,7 +282,7 @@ generateResultsDocument<- function(results, outputFolder, docTemplate="EHDEN", a
 
     doc<-doc %>%
       officer::body_add_par(value = "Achilles Query Performance", style = "heading 2") %>%
-      officer::body_add_par("Table 21. Execution time of queries of the Achilles R-Package")
+      officer::body_add_par("Table 20. Execution time of queries of the Achilles R-Package")
 
     if (!is.null(results$performanceResults$achillesTiming$result)) {
       doc<-doc %>%

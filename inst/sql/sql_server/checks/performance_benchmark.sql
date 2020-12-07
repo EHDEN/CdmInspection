@@ -1,8 +1,8 @@
 -- query benchmark check
 
 SELECT COUNT(*)
-FROM @cdmDatabaseSchema.CONCEPT C
-        JOIN @cdmDatabaseSchema.CONCEPT_RELATIONSHIP CR
+FROM @vocabDatabaseSchema.CONCEPT C
+        JOIN @vocabDatabaseSchema.CONCEPT_RELATIONSHIP CR
                 ON C.CONCEPT_ID = CR.CONCEPT_ID_1
                 AND CR.invalid_reason IS NULL
                 AND cr.relationship_id = 'Maps to'

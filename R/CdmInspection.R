@@ -156,8 +156,11 @@ cdmInspection <- function (connectionDetails,
       #   ParallelLogger::logInfo(paste0("> All required standard vocabularies are found"))
 
     }
+    packinfo <- NULL
+    sys_details <- NULL
     hadesPackageVersions <- NULL
     performanceResults <- NULL
+    missingPackages <- NULL
     if (runPerformanceChecks) {
 
       ParallelLogger::logInfo(paste0("Check installed R Packages"))
