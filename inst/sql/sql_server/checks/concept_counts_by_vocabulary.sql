@@ -9,6 +9,6 @@ select vocabulary.vocabulary_id                                  as id,
 from @vocabDatabaseSchema.vocabulary
 left join @vocabDatabaseSchema.concept
     on concept.vocabulary_id = vocabulary.vocabulary_id
-group by vocabulary.vocabulary_id
+group by vocabulary.vocabulary_id, vocabulary.vocabulary_name, vocabulary.vocabulary_version
 order by vocabulary.vocabulary_id
 ;
