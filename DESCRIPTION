@@ -22,7 +22,9 @@ Depends:     R (>= 3.5.0),
     dplyr,
     officer,
     data.table,
-    flextable
+    flextable,
+    lubridate,
+    ggplot2
 Imports: parallel,
          benchmarkme,
          prettyunits,

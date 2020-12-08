@@ -103,7 +103,7 @@ recordsCountPlot <- function(results){
 #' @export
 bundleResults <- function(outputFolder, databaseId) {
   zipName <- file.path(outputFolder, paste0("Results_Inspection_", databaseId, ".zip"))
-  files <- list.files(outputFolder, "^Results_.*.zip$", full.names = TRUE, recursive = TRUE)
+  files <- list.files(outputFolder, "*.*", full.names = TRUE, recursive = TRUE)
   oldWd <- setwd(outputFolder)
   on.exit(setwd(oldWd), add = TRUE)
   DatabaseConnector::createZipFile(zipFile = zipName, files = files)
