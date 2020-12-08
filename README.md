@@ -61,8 +61,9 @@ You should run the cdmInspection package ideally on the same machine you will pe
 Make sure that Achilles has run in the results schema you select when calling the cdmInspection function.
 
 PDF versions of the documentation are available:
-* Package manual: 
+* Package manual: [Link](https://github.com/EHDEN/CdmInspection/blob/master/extras/CdmInspection.pdf)
 * CodeToRun Example: [Link](https://github.com/EHDEN/CdmInspection/blob/master/extras/CodeToRun.R)
+* Report Exampke: [Link](https://github.com/EHDEN/CdmInspection/blob/master/extras/SYNPUF-results.docx)
 
 Support
 =======
