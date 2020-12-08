@@ -37,5 +37,5 @@ On SQL Server, this should specifiy both the database and the schema, so for exa
 Validate the CDM schema
 }
 \details{
-Runs a validation script to ensure the CDM is valid based on v5.x
+Runs a validation script to ensure the CDM is valid based on v5.x (NOT USED CURRENTLY)
 }

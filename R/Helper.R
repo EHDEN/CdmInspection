@@ -1,4 +1,4 @@
-# @file CdmInspection
+# @file Helper.R
 #
 # Copyright 2020 European Health Data and Evidence Network (EHDEN)
 #
@@ -98,4 +98,14 @@ recordsCountPlot <- function(results){
     rename(Date=X_CALENDAR_MONTH,Domain=SERIES_NAME, Count=Y_RECORD_COUNT) %>%
     mutate(Date=parse_date_time(Date, "ym"))
   plot <- ggplot(temp, aes(x = Date, y = Count)) + geom_line(aes(color = Domain))
+}
+
+#' @export
+bundleResults <- function(outputFolder, databaseId) {
+  zipName <- file.path(outputFolder, paste0("Results_Inspection_", databaseId, ".zip"))
+  files <- list.files(outputFolder, "^Results_.*.zip$", full.names = TRUE, recursive = TRUE)
+  oldWd <- setwd(outputFolder)
+  on.exit(setwd(oldWd), add = TRUE)
+  DatabaseConnector::createZipFile(zipFile = zipName, files = files)
+  return(zipName)
 }

@@ -142,19 +142,6 @@ cdmInspection <- function (connectionDetails,
                        oracleTempSchema = roracleTempSchema,
                        sqlOnly = sqlOnly,
                        outputFolder = outputFolder)
-
-      write.csv(vocabularyResults$mappingCompleteness$data,file.path(outputFolder,"mappingCompleteness.csv"))
-      write.csv(vocabularyResults$vocabularies$data,file.path(outputFolder,"vocabularies.csv"))
-
-      # vocabularies <- data.frame(VocabularyName=c("None", "RxNorm", "CC"))
-      # diffVocabularies <- setdiff(vocabularies, vocabularyResults$vocabularies) #TODO: does not work
-      #
-      # if (length(Vocabularies)>0){
-      #   ParallelLogger::logInfo(paste0("Not all the required standard vocabularies are found"))
-      #   ParallelLogger::logInfo(paste0("Missing:", paste(diffVocabularies, collapse=', ')))
-      # } else
-      #   ParallelLogger::logInfo(paste0("> All required standard vocabularies are found"))
-
     }
     packinfo <- NULL
     sys_details <- NULL
@@ -236,6 +223,9 @@ cdmInspection <- function (connectionDetails,
 
     saveRDS(results, file.path(outputFolder,"inspection_results.rds"))
     ParallelLogger::logInfo(sprintf("The cdm inspection results have been exported to: %s", outputFolder))
+    bundledResultsLocation <- bundleResults(outputFolder, databaseId)
+    ParallelLogger::logInfo(paste("All cdm inspection results are bundled for sharing at: ", bundledResultsLocation))
+    ParallelLogger::logInfo("Next step: generate and complete the inspection report and share this together with the zip file.")
 
     duration <- as.numeric(difftime(Sys.time(),start_time), units="secs")
     ParallelLogger::logInfo(paste("CdmInspection run took", sprintf("%.2f", duration),"secs"))
@@ -322,7 +312,6 @@ cdmInspection <- function (connectionDetails,
 #' @param sqlOnly                          TRUE = just generate SQL files, don't actually run, FALSE = run Achilles
 #' @param verboseMode                      Boolean to determine if the console will show all execution steps. Default = TRUE
 #'
-#' @export
 validateSchema <- function(connectionDetails,
                            cdmDatabaseSchema,
                            resultsDatabaseSchema = cdmDatabaseSchema,

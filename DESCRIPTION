@@ -7,7 +7,7 @@ Authors@R:
            role = c("aut", "cre"),
            email = "p.rijnbeek@erasmusmc.nl",
            comment = c(ORCID = "https://orcid.org/0000-0003-0621-1979"))
-Description: The CdmInspection R Package is part of this SME Inspection procedure and performs additional checks on top of the Data Quality Dashboard step
+Description: The CdmInspection R Package performs additional checks on top of the Data Quality Dashboard.
 License: Apache License 2.0
 VignetteBuilder: knitr
 URL: https://github.com/EHDEN/CdmInspection
