@@ -63,7 +63,7 @@ Make sure that Achilles has run in the results schema you select when calling th
 PDF versions of the documentation are available:
 * Package manual: [Link](https://github.com/EHDEN/CdmInspection/blob/master/extras/CdmInspection.pdf)
 * CodeToRun Example: [Link](https://github.com/EHDEN/CdmInspection/blob/master/extras/CodeToRun.R)
-* Report Exampke: [Link](https://github.com/EHDEN/CdmInspection/blob/master/extras/SYNPUF-results.docx)
+* Report Example: [Link](https://github.com/EHDEN/CdmInspection/blob/master/extras/SYNPUF-results.docx)
 
 Support
 =======
