@@ -17,7 +17,7 @@ generateResultsDocument<- function(results, outputFolder, docTemplate="EHDEN", a
     officer::body_add_img(logo,width=6.10,height=1.59, style = "Title") %>%
     officer::body_add_par(value = paste0("CDM Inspection report for the ",databaseName," database"), style = "Title") %>%
     #body_add_par(value = "Note", style = "heading 1") %>%
-    body_add_par(value = paste0("Package Version: ", packageVersion("cdmInspection")), style = "Centered") %>%
+    body_add_par(value = paste0("Package Version: ", packageVersion("CdmInspection")), style = "Centered") %>%
     body_add_par(value = paste0("Date: ", date()), style = "Centered") %>%
     body_add_par(value = paste0("Authors: ", authors), style = "Centered") %>%
     body_add_break()
