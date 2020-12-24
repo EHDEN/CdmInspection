@@ -50,7 +50,7 @@ Installation
 2. In R, use the following commands to download and install CdmInspection:
 
   ```r
-  remotes::install.github("EHDEN/CdmInspection")
+  remotes::install_github("EHDEN/CdmInspection")
 ```
 
 User Documentation
