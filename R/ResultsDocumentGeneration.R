@@ -138,7 +138,7 @@ generateResultsDocument<- function(results, outputFolder, docTemplate="EHDEN", a
 
       officer::body_add_par(value = "Vocabularies", style = "heading 2") %>%
       officer::body_add_par(paste0("Vocabulary version: ",results$vocabularyResults$version)) %>%
-      officer::body_add_par("Table 3. The vocabularies available in the CDM with concept count") %>%
+      officer::body_add_par("Table 3. The vocabularies available in the CDM with concept count. Note that this does not reflect which concepts are actually used in the clinical CDM tables. S=Standard, C=Classification and '-'=Non-standard") %>%
       my_body_add_table(value = vocabResults$conceptCounts$result, style = "EHDEN") %>%
       officer::body_add_par(" ") %>%
       officer::body_add_par(paste("Query executed in ",sprintf("%.2f", vocabResults$conceptCounts$duration),"secs"))
