@@ -1,4 +1,7 @@
 -- overview of vocabulary table
+-- S=Standard concepts
+-- C=Classification concepts
+-- '-'=Non-standard and non-classification. Can be represented by empty string or null in the database.
 
 select vocabulary.vocabulary_id                                  as id,
        vocabulary.vocabulary_name                                as name,
