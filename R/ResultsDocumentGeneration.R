@@ -104,23 +104,23 @@ generateResultsDocument<- function(results, outputFolder, docTemplate="EHDEN", a
       officer::body_add_par(" ") %>%
       officer::body_add_par(paste("Query executed in ",sprintf("%.2f", results$dataTablesResults$dataTablesCounts$duration),"secs"))
 
-    plot <- recordsCountPlot(as.data.frame(results$dataTablesResults$totalRecords$result))
-    doc<-doc %>% body_add_break() %>%
-      body_add_par(value = "Data density plots", style = "heading 2") %>%
-      body_add_gg(plot, height=4) %>%
-      body_add_par("Figure 1. Total record count over time per data domain")
-
-    plot <- recordsCountPlot(as.data.frame(results$dataTablesResults$recordsPerPerson$result))
-    doc<-doc %>%
-      body_add_gg(plot, height=4) %>%
-      body_add_par("Figure 2. Number of records per person over time per data domain")
-
-    colnames(results$dataTablesResults$conceptsPerPerson$result) <- c("Domain", "Min", "P10", "P25", "MEDIAN", "P75", "P90", "Max")
-    doc<-doc %>% body_add_break() %>%
-      officer::body_add_par(value = "Concepts per person", style = "heading 2") %>%
-      officer::body_add_par("Table 2. Shows the number of records per person for all data domains") %>%
-      my_body_add_table(value = results$dataTablesResults$conceptsPerPerson$result, style = "EHDEN") %>%
-      officer::body_add_par(" ")
+    # plot <- recordsCountPlot(as.data.frame(results$dataTablesResults$totalRecords$result))
+    # doc<-doc %>% body_add_break() %>%
+    #   body_add_par(value = "Data density plots", style = "heading 2") %>%
+    #   body_add_gg(plot, height=4) %>%
+    #   body_add_par("Figure 1. Total record count over time per data domain")
+    #
+    # plot <- recordsCountPlot(as.data.frame(results$dataTablesResults$recordsPerPerson$result))
+    # doc<-doc %>%
+    #   body_add_gg(plot, height=4) %>%
+    #   body_add_par("Figure 2. Number of records per person over time per data domain")
+    #
+    # colnames(results$dataTablesResults$conceptsPerPerson$result) <- c("Domain", "Min", "P10", "P25", "MEDIAN", "P75", "P90", "Max")
+    # doc<-doc %>% body_add_break() %>%
+    #   officer::body_add_par(value = "Concepts per person", style = "heading 2") %>%
+    #   officer::body_add_par("Table 2. Shows the number of records per person for all data domains") %>%
+    #   my_body_add_table(value = results$dataTablesResults$conceptsPerPerson$result, style = "EHDEN") %>%
+    #   officer::body_add_par(" ")
 
   }
 
@@ -175,32 +175,16 @@ generateResultsDocument<- function(results, outputFolder, docTemplate="EHDEN", a
 
     ## add Top 25 missing mappings
     doc<-doc %>%
-      officer::body_add_par(value = "Unmapped Codes", style = "heading 2") %>%
-      officer::body_add_par("Table 7. Top 25 of unmapped drugs") %>%
-      my_body_add_table(value = vocabResults$unmappedDrugs$result, style = "EHDEN") %>%
-      officer::body_add_par(" ") %>%
-      officer::body_add_par(paste("Query executed in ",sprintf("%.2f", vocabResults$unmappedDrugs$duration),"secs")) %>%
-      officer::body_add_par("Table 8. Top 25 of unmapped conditions") %>%
-      my_body_add_table(value = vocabResults$unmappedConditions$result, style = "EHDEN") %>%
-      officer::body_add_par(" ") %>%
-      officer::body_add_par(paste("Query executed in ",sprintf("%.2f", vocabResults$unmappedConditions$duration),"secs")) %>%
-      officer::body_add_par("Table 9. Top 25 of unmapped measurements") %>%
-      my_body_add_table(value = vocabResults$unmappedMeasurements$result, style = "EHDEN") %>%
-      officer::body_add_par(" ") %>%
-      officer::body_add_par(paste("Query executed in ",sprintf("%.2f", vocabResults$unmappedMeasurements$duration),"secs")) %>%
-      officer::body_add_par("Table 10. Top 25 of unmapped observations") %>%
-      my_body_add_table(value = vocabResults$unmappedObservations$result, style = "EHDEN") %>%
-      officer::body_add_par(" ") %>%
-      officer::body_add_par(paste("Query executed in ",sprintf("%.2f", vocabResults$unmappedObservations$duration),"secs")) %>%
-      officer::body_add_par("Table 11. Top 25 of unmapped procedures") %>%
-      my_body_add_table(value = vocabResults$unmappedProcedures$result, style = "EHDEN") %>%
-      officer::body_add_par(" ") %>%
-      officer::body_add_par(paste("Query executed in ",sprintf("%.2f", vocabResults$unmappedProcedures$duration),"secs")) %>%
-      officer::body_add_par("Table 12. Top 25 of unmapped devices") %>%
-      my_body_add_table(value = vocabResults$unmappedDevices$result, style = "EHDEN") %>%
-      officer::body_add_par(" ") %>%
-      officer::body_add_par(paste("Query executed in ",sprintf("%.2f", vocabResults$unmappedDevices$duration),"secs"))
+      officer::body_add_par(doc, value = "Unmapped Codes", style = "heading 2")
 
+    my_unmapped_table(doc, vocabResults$unmappedDrugs, 7, "drugs")
+    my_unmapped_table(doc, vocabResults$unmappedConditions, 8, "conditions")
+    my_unmapped_table(doc, vocabResults$unmappedMeasurements, 9, "measurements")
+    my_unmapped_table(doc, vocabResults$unmappedObservations, 10, "observations")
+    my_unmapped_table(doc, vocabResults$unmappedProcedures, 11, "procedures")
+    my_unmapped_table(doc, vocabResults$unmappedDevices, 12, "devices")
+
+    #   officer\:\:body_add_par\(\"Table (\d+)\. Top 25 of unmapped (\w+)\.\"\) \%\>\%\n      my_body_add_table\(value \= vocabResults\$unmapped(\w+)\$result\, style \= \"EHDEN\"\) \%\>\%\n      officer\:\:body_add_par\(\" \"\) \%\>\%\n      officer\:\:body_add_par\(paste\(\"Query executed in \"\,sprintf\(\"\%\.2f\"\, vocabResults\$unmapped(\w+)\$duration\)\,\"secs\"\)\) \%\>\%
     ## add top 25 mapped codes
     doc<-doc %>%
       officer::body_add_par(value = "Mapped Codes", style = "heading 2") %>%
