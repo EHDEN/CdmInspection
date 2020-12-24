@@ -175,43 +175,23 @@ generateResultsDocument<- function(results, outputFolder, docTemplate="EHDEN", a
 
     ## add Top 25 missing mappings
     doc<-doc %>%
-      officer::body_add_par(doc, value = "Unmapped Codes", style = "heading 2")
+      officer::body_add_par(value = "Unmapped Codes", style = "heading 2")
+    my_unmapped_section(doc, vocabResults$unmappedDrugs, 7, "drugs")
+    my_unmapped_section(doc, vocabResults$unmappedConditions, 8, "conditions")
+    my_unmapped_section(doc, vocabResults$unmappedMeasurements, 9, "measurements")
+    my_unmapped_section(doc, vocabResults$unmappedObservations, 10, "observations")
+    my_unmapped_section(doc, vocabResults$unmappedProcedures, 11, "procedures")
+    my_unmapped_section(doc, vocabResults$unmappedDevices, 12, "devices")
 
-    my_unmapped_table(doc, vocabResults$unmappedDrugs, 7, "drugs")
-    my_unmapped_table(doc, vocabResults$unmappedConditions, 8, "conditions")
-    my_unmapped_table(doc, vocabResults$unmappedMeasurements, 9, "measurements")
-    my_unmapped_table(doc, vocabResults$unmappedObservations, 10, "observations")
-    my_unmapped_table(doc, vocabResults$unmappedProcedures, 11, "procedures")
-    my_unmapped_table(doc, vocabResults$unmappedDevices, 12, "devices")
-
-    #   officer\:\:body_add_par\(\"Table (\d+)\. Top 25 of unmapped (\w+)\.\"\) \%\>\%\n      my_body_add_table\(value \= vocabResults\$unmapped(\w+)\$result\, style \= \"EHDEN\"\) \%\>\%\n      officer\:\:body_add_par\(\" \"\) \%\>\%\n      officer\:\:body_add_par\(paste\(\"Query executed in \"\,sprintf\(\"\%\.2f\"\, vocabResults\$unmapped(\w+)\$duration\)\,\"secs\"\)\) \%\>\%
     ## add top 25 mapped codes
     doc<-doc %>%
-      officer::body_add_par(value = "Mapped Codes", style = "heading 2") %>%
-      officer::body_add_par("Table 13. Top 25 of mapped drugs") %>%
-      my_body_add_table(value = vocabResults$mappedDrugs$result, style = "EHDEN") %>%
-      officer::body_add_par(" ") %>%
-      officer::body_add_par(paste("Query executed in ",sprintf("%.2f", vocabResults$mappedDrugs$duration),"secs")) %>%
-      officer::body_add_par("Table 14. Top 25 of mapped conditions") %>%
-      my_body_add_table(value = vocabResults$mappedConditions$result, style = "EHDEN") %>%
-      officer::body_add_par(" ") %>%
-      officer::body_add_par(paste("Query executed in ",sprintf("%.2f", vocabResults$mappedConditions$duration),"secs")) %>%
-      officer::body_add_par("Table 15. Top 25 of mapped measurements") %>%
-      my_body_add_table(value = vocabResults$mappedMeasurements$result, style = "EHDEN") %>%
-      officer::body_add_par(" ") %>%
-      officer::body_add_par(paste("Query executed in ",sprintf("%.2f", vocabResults$mappedMeasurements$duration),"secs")) %>%
-      officer::body_add_par("Table 16. Top 25 of mapped observations") %>%
-      my_body_add_table(value = vocabResults$mappedObservations$result, style = "EHDEN") %>%
-      officer::body_add_par(" ") %>%
-      officer::body_add_par(paste("Query executed in ",sprintf("%.2f", vocabResults$mappedObservations$duration),"secs")) %>%
-      officer::body_add_par("Table 17. Top 25 of mapped procedures") %>%
-      my_body_add_table(value = vocabResults$mappedProcedures$result, style = "EHDEN") %>%
-      officer::body_add_par(" ") %>%
-      officer::body_add_par(paste("Query executed in ",sprintf("%.2f", vocabResults$mappedProcedures$duration),"secs")) %>%
-      officer::body_add_par("Table 18. Top 25 of mapped devices") %>%
-      my_body_add_table(value = vocabResults$mappedDevices$result, style = "EHDEN") %>%
-      officer::body_add_par(" ") %>%
-      officer::body_add_par(paste("Query executed in ",sprintf("%.2f", vocabResults$mappedDevices$duration),"secs"))
+      officer::body_add_par(value = "Mapped Codes", style = "heading 2")
+    my_mapped_section(doc, vocabResults$mappedDrugs, 13, "drugs")
+    my_mapped_section(doc, vocabResults$mappedConditions, 14, "conditions")
+    my_mapped_section(doc, vocabResults$mappedMeasurements, 15, "measurements")
+    my_mapped_section(doc, vocabResults$mappedObservations, 16, "observations")
+    my_mapped_section(doc, vocabResults$mappedProcedures, 17, "procedures")
+    my_mapped_section(doc, vocabResults$mappedDevices, 18, "devices")
 
     ## add source_to_concept_map breakdown
     doc<-doc %>%

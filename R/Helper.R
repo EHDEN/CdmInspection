@@ -94,17 +94,16 @@ my_body_add_table <- function (x, value, style = NULL, pos = "after", header = T
 }
 
 
-my_unmapped_table <- function (x, data, table_number, domain, kind="unmapped") {
+my_source_value_count_section <- function (x, data, table_number, domain, kind) {
   n <- nrow(data$result)
 
+  msg <- "Counts are rounded up to the nearest hundred. Values with a record count <=10 are omitted."
   if (n == 0) {
-    officer::body_add_par(x, paste0("Table ", table_number, " omitted because there are no ", kind, " ", domain, "."))
+    officer::body_add_par(x,paste0("Table ", table_number, " omitted because no ", kind, " ", domain, " were found."))
   } else if (n < 25) {
-    officer::body_add_par(x,paste0("Table ", table_number, ". All ", n, " ", kind, " ", domain,
-                                   ". Counts are rounded up to the nearest hundred and values with a count smaller than 10 are not included."))
+    officer::body_add_par(x,paste0("Table ", table_number, ". All ", n, " ", kind, " ", domain, ". ", msg))
   } else {
-    officer::body_add_par(x,paste0("Table ", table_number, ". Top 25 of ", kind, " ", domain,
-                                   ". Counts are rounded up to the nearest hundred and values with a count smaller than 10 are not included."))
+    officer::body_add_par(x,paste0("Table ", table_number, ". Top 25 of ", kind, " ", domain, ". ", msg))
   }
 
   if (n>0) {
@@ -112,6 +111,14 @@ my_unmapped_table <- function (x, data, table_number, domain, kind="unmapped") {
   }
 
   officer::body_add_par(x, paste0("Query executed in ", sprintf("%.2f", data$duration), " secs"))
+}
+
+my_unmapped_section <- function(x, data, table_number, domain) {
+  my_source_value_count_section(x, data, table_number, domain, "unmapped")
+}
+
+my_mapped_section <- function(x, data, table_number, domain) {
+  my_source_value_count_section(x, data, table_number, domain, "mapped")
 }
 
 
