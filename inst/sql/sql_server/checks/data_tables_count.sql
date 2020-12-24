@@ -6,9 +6,9 @@ select 'care_site' as tablename, count_big(*) as count from @cdmDatabaseSchema.c
 UNION
 select 'condition_era' as tablename, count_big(*) as count from @cdmDatabaseSchema.condition_era
 UNION
-select 'condition occurrence' as tablename, count_big(*) as count from @cdmDatabaseSchema.condition_occurrence
+select 'condition_occurrence' as tablename, count_big(*) as count from @cdmDatabaseSchema.condition_occurrence
 UNION
-select 'drug exposure' as tablename, count_big(*) as count from @cdmDatabaseSchema.drug_exposure
+select 'drug_exposure' as tablename, count_big(*) as count from @cdmDatabaseSchema.drug_exposure
 UNION
 select 'cost' as tablename, count_big(*) as count from @cdmDatabaseSchema.cost
 UNION
@@ -20,13 +20,9 @@ select 'dose_era' as tablename, count_big(*) as count from @cdmDatabaseSchema.do
 UNION
 select 'drug_era' as tablename, count_big(*) as count from @cdmDatabaseSchema.drug_era
 UNION
-select 'drug_exposure' as tablename, count_big(*) as count from @cdmDatabaseSchema.drug_exposure
-UNION
 select 'location' as tablename, count_big(*) as count from @cdmDatabaseSchema.location
 UNION
 select 'measurement' as tablename, count_big(*) as count from @cdmDatabaseSchema.measurement
-UNION
-select 'device_exposure' as tablename, count_big(*) as count from @cdmDatabaseSchema.device_exposure
 UNION
 select 'note' as tablename, count_big(*) as count from @cdmDatabaseSchema.note
 UNION
@@ -43,3 +39,5 @@ UNION
 select 'specimen' as tablename, count_big(*) as count from @cdmDatabaseSchema.specimen
 UNION
 select 'visit_details' as tablename, count_big(*) as count from @cdmDatabaseSchema.visit_detail
+UNION
+select 'visit_occurrence' as tablename, count_big(*) as count from @cdmDatabaseSchema.visit_occurrence
