@@ -105,23 +105,23 @@ generateResultsDocument<- function(results, outputFolder, docTemplate="EHDEN", a
       officer::body_add_par(" ") %>%
       officer::body_add_par(paste("Query executed in ",sprintf("%.2f", results$dataTablesResults$dataTablesCounts$duration),"secs"))
 
-    # plot <- recordsCountPlot(as.data.frame(results$dataTablesResults$totalRecords$result))
-    # doc<-doc %>% body_add_break() %>%
-    #   body_add_par(value = "Data density plots", style = "heading 2") %>%
-    #   body_add_gg(plot, height=4) %>%
-    #   body_add_par("Figure 1. Total record count over time per data domain")
-    #
-    # plot <- recordsCountPlot(as.data.frame(results$dataTablesResults$recordsPerPerson$result))
-    # doc<-doc %>%
-    #   body_add_gg(plot, height=4) %>%
-    #   body_add_par("Figure 2. Number of records per person over time per data domain")
-    #
-    # colnames(results$dataTablesResults$conceptsPerPerson$result) <- c("Domain", "Min", "P10", "P25", "MEDIAN", "P75", "P90", "Max")
-    # doc<-doc %>% body_add_break() %>%
-    #   officer::body_add_par(value = "Concepts per person", style = "heading 2") %>%
-    #   officer::body_add_par("Table 2. Shows the number of records per person for all data domains") %>%
-    #   my_body_add_table(value = results$dataTablesResults$conceptsPerPerson$result, style = "EHDEN") %>%
-    #   officer::body_add_par(" ")
+    plot <- recordsCountPlot(as.data.frame(results$dataTablesResults$totalRecords$result))
+    doc<-doc %>% body_add_break() %>%
+      body_add_par(value = "Data density plots", style = "heading 2") %>%
+      body_add_gg(plot, height=4) %>%
+      body_add_par("Figure 1. Total record count over time per data domain")
+   
+    plot <- recordsCountPlot(as.data.frame(results$dataTablesResults$recordsPerPerson$result))
+    doc<-doc %>%
+      body_add_gg(plot, height=4) %>%
+      body_add_par("Figure 2. Number of records per person over time per data domain")
+   
+    colnames(results$dataTablesResults$conceptsPerPerson$result) <- c("Domain", "Min", "P10", "P25", "MEDIAN", "P75", "P90", "Max")
+    doc<-doc %>% body_add_break() %>%
+      officer::body_add_par(value = "Concepts per person", style = "heading 2") %>%
+      officer::body_add_par("Table 2. Shows the number of records per person for all data domains") %>%
+      my_body_add_table(value = results$dataTablesResults$conceptsPerPerson$result, style = "EHDEN") %>%
+      officer::body_add_par(" ")
 
   }
 
