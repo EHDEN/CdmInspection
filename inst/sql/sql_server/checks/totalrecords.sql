@@ -41,6 +41,12 @@ FROM
     FROM @resultsDatabaseSchema.achilles_results WHERE analysis_id = 820
     UNION ALL
     SELECT
+     'Device exposure' AS table_name,
+     stratum_1,
+     count_value
+    FROM @resultsDatabaseSchema.achilles_results WHERE analysis_id = 2120
+    UNION ALL
+    SELECT
       'Drug era' AS table_name,
       stratum_1,
       count_value

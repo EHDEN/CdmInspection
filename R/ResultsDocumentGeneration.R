@@ -97,10 +97,11 @@ generateResultsDocument<- function(results, outputFolder, docTemplate="EHDEN", a
 
     ## add Concept counts
   if (!is.null(results$dataTablesResults)) {
+    df_t1 <- results$dataTablesResults$dataTablesCounts$result
     doc<-doc %>%
       officer::body_add_par(value = "Record counts data tables", style = "heading 2") %>%
       officer::body_add_par("Table 1. Shows the number of records in all clinical data tables") %>%
-      my_body_add_table(value = results$dataTablesResults$dataTablesCounts$result, style = "EHDEN") %>%
+      my_body_add_table(value = df_t1[order(df_t1$COUNT, decreasing=TRUE),], style = "EHDEN") %>%
       officer::body_add_par(" ") %>%
       officer::body_add_par(paste("Query executed in ",sprintf("%.2f", results$dataTablesResults$dataTablesCounts$duration),"secs"))
 
@@ -138,7 +139,7 @@ generateResultsDocument<- function(results, outputFolder, docTemplate="EHDEN", a
 
       officer::body_add_par(value = "Vocabularies", style = "heading 2") %>%
       officer::body_add_par(paste0("Vocabulary version: ",results$vocabularyResults$version)) %>%
-      officer::body_add_par("Table 3. The vocabularies available in the CDM with concept count") %>%
+      officer::body_add_par("Table 3. The vocabularies available in the CDM with concept count. Note that this does not reflect which concepts are actually used in the clinical CDM tables. S=Standard, C=Classification and '-'=Non-standard") %>%
       my_body_add_table(value = vocabResults$conceptCounts$result, style = "EHDEN") %>%
       officer::body_add_par(" ") %>%
       officer::body_add_par(paste("Query executed in ",sprintf("%.2f", vocabResults$conceptCounts$duration),"secs"))
