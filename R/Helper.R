@@ -19,7 +19,7 @@
 # @author European Health Data and Evidence Network
 # @author Peter Rijnbeek
 
-executeQuery <- function(outputFolder,sqlFileName, successMessage, connectionDetails, sqlOnly, cmdDatabaseSchema, vocabDatabaseSchema=NULL, resultsDatabaseSchema=NULL){
+executeQuery <- function(outputFolder,sqlFileName, successMessage, connectionDetails, sqlOnly, cdmDatabaseSchema, vocabDatabaseSchema=NULL, resultsDatabaseSchema=NULL){
   sql <- SqlRender::loadRenderTranslateSql(sqlFilename = file.path("checks",sqlFileName),
                                            packageName = "CdmInspection",
                                            dbms = connectionDetails$dbms,
