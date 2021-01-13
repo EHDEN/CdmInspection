@@ -93,6 +93,35 @@ my_body_add_table <- function (x, value, style = NULL, pos = "after", header = T
   body_add_xml(x = x, str = xml_elt, pos = pos)
 }
 
+
+my_source_value_count_section <- function (x, data, table_number, domain, kind) {
+  n <- nrow(data$result)
+
+  msg <- "Counts are rounded up to the nearest hundred. Values with a record count <=10 are omitted."
+  if (n == 0) {
+    officer::body_add_par(x,paste0("Table ", table_number, " omitted because no ", kind, " ", domain, " were found."))
+  } else if (n < 25) {
+    officer::body_add_par(x,paste0("Table ", table_number, ". All ", n, " ", kind, " ", domain, ". ", msg))
+  } else {
+    officer::body_add_par(x,paste0("Table ", table_number, ". Top 25 of ", kind, " ", domain, ". ", msg))
+  }
+
+  if (n>0) {
+    my_body_add_table(x, value = data$result, style = "EHDEN")
+  }
+
+  officer::body_add_par(x, paste0("Query executed in ", sprintf("%.2f", data$duration), " secs"))
+}
+
+my_unmapped_section <- function(x, data, table_number, domain) {
+  my_source_value_count_section(x, data, table_number, domain, "unmapped")
+}
+
+my_mapped_section <- function(x, data, table_number, domain) {
+  my_source_value_count_section(x, data, table_number, domain, "mapped")
+}
+
+
 recordsCountPlot <- function(results){
   temp <- results %>%
     rename(Date=X_CALENDAR_MONTH,Domain=SERIES_NAME, Count=Y_RECORD_COUNT) %>%
