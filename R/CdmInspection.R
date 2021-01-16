@@ -139,6 +139,7 @@ cdmInspection <- function (connectionDetails,
                        cdmDatabaseSchema = cdmDatabaseSchema,
                        vocabDatabaseSchema = vocabDatabaseSchema,
                        resultsDatabaseSchema = resultsDatabaseSchema,
+                       smallCellCount = smallCellCount,
                        oracleTempSchema = roracleTempSchema,
                        sqlOnly = sqlOnly,
                        outputFolder = outputFolder)

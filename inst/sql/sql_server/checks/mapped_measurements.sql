@@ -11,7 +11,7 @@ JOIN @vocabDatabaseSchema.CONCEPT CR
 ON C.measurement_concept_id = CR.CONCEPT_ID
 where c. measurement_concept_id != 0
 group by CR.concept_name
-having count_big(measurement_id)>10
+having count_big(measurement_id)>@smallCellCount
 ) z
 WHERE z.ROW_NUM <= 25
 ORDER BY z.ROW_NUM

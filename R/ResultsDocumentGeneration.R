@@ -3,7 +3,7 @@ library(magrittr)
 
 
 #' @export
-generateResultsDocument<- function(results, outputFolder, docTemplate="EHDEN", authors = "Author Names", databaseDescription, databaseName, databaseId,silent=FALSE) {
+generateResultsDocument<- function(results, outputFolder, docTemplate="EHDEN", authors = "Author Names", databaseDescription, databaseName, databaseId,smallCellCount,silent=FALSE) {
 
   if (docTemplate=="EHDEN"){
     docTemplate <- system.file("templates", "Template-EHDEN.docx", package="CdmInspection")
@@ -110,12 +110,12 @@ generateResultsDocument<- function(results, outputFolder, docTemplate="EHDEN", a
       body_add_par(value = "Data density plots", style = "heading 2") %>%
       body_add_gg(plot, height=4) %>%
       body_add_par("Figure 1. Total record count over time per data domain")
-   
+
     plot <- recordsCountPlot(as.data.frame(results$dataTablesResults$recordsPerPerson$result))
     doc<-doc %>%
       body_add_gg(plot, height=4) %>%
       body_add_par("Figure 2. Number of records per person over time per data domain")
-   
+
     colnames(results$dataTablesResults$conceptsPerPerson$result) <- c("Domain", "Min", "P10", "P25", "MEDIAN", "P75", "P90", "Max")
     doc<-doc %>% body_add_break() %>%
       officer::body_add_par(value = "Concepts per person", style = "heading 2") %>%
@@ -177,22 +177,22 @@ generateResultsDocument<- function(results, outputFolder, docTemplate="EHDEN", a
     ## add Top 25 missing mappings
     doc<-doc %>%
       officer::body_add_par(value = "Unmapped Codes", style = "heading 2")
-    my_unmapped_section(doc, vocabResults$unmappedDrugs, 7, "drugs")
-    my_unmapped_section(doc, vocabResults$unmappedConditions, 8, "conditions")
-    my_unmapped_section(doc, vocabResults$unmappedMeasurements, 9, "measurements")
-    my_unmapped_section(doc, vocabResults$unmappedObservations, 10, "observations")
-    my_unmapped_section(doc, vocabResults$unmappedProcedures, 11, "procedures")
-    my_unmapped_section(doc, vocabResults$unmappedDevices, 12, "devices")
+    my_unmapped_section(doc, vocabResults$unmappedDrugs, 7, "drugs", smallCellCount)
+    my_unmapped_section(doc, vocabResults$unmappedConditions, 8, "conditions", smallCellCount)
+    my_unmapped_section(doc, vocabResults$unmappedMeasurements, 9, "measurements", smallCellCount)
+    my_unmapped_section(doc, vocabResults$unmappedObservations, 10, "observations",smallCellCount)
+    my_unmapped_section(doc, vocabResults$unmappedProcedures, 11, "procedures", smallCellCount)
+    my_unmapped_section(doc, vocabResults$unmappedDevices, 12, "devices", smallCellCount)
 
     ## add top 25 mapped codes
     doc<-doc %>%
       officer::body_add_par(value = "Mapped Codes", style = "heading 2")
-    my_mapped_section(doc, vocabResults$mappedDrugs, 13, "drugs")
-    my_mapped_section(doc, vocabResults$mappedConditions, 14, "conditions")
-    my_mapped_section(doc, vocabResults$mappedMeasurements, 15, "measurements")
-    my_mapped_section(doc, vocabResults$mappedObservations, 16, "observations")
-    my_mapped_section(doc, vocabResults$mappedProcedures, 17, "procedures")
-    my_mapped_section(doc, vocabResults$mappedDevices, 18, "devices")
+    my_mapped_section(doc, vocabResults$mappedDrugs, 13, "drugs", smallCellCount)
+    my_mapped_section(doc, vocabResults$mappedConditions, 14, "conditions", smallCellCount)
+    my_mapped_section(doc, vocabResults$mappedMeasurements, 15, "measurements", smallCellCount)
+    my_mapped_section(doc, vocabResults$mappedObservations, 16, "observations", smallCellCount)
+    my_mapped_section(doc, vocabResults$mappedProcedures, 17, "procedures", smallCellCount)
+    my_mapped_section(doc, vocabResults$mappedDevices, 18, "devices", smallCellCount)
 
     ## add source_to_concept_map breakdown
     doc<-doc %>%

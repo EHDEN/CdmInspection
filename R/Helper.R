@@ -19,14 +19,15 @@
 # @author European Health Data and Evidence Network
 # @author Peter Rijnbeek
 
-executeQuery <- function(outputFolder,sqlFileName, successMessage, connectionDetails, sqlOnly, cdmDatabaseSchema, vocabDatabaseSchema=NULL, resultsDatabaseSchema=NULL){
+executeQuery <- function(outputFolder,sqlFileName, successMessage, connectionDetails, sqlOnly, cdmDatabaseSchema, vocabDatabaseSchema=NULL, resultsDatabaseSchema=NULL, smallCellCount = 5){
   sql <- SqlRender::loadRenderTranslateSql(sqlFilename = file.path("checks",sqlFileName),
                                            packageName = "CdmInspection",
                                            dbms = connectionDetails$dbms,
                                            warnOnMissingParameters = FALSE,
                                            vocabDatabaseSchema = vocabDatabaseSchema,
                                            cdmDatabaseSchema = cdmDatabaseSchema,
-                                           resultsDatabaseSchema = resultsDatabaseSchema)
+                                           resultsDatabaseSchema = resultsDatabaseSchema,
+                                           smallCellCount = smallCellCount)
 
   duration = -1
   result = NULL
@@ -94,10 +95,10 @@ my_body_add_table <- function (x, value, style = NULL, pos = "after", header = T
 }
 
 
-my_source_value_count_section <- function (x, data, table_number, domain, kind) {
+my_source_value_count_section <- function (x, data, table_number, domain, kind,smallCellCount) {
   n <- nrow(data$result)
 
-  msg <- "Counts are rounded up to the nearest hundred. Values with a record count <=10 are omitted."
+  msg <- paste0("Counts are rounded up to the nearest hundred. Values with a record count <=",smallCellCount," are omitted.")
   if (n == 0) {
     officer::body_add_par(x,paste0("Table ", table_number, " omitted because no ", kind, " ", domain, " were found."))
   } else if (n < 25) {
@@ -113,12 +114,12 @@ my_source_value_count_section <- function (x, data, table_number, domain, kind) 
   officer::body_add_par(x, paste0("Query executed in ", sprintf("%.2f", data$duration), " secs"))
 }
 
-my_unmapped_section <- function(x, data, table_number, domain) {
-  my_source_value_count_section(x, data, table_number, domain, "unmapped")
+my_unmapped_section <- function(x, data, table_number, domain, smallCellCount) {
+  my_source_value_count_section(x, data, table_number, domain, "unmapped", smallCellCount)
 }
 
-my_mapped_section <- function(x, data, table_number, domain) {
-  my_source_value_count_section(x, data, table_number, domain, "mapped")
+my_mapped_section <- function(x, data, table_number, domain, smallCellCount) {
+  my_source_value_count_section(x, data, table_number, domain, "mapped", smallCellCount)
 }
 
 

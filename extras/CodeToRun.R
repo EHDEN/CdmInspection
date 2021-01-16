@@ -129,5 +129,5 @@ results<-cdmInspection(connectionDetails,
                 outputFolder = outputFolder,
                 verboseMode = verboseMode)
 
-generateResultsDocument(results,outputFolder, authors=authors, databaseDescription = databaseDescription, databaseName = databaseName, databaseId = databaseId)
+generateResultsDocument(results,outputFolder, authors=authors, databaseDescription = databaseDescription, databaseName = databaseName, databaseId = databaseId, smallCellCount = smallCellCount)
 

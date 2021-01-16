@@ -8,7 +8,7 @@ FROM (
        floor((count_big(distinct person_id)+99)/100)*100 as "#Subjects"
        from @cdmDatabaseSchema.device_exposure where device_concept_id = 0
 group by device_source_value
-having count_big(device_exposure_id)>10
+having count_big(device_exposure_id)>@smallCellCount
 ) z
 WHERE z.ROW_NUM <= 25
 ORDER BY z.ROW_NUM
