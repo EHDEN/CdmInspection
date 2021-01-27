@@ -59,7 +59,7 @@ Sys.setenv("R_REMOTES_NO_ERRORS_FROM_WARNINGS" = TRUE)
 #devtools::install_github("EHDEN/CdmInspection.R")
 
 # *******************************************************
-# SECTION 2: Set Local Variable
+# SECTION 2: Set Local Details
 # *******************************************************
 library(CdmInspection)
 
@@ -73,10 +73,13 @@ user <- if (Sys.getenv("DB_USER") == "") NULL else Sys.getenv("DB_USER")
 password <- if (Sys.getenv("DB_PASSWORD") == "") NULL else Sys.getenv("DB_PASSWORD")
 server = Sys.getenv("DB_SERVER")
 port = Sys.getenv("DB_PORT")
-connectionString = Sys.getenv("CONNECTION_STRING")
+
+# connectionString is optional
+# if specified, the server, port fields are ignored. If user and password are not specified, they are assumed to already be included in the connection string.
+connectionString = if (Sys.getenv("CONNECTION_STRING") == "") NULL else Sys.getenv("CONNECTION_STRING")
 
 # Author details
-authors <-"<your_name>" # used in the title page
+authors <-"<your_name>" # used on the title page
 
 # Details specific to the database:
 databaseId <- "<your_id>" #for example SYNPUF (this will be used as results sub-folder)
@@ -95,28 +98,20 @@ vocabDatabaseSchema <- "<your_vocab_schema>"
 # Url to check the version of your local Atlas
 baseUrl <- "<your_baseUrl>" # example: "http://atlas-demo.ohdsi.org/WebAPI"
 
-
+# All results smaller than this value are removed from the results.
 smallCellCount <- 5
+
 verboseMode <- TRUE
+
+# *******************************************************
+# SECTION 3: Run the package
+# *******************************************************
 
 connectionDetails <- DatabaseConnector::createConnectionDetails(dbms = dbms,
                                                                 server = server,
                                                                 user = user,
                                                                 password = password,
-                                                                connectionString = connectionString )
-
-# For Oracle: define a schema that can be used to emulate temp tables:
-oracleTempSchema <- NULL
-
-# Details for connecting to the CDM and storing the results
-outputFolder <- file.path(getwd(), "results",databaseId)
-cdmDatabaseSchema <- "synpuf"
-resultsDatabaseSchema <- "prijnbeek" #Make sure the Achilles results are in this schema!
-vocabDatabaseSchema = "synpuf"
-
-smallCellCount <- 5
-verboseMode <- TRUE
-
+                                                                connectionString = connectionString)
 
 results<-cdmInspection(connectionDetails,
                 cdmDatabaseSchema = cdmDatabaseSchema,
@@ -129,7 +124,7 @@ results<-cdmInspection(connectionDetails,
                 runPerformanceChecks = TRUE,
                 runWebAPIChecks = TRUE,
                 smallCellCount = smallCellCount,
-                baseUrl = "http://atlas-demo.ohdsi.org/WebAPI",
+                baseUrl = baseUrl,
                 sqlOnly = FALSE,
                 outputFolder = outputFolder,
                 verboseMode = verboseMode)
