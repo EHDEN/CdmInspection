@@ -188,7 +188,7 @@ cdmInspection <- function (connectionDetails,
       ParallelLogger::logInfo(paste0("Running WebAPIChecks"))
 
       tryCatch({
-        webAPIversion <- getWebApiVersion(baseUrl = baseUrl)
+        webAPIversion <- ROhdsiWebApi::getWebApiVersion(baseUrl = baseUrl)
         ParallelLogger::logInfo(sprintf("> Connected successfully to %s", baseUrl))
         ParallelLogger::logInfo(sprintf("> WebAPI version: %s", webAPIversion))},
                error = function (e) {
