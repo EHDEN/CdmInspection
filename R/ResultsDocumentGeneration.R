@@ -17,16 +17,16 @@ generateResultsDocument<- function(results, outputFolder, docTemplate="EHDEN", a
     officer::body_add_img(logo,width=6.10,height=1.59, style = "Title") %>%
     officer::body_add_par(value = paste0("CDM Inspection report for the ",databaseName," database"), style = "Title") %>%
     #body_add_par(value = "Note", style = "heading 1") %>%
-    body_add_par(value = paste0("Package Version: ", packageVersion("CdmInspection")), style = "Centered") %>%
-    body_add_par(value = paste0("Date: ", date()), style = "Centered") %>%
-    body_add_par(value = paste0("Authors: ", authors), style = "Centered") %>%
-    body_add_break()
+    officer::body_add_par(value = paste0("Package Version: ", packageVersion("CdmInspection")), style = "Centered") %>%
+    officer::body_add_par(value = paste0("Date: ", date()), style = "Centered") %>%
+    officer::body_add_par(value = paste0("Authors: ", authors), style = "Centered") %>%
+    officer::body_add_break()
 
   ## add Table of content
   doc<-doc %>%
     officer::body_add_par(value = "Table of content", style = "heading 1") %>%
     officer::body_add_toc(level = 2) %>%
-    body_add_break()
+    officer::body_add_break()
 
 
   ## add genereal section
@@ -42,12 +42,12 @@ generateResultsDocument<- function(results, outputFolder, docTemplate="EHDEN", a
                  )
   answers <- c("",databaseName, databaseId,"","","","","")
   preample <- data.frame(items,answers)
-  ft <- qflextable(preample)
-  ft<-set_table_properties(ft, width = 1, layout = "fixed")
-  ft <- bold(ft, bold = TRUE, part = "header")
-  border_v = fp_border(color="gray")
-  border_h = fp_border(color="gray")
-  ft<-border_inner_v(ft, part="all", border = border_v )
+  ft <- flextable::qflextable(preample)
+  ft<-flextable::set_table_properties(ft, width = 1, layout = "fixed")
+  ft <- flextable::bold(ft, bold = TRUE, part = "header")
+  border_v = officer::fp_border(color="gray")
+  border_h = officer::fp_border(color="gray")
+  ft<-flextable::border_inner_v(ft, part="all", border = border_v )
 
   doc<-doc %>%
     officer::body_add_par(value = "General Information", style = "heading 1") %>%
@@ -55,7 +55,7 @@ generateResultsDocument<- function(results, outputFolder, docTemplate="EHDEN", a
     officer::body_add_par(value = "The goal of the inspection report is to provide insight into the completeness, transparency and quality of the performed Extraction Transform, and Load (ETL) process and the readiness of the data source to be onboarded in the data network to participate in research studies.") %>%
 
     officer::body_add_par(value = "Contact Details", style = "heading 2") %>%
-    body_add_par(value = "Fill in the table below",style="Highlight") %>%
+    officer::body_add_par(value = "Fill in the table below",style="Highlight") %>%
 
     flextable::body_add_flextable(value = ft, align = "left")
   doc<-doc %>%
@@ -71,8 +71,8 @@ generateResultsDocument<- function(results, outputFolder, docTemplate="EHDEN", a
 
     doc<-doc %>% officer::body_add_par(value = "SME Role", style = "heading 2") %>%
 
-    body_add_par(value = "Describe the involvement of the SME in the ETL Delopment process",style="Highlight") %>%
-    body_add_break()
+    officer::body_add_par(value = "Describe the involvement of the SME in the ETL Delopment process",style="Highlight") %>%
+    officer::body_add_break()
 
 
   ## ETL Development section
@@ -106,18 +106,18 @@ generateResultsDocument<- function(results, outputFolder, docTemplate="EHDEN", a
       officer::body_add_par(paste("Query executed in ",sprintf("%.2f", results$dataTablesResults$dataTablesCounts$duration),"secs"))
 
     plot <- recordsCountPlot(as.data.frame(results$dataTablesResults$totalRecords$result))
-    doc<-doc %>% body_add_break() %>%
-      body_add_par(value = "Data density plots", style = "heading 2") %>%
-      body_add_gg(plot, height=4) %>%
-      body_add_par("Figure 1. Total record count over time per data domain")
+    doc<-doc %>% officer::body_add_break() %>%
+      officer::body_add_par(value = "Data density plots", style = "heading 2") %>%
+      officer::body_add_gg(plot, height=4) %>%
+      officer::body_add_par("Figure 1. Total record count over time per data domain")
 
     plot <- recordsCountPlot(as.data.frame(results$dataTablesResults$recordsPerPerson$result))
     doc<-doc %>%
-      body_add_gg(plot, height=4) %>%
-      body_add_par("Figure 2. Number of records per person over time per data domain")
+      officer::body_add_gg(plot, height=4) %>%
+      officer::body_add_par("Figure 2. Number of records per person over time per data domain")
 
     colnames(results$dataTablesResults$conceptsPerPerson$result) <- c("Domain", "Min", "P10", "P25", "MEDIAN", "P75", "P90", "Max")
-    doc<-doc %>% body_add_break() %>%
+    doc<-doc %>% officer::body_add_break() %>%
       officer::body_add_par(value = "Concepts per person", style = "heading 2") %>%
       officer::body_add_par("Table 2. Shows the number of records per person for all data domains") %>%
       my_body_add_table(value = results$dataTablesResults$conceptsPerPerson$result, style = "EHDEN") %>%
@@ -164,7 +164,7 @@ generateResultsDocument<- function(results, outputFolder, docTemplate="EHDEN", a
       my_body_add_table(value = vocabResults$mappingCompleteness$result, style = "EHDEN", alignment = c('l', rep('r',6))) %>%
       officer::body_add_par(" ") %>%
       officer::body_add_par(paste("Query executed in ",sprintf("%.2f", vocabResults$mappingCompleteness$duration),"secs")) %>%
-      body_add_break()
+      officer::body_add_break()
 
     ## add Drug Level Mappings
     doc<-doc %>%
@@ -207,7 +207,7 @@ generateResultsDocument<- function(results, outputFolder, docTemplate="EHDEN", a
   } else {
     doc<-doc %>%
     officer::body_add_par("Vocabulary checks have not been executed, runVocabularyChecks = FALSE?", style="Highlight") %>%
-    body_add_break()
+    officer::body_add_break()
   }
 
   doc<-doc %>%
@@ -218,7 +218,7 @@ generateResultsDocument<- function(results, outputFolder, docTemplate="EHDEN", a
 
   if (!is.null(results$dataTablesResults)) {
     #cdm source
-    t_cdmSource <- transpose(results$cdmSource)
+    t_cdmSource <- data.table::transpose(results$cdmSource)
     colnames(t_cdmSource) <- rownames(results$cdmSource)
     field <- colnames(results$cdmSource)
     t_cdmSource <- cbind(field, t_cdmSource)

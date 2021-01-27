@@ -68,7 +68,7 @@ my_body_add_table <- function (x, value, style = NULL, pos = "after", header = T
           first_column = FALSE, last_row = FALSE, last_column = FALSE,
           no_hband = FALSE, no_vband = TRUE, align = "left")
 {
-  pt <- prop_table(style = style, layout = table_layout(),
+  pt <- officer::prop_table(style = style, layout = table_layout(),
                    width = table_width(), stylenames = stylenames,
                    tcf = table_conditional_formatting(first_row = first_row,
                                                       first_column = first_column, last_row = last_row,
@@ -88,10 +88,10 @@ my_body_add_table <- function (x, value, style = NULL, pos = "after", header = T
     }
   }
 
-  bt <- block_table(x = value, header = header, properties = pt,
+  bt <- officer::block_table(x = value, header = header, properties = pt,
                     alignment = alignment)
-  xml_elt <- to_wml(bt, add_ns = TRUE, base_document = x)
-  body_add_xml(x = x, str = xml_elt, pos = pos)
+  xml_elt <- officer::to_wml(bt, add_ns = TRUE, base_document = x)
+  officer::body_add_xml(x = x, str = xml_elt, pos = pos)
 }
 
 
@@ -125,9 +125,9 @@ my_mapped_section <- function(x, data, table_number, domain, smallCellCount) {
 
 recordsCountPlot <- function(results){
   temp <- results %>%
-    rename(Date=X_CALENDAR_MONTH,Domain=SERIES_NAME, Count=Y_RECORD_COUNT) %>%
-    mutate(Date=parse_date_time(Date, "ym"))
-  plot <- ggplot(temp, aes(x = Date, y = Count)) + geom_line(aes(color = Domain))
+    dplyr::rename(Date=X_CALENDAR_MONTH,Domain=SERIES_NAME, Count=Y_RECORD_COUNT) %>%
+    dplyr::mutate(Date=lubridate::parse_date_time(Date, "ym"))
+  plot <- ggplot2::ggplot(temp, aes(x = Date, y = Count)) + geom_line(aes(color = Domain))
 }
 
 #' @export
