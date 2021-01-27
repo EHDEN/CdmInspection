@@ -73,7 +73,14 @@ user <- if (Sys.getenv("DB_USER") == "") NULL else Sys.getenv("DB_USER")
 password <- if (Sys.getenv("DB_PASSWORD") == "") NULL else Sys.getenv("DB_PASSWORD")
 server = Sys.getenv("DB_SERVER")
 port = Sys.getenv("DB_PORT")
-connectionString = Sys.getenv("CONNECTION_STRING")
+
+## connectionString(optional): the JDBC connection string is optional
+### If specified, the server, port fields are ignored. If user and password are not specified, they are assumed to already be included in the connection string.
+connectionString = if (Sys.getenv("CONNECTION_STRING") == "") NULL else Sys.getenv("CONNECTION_STRING")
+
+
+
+
 
 # User details
 authors <-"My Name" # used in the title page
@@ -84,21 +91,11 @@ databaseName <- "Medicare Claims Synthetic Public Use Files "
 databaseDescription <- "The CMS Linkable 2008–2010 Medicare DE-SynPUF originated from a disjoint (mutually exclusive from existing samples) 5% random sample of beneficiaries from the 100% Beneficiary Summary File for 2008. To exclude any overlap with the beneficiaries in the existing 5% CMS research sample, 3 the beneficiaries in that other sample were excluded, and a 5-in-95 random draw was made with the remaining 95% of beneficiaries. A variety of statistical disclosure limitation techniques were used to protect the confidentiality of Medicare beneficiaries in the CMS Linkable 2008–2010 Medicare DE-SynPUF. The DE-SynPUF was created by starting with an actual beneficiary as a “seed” for a synthetic beneficiary. Synthetic beneficiaries and their claims are based on actual seed beneficiaries. Disclosure is reduced through multiple deterministically or stochastically applied treatment mechanisms. First, hot decking based procedures are used to find donors for beneficiary-level variables and individual claims. Second, other synthetic processes are used to protect other elements of the data. Disclosure limitation methods used in the process include variable reduction, suppression, substitution, synthesis, date perturbation, and coarsening. Please refer to the CMS Linkable 2008–2010 Medicare Data Entrepreneurs’ Synthetic Public Use File (DE-SynPUF) User Manual for details regarding how DE-SynPUF was created"
 
 # *******************************************************
-
-
-connectionDetails <- DatabaseConnector::createConnectionDetails(dbms = dbms,
-                                                                server = server,
-                                                                user = user,
-                                                                password = password,
-                                                                port = port)
-
-# Azure connection
 connectionDetails <- DatabaseConnector::createConnectionDetails(dbms = dbms,
                                                                 server = server,
                                                                 user = user,
                                                                 password = password,
                                                                 connectionString = connectionString )
-#conn <- DatabaseConnector::connect(dbms = dbms,connectionDetails = connectionDetails)
 
 # For Oracle: define a schema that can be used to emulate temp tables:
 oracleTempSchema <- NULL

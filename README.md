@@ -6,7 +6,7 @@ The European Health Data and Evidence Network (EHDEN) project has multiple yearl
 
 Quality control of the mapping is clearly important and therefore a procedure has been developed called SME Inspection in which a certified SME performs a series of tests on the CDM and produces a report that is send to the EHDEN Team for review. The goal of the inspection report is to provide insight into the completeness, transparency and quality of the performed Extraction Transform, and Load (ETL) process and the readiness of the data partner to be onboarded in the EHDEN and OHDSI data networks and participate in research studies. If the SME that is performing the inspection was not involved in the ETL implementation we advise to use a two-stage inspection process. A first inspection report can be made to provide recommendations to the Data Partner on how to improve the ETL and processes, if necessary. Ideally, this includes a site visit of the SME after providing instructions on the content of the report. The Data Partner can share this draft report with EHDEN to obtain additional input. Once the improvements have been made the final report can be created by the SME and send to EHDEN for approval.  
 
-An example of an inspection report for the Synpuf database can be found here: TO BE ADDED.
+An example of an inspection report for the Synpuf database can be found here: [link](https://github.com/EHDEN/CdmInspection/blob/master/extras/SYNPUF-results.docx).
 
 The CdmInspection R Package is part of this SME Inspection procedure and performs the following checks on top of the required [Data Quality Dashboard](https://github.com/OHDSI/DataQualityDashboard) step:
 
@@ -83,7 +83,7 @@ CdmInspection is being developed in R Studio.
 
 ### Development status
 
-Under development by the EHDEN consortium do not use!
+Stable Release
 
 ## Acknowledgements
 - The European Health Data & Evidence Network has received funding from the Innovative Medicines Initiative 2 Joint Undertaking (JU) under grant agreement No 806968. The JU receives support from the European Union’s Horizon 2020 research 
