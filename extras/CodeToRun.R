@@ -59,7 +59,7 @@ Sys.setenv("R_REMOTES_NO_ERRORS_FROM_WARNINGS" = TRUE)
 #devtools::install_github("EHDEN/CdmInspection.R")
 
 # *******************************************************
-# SECTION 2: Running the package -------------------------------------------------------------------------------
+# SECTION 2: Set Local Details
 # *******************************************************
 library(CdmInspection)
 
@@ -73,44 +73,45 @@ user <- if (Sys.getenv("DB_USER") == "") NULL else Sys.getenv("DB_USER")
 password <- if (Sys.getenv("DB_PASSWORD") == "") NULL else Sys.getenv("DB_PASSWORD")
 server = Sys.getenv("DB_SERVER")
 port = Sys.getenv("DB_PORT")
-connectionString = Sys.getenv("CONNECTION_STRING")
 
-# User details
-authors <-"My Name" # used in the title page
+# connectionString is optional
+# if specified, the server, port fields are ignored. If user and password are not specified, they are assumed to already be included in the connection string.
+connectionString = if (Sys.getenv("CONNECTION_STRING") == "") NULL else Sys.getenv("CONNECTION_STRING")
+
+# Author details
+authors <-"<your_name>" # used on the title page
 
 # Details specific to the database:
-databaseId <- "SYNPUF"
-databaseName <- "Medicare Claims Synthetic Public Use Files "
-databaseDescription <- "The CMS Linkable 2008–2010 Medicare DE-SynPUF originated from a disjoint (mutually exclusive from existing samples) 5% random sample of beneficiaries from the 100% Beneficiary Summary File for 2008. To exclude any overlap with the beneficiaries in the existing 5% CMS research sample, 3 the beneficiaries in that other sample were excluded, and a 5-in-95 random draw was made with the remaining 95% of beneficiaries. A variety of statistical disclosure limitation techniques were used to protect the confidentiality of Medicare beneficiaries in the CMS Linkable 2008–2010 Medicare DE-SynPUF. The DE-SynPUF was created by starting with an actual beneficiary as a “seed” for a synthetic beneficiary. Synthetic beneficiaries and their claims are based on actual seed beneficiaries. Disclosure is reduced through multiple deterministically or stochastically applied treatment mechanisms. First, hot decking based procedures are used to find donors for beneficiary-level variables and individual claims. Second, other synthetic processes are used to protect other elements of the data. Disclosure limitation methods used in the process include variable reduction, suppression, substitution, synthesis, date perturbation, and coarsening. Please refer to the CMS Linkable 2008–2010 Medicare Data Entrepreneurs’ Synthetic Public Use File (DE-SynPUF) User Manual for details regarding how DE-SynPUF was created"
-
-# *******************************************************
-
-
-connectionDetails <- DatabaseConnector::createConnectionDetails(dbms = dbms,
-                                                                server = server,
-                                                                user = user,
-                                                                password = password,
-                                                                port = port)
-
-# If connectionString is provided
-# connectionDetails <- DatabaseConnector::createConnectionDetails(dbms = dbms,
-#                                                                server = server,
-#                                                                user = user,
-#                                                                password = password,
-#                                                                connectionString = connectionString )
+databaseId <- "<your_id>" #for example SYNPUF (this will be used as results sub-folder)
+databaseName <- "<your_full_databasename>"
+databaseDescription <- "<your_description>"
 
 # For Oracle: define a schema that can be used to emulate temp tables:
 oracleTempSchema <- NULL
 
 # Details for connecting to the CDM and storing the results
 outputFolder <- file.path(getwd(), "results",databaseId)
-cdmDatabaseSchema <- "synpuf"
-resultsDatabaseSchema <- "prijnbeek" #Make sure the Achilles results are in this schema!
-vocabDatabaseSchema = "synpuf"
+cdmDatabaseSchema <- "<your_cdm_schema>"
+resultsDatabaseSchema <- "<your_results_schema>" #Make sure the Achilles results are in this schema!
+vocabDatabaseSchema <- "<your_vocab_schema>"
 
+# Url to check the version of your local Atlas
+baseUrl <- "<your_baseUrl>" # example: "http://atlas-demo.ohdsi.org/WebAPI"
+
+# All results smaller than this value are removed from the results.
 smallCellCount <- 5
+
 verboseMode <- TRUE
 
+# *******************************************************
+# SECTION 3: Run the package
+# *******************************************************
+
+connectionDetails <- DatabaseConnector::createConnectionDetails(dbms = dbms,
+                                                                server = server,
+                                                                user = user,
+                                                                password = password,
+                                                                connectionString = connectionString)
 
 results<-cdmInspection(connectionDetails,
                 cdmDatabaseSchema = cdmDatabaseSchema,
@@ -123,7 +124,7 @@ results<-cdmInspection(connectionDetails,
                 runPerformanceChecks = TRUE,
                 runWebAPIChecks = TRUE,
                 smallCellCount = smallCellCount,
-                baseUrl = "http://atlas-demo.ohdsi.org/WebAPI",
+                baseUrl = baseUrl,
                 sqlOnly = FALSE,
                 outputFolder = outputFolder,
                 verboseMode = verboseMode)

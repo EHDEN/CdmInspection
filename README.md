@@ -47,9 +47,15 @@ Installation
 
 1. See the instructions [here](https://ohdsi.github.io/Hades/rSetup.html) for configuring your R environment, including Java.
 
-2. In R, use the following commands to download and install CdmInspection:
+2. Make sure RohdsiWebApi is installed
 
-  ```r
+```r
+  remotes::install_github("OHDSI/ROhdsiWebApi")
+```
+
+3. In R, use the following commands to download and install CdmInspection:
+
+```r
   remotes::install_github("EHDEN/CdmInspection")
 ```
 
