@@ -35,9 +35,9 @@
 #'                                         On SQL Server, this should specifiy both the database and the schema, so for example, on SQL Server, 'cdm_results.dbo'.
 #' @param vocabDatabaseSchema		           String name of database schema that contains OMOP Vocabulary. Default is cdmDatabaseSchema. On SQL Server, this should specifiy both the database and the schema, so for example 'results.dbo'.
 #' @param oracleTempSchema                 For Oracle only: the name of the database schema where you want all temporary tables to be managed. Requires create/insert permissions to this database.
-#' @param sourceName		                   String name of the data source name. If blank, CDM_SOURCE table will be queried to try to obtain this.
+#' @param databaseName		                 String name of the database name. If blank, CDM_SOURCE table will be queried to try to obtain this.
 #' @param smallCellCount                   To avoid patient identifiability, cells with small counts (<= smallCellCount) are deleted. Set to NULL if you don't want any deletions.
-#' @param runSchemaChecks                 Boolean to determine if CDM Schema Validation should be run. Default = TRUE
+#' @param runSchemaChecks                  Boolean to determine if CDM Schema Validation should be run. Default = TRUE
 #' @param runVocabularyChecks              Boolean to determine if vocabulary checks need to be run. Default = TRUE
 #' @param runWebAPIChecks                  Boolean to determine if WebAPI checks need to be run. Default = TRUE
 #' @param baseUrl                          WebAPI url, example: http://server.org:80/WebAPI
@@ -53,7 +53,7 @@ cdmInspection <- function (connectionDetails,
                              scratchDatabaseSchema = resultsDatabaseSchema,
                              vocabDatabaseSchema = cdmDatabaseSchema,
                              oracleTempSchema = resultsDatabaseSchema,
-                             sourceName = "",
+                             databaseName = "",
                              analysisIds = "",
                              createTable = TRUE,
                              smallCellCount = 5,
@@ -106,12 +106,12 @@ cdmInspection <- function (connectionDetails,
 
     # Get source name if none provided ----------------------------------------------------------------------------------------------
 
-    if (missing(sourceName) & !sqlOnly) {
-      sourceName <- .getSourceName(connectionDetails, cdmDatabaseSchema)
+    if (missing(databaseName) & !sqlOnly) {
+      databaseName <- .getDatabaseName(connectionDetails, cdmDatabaseSchema)
     }
 
     # Logging
-    ParallelLogger::logInfo(paste0("CDM Inspection of database ",sourceName, " started (cdm_version=",cdmVersion,")"))
+    ParallelLogger::logInfo(paste0("CDM Inspection of database ",databaseName, " started (cdm_version=",cdmVersion,")"))
 
     # run all the checks ------------------------------------------------------------------------------------------------------------
     dataTablesResults <- NULL
@@ -236,13 +236,13 @@ cdmInspection <- function (connectionDetails,
 
 }
 
-.getSourceName <- function(connectionDetails,
+.getDatabaseName <- function(connectionDetails,
                            cdmDatabaseSchema) {
   sql <- SqlRender::render(sql = "select cdm_source_name from @cdmDatabaseSchema.cdm_source",
                            cdmDatabaseSchema = cdmDatabaseSchema)
   sql <- SqlRender::translate(sql = sql, targetDialect = connectionDetails$dbms)
   connection <- DatabaseConnector::connect(connectionDetails = connectionDetails)
-  sourceName <- tryCatch({
+  databaseName <- tryCatch({
     s <- DatabaseConnector::querySql(connection = connection, sql = sql)
     s[1,]
   }, error = function (e) {
@@ -251,7 +251,7 @@ cdmInspection <- function (connectionDetails,
     DatabaseConnector::disconnect(connection = connection)
     rm(connection)
   })
-  sourceName
+  databaseName
 }
 
 .getCdmVersion <- function(connectionDetails,
