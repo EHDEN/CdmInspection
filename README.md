@@ -73,7 +73,7 @@ PDF versions of the documentation are available:
 
 Support
 =======
-* We use the <a href="https://github.com/EHDEN/CdmInspectionm/issues">GitHub issue tracker</a> for all bugs/issues/enhancements/questions/feedback
+* We use the <a href="https://github.com/EHDEN/CdmInspection/issues">GitHub issue tracker</a> for all bugs/issues/enhancements/questions/feedback
 
 Contributing
 ============
