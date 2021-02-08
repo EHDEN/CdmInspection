@@ -118,8 +118,8 @@ generateResultsDocument<- function(results, outputFolder, docTemplate="EHDEN", a
 
     colnames(results$dataTablesResults$conceptsPerPerson$result) <- c("Domain", "Min", "P10", "P25", "MEDIAN", "P75", "P90", "Max")
     doc<-doc %>% officer::body_add_break() %>%
-      officer::body_add_par(value = "Concepts per person", style = "heading 2") %>%
-      officer::body_add_par("Table 2. Shows the number of records per person for all data domains") %>%
+      officer::body_add_par(value = "Distinct concepts per person", style = "heading 2") %>%
+      officer::body_add_par("Table 2. Shows the number of distinct concepts per person for all data domains") %>%
       my_body_add_table(value = results$dataTablesResults$conceptsPerPerson$result, style = "EHDEN") %>%
       officer::body_add_par(" ")
 
