@@ -37,7 +37,7 @@
 #' @param oracleTempSchema                 For Oracle only: the name of the database schema where you want all temporary tables to be managed. Requires create/insert permissions to this database.
 #' @param sourceName		                   String name of the data source name. If blank, CDM_SOURCE table will be queried to try to obtain this.
 #' @param smallCellCount                   To avoid patient identifiability, cells with small counts (<= smallCellCount) are deleted. Set to NULL if you don't want any deletions.
-#' @param runSchemaChecks                 Boolean to determine if CDM Schema Validation should be run. Default = TRUE
+#' @param runSchemaChecks                  Boolean to determine if CDM Schema Validation should be run. Default = TRUE
 #' @param runVocabularyChecks              Boolean to determine if vocabulary checks need to be run. Default = TRUE
 #' @param runWebAPIChecks                  Boolean to determine if WebAPI checks need to be run. Default = TRUE
 #' @param baseUrl                          WebAPI url, example: http://server.org:80/WebAPI
@@ -206,7 +206,7 @@ cdmInspection <- function (connectionDetails,
 
     results<-list(executionDate = date(),
                   executionDuration = as.numeric(difftime(Sys.time(),start_time), units="secs"),
-                  databaseName = databaseName,
+                  databaseName = sourceName,
                   databaseId = databaseId,
                   databaseDescription = databaseDescription,
                   vocabularyResults = vocabularyResults,
