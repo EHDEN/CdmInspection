@@ -10,6 +10,7 @@ vocabularyChecks(
   resultsDatabaseSchema = cdmDatabaseSchema,
   vocabDatabaseSchema = cdmDatabaseSchema,
   oracleTempSchema = resultsDatabaseSchema,
+  smallCellCount = 5,
   sourceName = "",
   sqlOnly = FALSE,
   outputFolder = "output",
