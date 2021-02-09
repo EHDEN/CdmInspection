@@ -31,11 +31,13 @@
 #' @param connectionDetails                An R object of type \code{connectionDetails} created using the function \code{createConnectionDetails} in the \code{DatabaseConnector} package.
 #' @param cdmDatabaseSchema    	           Fully qualified name of database schema that contains OMOP CDM schema.
 #'                                         On SQL Server, this should specifiy both the database and the schema, so for example, on SQL Server, 'cdm_instance.dbo'.
+#' @param databaseId                       ID of your database, this will be used as subfolder for the results.
 #' @param resultsDatabaseSchema		         Fully qualified name of database schema that we can write final results to. Default is cdmDatabaseSchema.
 #'                                         On SQL Server, this should specifiy both the database and the schema, so for example, on SQL Server, 'cdm_results.dbo'.
 #' @param vocabDatabaseSchema		           String name of database schema that contains OMOP Vocabulary. Default is cdmDatabaseSchema. On SQL Server, this should specifiy both the database and the schema, so for example 'results.dbo'.
 #' @param oracleTempSchema                 For Oracle only: the name of the database schema where you want all temporary tables to be managed. Requires create/insert permissions to this database.
 #' @param databaseName		                 String name of the database name. If blank, CDM_SOURCE table will be queried to try to obtain this.
+#' @param databaseDescription              Provide a short description of the database.
 #' @param smallCellCount                   To avoid patient identifiability, cells with small counts (<= smallCellCount) are deleted. Set to NULL if you don't want any deletions.
 #' @param runSchemaChecks                  Boolean to determine if CDM Schema Validation should be run. Default = TRUE
 #' @param runVocabularyChecks              Boolean to determine if vocabulary checks need to be run. Default = TRUE
@@ -49,11 +51,13 @@
 #' @export
 cdmInspection <- function (connectionDetails,
                              cdmDatabaseSchema,
+                             databaseId,
                              resultsDatabaseSchema = cdmDatabaseSchema,
                              scratchDatabaseSchema = resultsDatabaseSchema,
                              vocabDatabaseSchema = cdmDatabaseSchema,
                              oracleTempSchema = resultsDatabaseSchema,
                              databaseName = "",
+                             databaseDescription = "",
                              analysisIds = "",
                              createTable = TRUE,
                              smallCellCount = 5,
