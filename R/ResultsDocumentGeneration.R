@@ -1,7 +1,18 @@
-library(officer)
-library(magrittr)
 
-
+#' Generates the Results Document
+#'
+#' @description
+#' \code{generateResultsDocument} creates a word document with results based on a template
+#' @param results             Results object from \code{cdmInspection}
+#'
+#' @param outputFolder        Folder to store the results
+#' @param docTemplate         Name of the document template (EHDEN)
+#' @param authors             List of author names to be added in the document
+#' @param databaseDescription Description of the database
+#' @param databaseName        Name of the database
+#' @param databaseId          Id of the database
+#' @param smallCellCount      Date with less than this number of patients are removed
+#' @param silent              Flag to not create output in the terminal (default = FALSE)
 #' @export
 generateResultsDocument<- function(results, outputFolder, docTemplate="EHDEN", authors = "Author Names", databaseDescription, databaseName, databaseId,smallCellCount,silent=FALSE) {
 
@@ -130,7 +141,7 @@ generateResultsDocument<- function(results, outputFolder, docTemplate="EHDEN", a
   doc<-doc %>%
     officer::body_add_par(value = "Vocabulary Mapping", style = "heading 1") %>%
     officer::body_add_par(value = "Describe how the vocabulary mapping process was implemented, and what the quality control mechanism are.", style = "Highlight") %>%
-    officer::body_add_par(value = "All the custom mappings need to be shared with the report as Excel file or as source_to_concept map, to allow for random checks by EHDEN’s vocabulary team. Ideally these lists are sorted descending by source code frequency.", style = "Highlight")
+    officer::body_add_par(value = "All the custom mappings need to be shared with the report as Excel file or as source_to_concept map, to allow for random checks. Ideally these lists are sorted descending by source code frequency.", style = "Highlight")
 
   vocabResults <-results$vocabularyResults
   if (!is.null(vocabResults)) {
