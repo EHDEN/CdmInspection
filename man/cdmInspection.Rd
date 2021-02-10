@@ -12,8 +12,9 @@ cdmInspection(
   vocabDatabaseSchema = cdmDatabaseSchema,
   oracleTempSchema = resultsDatabaseSchema,
   databaseName = "",
+  databaseId = "",
+  databaseDescription = "",
   analysisIds = "",
-  createTable = TRUE,
   smallCellCount = 5,
   runVocabularyChecks = TRUE,
   runDataTablesChecks = TRUE,
@@ -34,15 +35,26 @@ On SQL Server, this should specifiy both the database and the schema, so for exa
 \item{resultsDatabaseSchema}{Fully qualified name of database schema that we can write final results to. Default is cdmDatabaseSchema.
 On SQL Server, this should specifiy both the database and the schema, so for example, on SQL Server, 'cdm_results.dbo'.}
 
+\item{scratchDatabaseSchema}{Fully qualified name of database schema that we can write temporary tables to. Default is resultsDatabaseSchema.
+On SQL Server, this should specifiy both the database and the schema, so for example, on SQL Server, 'cdm_scratch.dbo'.}
+
 \item{vocabDatabaseSchema}{String name of database schema that contains OMOP Vocabulary. Default is cdmDatabaseSchema. On SQL Server, this should specifiy both the database and the schema, so for example 'results.dbo'.}
 
 \item{oracleTempSchema}{For Oracle only: the name of the database schema where you want all temporary tables to be managed. Requires create/insert permissions to this database.}
 
 \item{databaseName}{String name of the database name. If blank, CDM_SOURCE table will be queried to try to obtain this.}
 
+\item{databaseId}{ID of your database, this will be used as subfolder for the results.}
+
+\item{databaseDescription}{Provide a short description of the database.}
+
+\item{analysisIds}{Analyses to run}
+
 \item{smallCellCount}{To avoid patient identifiability, cells with small counts (<= smallCellCount) are deleted. Set to NULL if you don't want any deletions.}
 
 \item{runVocabularyChecks}{Boolean to determine if vocabulary checks need to be run. Default = TRUE}
+
+\item{runDataTablesChecks}{Boolean to determine if table checks need to be run. Default = TRUE}
 
 \item{runPerformanceChecks}{Boolean to determine if performance checks need to be run. Default = TRUE}
 
@@ -55,8 +67,6 @@ On SQL Server, this should specifiy both the database and the schema, so for exa
 \item{outputFolder}{Path to store logs and SQL files}
 
 \item{verboseMode}{Boolean to determine if the console will show all execution steps. Default = TRUE}
-
-\item{runSchemaChecks}{Boolean to determine if CDM Schema Validation should be run. Default = TRUE}
 }
 \value{
 \preformatted{                            An object of type \code{achillesResults} containing details for connecting to the database containing the results

@@ -130,6 +130,12 @@ recordsCountPlot <- function(results){
   plot <- ggplot2::ggplot(temp, aes(x = Date, y = Count)) + geom_line(aes(color = Domain))
 }
 
+#' Bundles the results in a zip file
+#'
+#' @description
+#' \code{bundleResults} creates a zip file with results in the outputFolder
+#' @param outputFolder  Folder to store the results
+#' @param databaseId    ID of your database, this will be used as subfolder for the results.
 #' @export
 bundleResults <- function(outputFolder, databaseId) {
   zipName <- file.path(outputFolder, paste0("Results_Inspection_", databaseId, ".zip"))

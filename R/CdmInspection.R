@@ -33,12 +33,17 @@
 #'                                         On SQL Server, this should specifiy both the database and the schema, so for example, on SQL Server, 'cdm_instance.dbo'.
 #' @param resultsDatabaseSchema		         Fully qualified name of database schema that we can write final results to. Default is cdmDatabaseSchema.
 #'                                         On SQL Server, this should specifiy both the database and the schema, so for example, on SQL Server, 'cdm_results.dbo'.
+#' @param scratchDatabaseSchema            Fully qualified name of database schema that we can write temporary tables to. Default is resultsDatabaseSchema.
+#'                                         On SQL Server, this should specifiy both the database and the schema, so for example, on SQL Server, 'cdm_scratch.dbo'.
 #' @param vocabDatabaseSchema		           String name of database schema that contains OMOP Vocabulary. Default is cdmDatabaseSchema. On SQL Server, this should specifiy both the database and the schema, so for example 'results.dbo'.
 #' @param oracleTempSchema                 For Oracle only: the name of the database schema where you want all temporary tables to be managed. Requires create/insert permissions to this database.
+#' @param databaseId                       ID of your database, this will be used as subfolder for the results.
 #' @param databaseName		                 String name of the database name. If blank, CDM_SOURCE table will be queried to try to obtain this.
+#' @param databaseDescription              Provide a short description of the database.
+#' @param analysisIds                      Analyses to run
 #' @param smallCellCount                   To avoid patient identifiability, cells with small counts (<= smallCellCount) are deleted. Set to NULL if you don't want any deletions.
-#' @param runSchemaChecks                  Boolean to determine if CDM Schema Validation should be run. Default = TRUE
 #' @param runVocabularyChecks              Boolean to determine if vocabulary checks need to be run. Default = TRUE
+#' @param runDataTablesChecks              Boolean to determine if table checks need to be run. Default = TRUE
 #' @param runWebAPIChecks                  Boolean to determine if WebAPI checks need to be run. Default = TRUE
 #' @param baseUrl                          WebAPI url, example: http://server.org:80/WebAPI
 #' @param runPerformanceChecks             Boolean to determine if performance checks need to be run. Default = TRUE
@@ -54,8 +59,9 @@ cdmInspection <- function (connectionDetails,
                              vocabDatabaseSchema = cdmDatabaseSchema,
                              oracleTempSchema = resultsDatabaseSchema,
                              databaseName = "",
+                             databaseId = "",
+                             databaseDescription = "",
                              analysisIds = "",
-                             createTable = TRUE,
                              smallCellCount = 5,
                              runVocabularyChecks = TRUE,
                              runDataTablesChecks = TRUE,
@@ -124,7 +130,7 @@ cdmInspection <- function (connectionDetails,
                                     resultsDatabaseSchema = resultsDatabaseSchema,
                                     outputFolder = outputFolder,
                                     sqlOnly = sqlOnly)
-      cdmSource<- .getCdmSource(connectionDetails, cdmDatabaseSchema,sqlOnly)
+      cdmSource<- .getCdmSource(connectionDetails, cdmDatabaseSchema,sqlOnly,outputFolder)
       temp <- cdmSource
       temp$CDM_RELEASE_DATE <- as.character(cdmSource$CDM_RELEASE_DATE)
       temp$SOURCE_RELEASE_DATE <- as.character(cdmSource$SOURCE_RELEASE_DATE)
@@ -140,7 +146,7 @@ cdmInspection <- function (connectionDetails,
                        vocabDatabaseSchema = vocabDatabaseSchema,
                        resultsDatabaseSchema = resultsDatabaseSchema,
                        smallCellCount = smallCellCount,
-                       oracleTempSchema = roracleTempSchema,
+                       oracleTempSchema = oracleTempSchema,
                        sqlOnly = sqlOnly,
                        outputFolder = outputFolder)
     }
@@ -175,7 +181,7 @@ cdmInspection <- function (connectionDetails,
       performanceResults <- performanceChecks(connectionDetails = connectionDetails,
                         cdmDatabaseSchema = cdmDatabaseSchema,
                         resultsDatabaseSchema = resultsDatabaseSchema,
-                        oracleTempSchema = roracleTempSchema,
+                        oracleTempSchema = oracleTempSchema,
                         sqlOnly = sqlOnly,
                         outputFolder = outputFolder)
 
@@ -274,7 +280,7 @@ cdmInspection <- function (connectionDetails,
 }
 
 .getCdmSource <- function(connectionDetails,
-                           cdmDatabaseSchema,sqlOnly) {
+                           cdmDatabaseSchema,sqlOnly,outputFolder) {
   sql <- SqlRender::loadRenderTranslateSql(sqlFilename = file.path("checks","get_cdm_source_table.sql"),
                                            packageName = "CdmInspection",
                                            dbms = connectionDetails$dbms,
@@ -296,67 +302,4 @@ cdmInspection <- function (connectionDetails,
     })
   }
   cdmSource
-}
-
-#' Validate the CDM schema
-#'
-#' @details
-#' Runs a validation script to ensure the CDM is valid based on v5.x (NOT USED CURRENTLY)
-#'
-#' @param connectionDetails                An R object of type \code{connectionDetails} created using the function \code{createConnectionDetails} in the \code{DatabaseConnector} package.
-#' @param cdmDatabaseSchema    	           string name of database schema that contains OMOP CDM. On SQL Server, this should specifiy both the database and the schema, so for example 'cdm_instance.dbo'.
-#' @param resultsDatabaseSchema		         Fully qualified name of database schema that the cohort table is written to. Default is cdmDatabaseSchema.
-#'                                         On SQL Server, this should specifiy both the database and the schema, so for example, on SQL Server, 'cdm_results.dbo'.
-#' @param cdmVersion                       Define the OMOP CDM version used:  currently supports v5 and above. Use major release number or minor number only (e.g. 5, 5.3)
-#' @param runCostAnalysis                  Boolean to determine if cost analysis should be run. Note: only works on CDM v5 and v5.1.0+ style cost tables.
-#' @param outputFolder                     Path to store logs and SQL files
-#' @param sqlOnly                          TRUE = just generate SQL files, don't actually run, FALSE = run Achilles
-#' @param verboseMode                      Boolean to determine if the console will show all execution steps. Default = TRUE
-#'
-validateSchema <- function(connectionDetails,
-                           cdmDatabaseSchema,
-                           resultsDatabaseSchema = cdmDatabaseSchema,
-                           cdmVersion,
-                           runCostAnalysis,
-                           outputFolder,
-                           sqlOnly = FALSE,
-                           verboseMode = TRUE) {
-
-
-  majorVersions <- lapply(c("5", "5.1", "5.2", "5.3"), function(majorVersion) {
-    if (compareVersion(a = as.character(cdmVersion), b = majorVersion) >= 0) {
-      majorVersion
-    } else {
-      0
-    }
-  })
-
-  cdmVersion <- max(unlist(majorVersions))
-
-  sql <- SqlRender::loadRenderTranslateSql(sqlFilename = file.path("checks","validate_schema.sql"),
-                                           packageName = "CdmInspection",
-                                           dbms = connectionDetails$dbms,
-                                           warnOnMissingParameters = FALSE,
-                                           cdmDatabaseSchema = cdmDatabaseSchema,
-                                           resultsDatabaseSchema = resultsDatabaseSchema,
-                                           runCostAnalysis = FALSE,
-                                           cdmVersion = cdmVersion)
-  schemaValid <- FALSE
-  if (sqlOnly) {
-    SqlRender::writeSql(sql = sql, targetFile = file.path(outputFolder, "ValidateSchema.sql"))
-  } else {
-    tryCatch({
-      connection <- DatabaseConnector::connect(connectionDetails = connectionDetails)
-      tables <- DatabaseConnector::querySql(connection = connection, sql = sql, errorReportFile = file.path(outputFolder, "validateSchemaError.txt"))
-      ParallelLogger::logInfo("CDM Schema is valid")
-      schemaValid <- TRUE
-    },
-    error = function (e) {
-      ParallelLogger::logError(paste0("The CDM Schema is not valid or a table does not contain data to allow schema check, see ",file.path(outputFolder,"validateSchemaError.txt")," for more details"))
-    }, finally = {
-      DatabaseConnector::disconnect(connection = connection)
-      rm(connection)
-    })
-  }
-  return(schemaValid)
 }

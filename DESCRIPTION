@@ -1,13 +1,15 @@
 Package: CdmInspection
 Title: R Package to support quality control inspection of an OMOP-CDM instance
-Version: 1.0.3
+Version: 1.0.4
 Authors@R: 
     person(given = "Peter",
            family = "Rijnbeek",
            role = c("aut", "cre"),
            email = "p.rijnbeek@erasmusmc.nl",
            comment = c(ORCID = "https://orcid.org/0000-0003-0621-1979"))
-Description: The CdmInspection R Package performs additional checks on top of the Data Quality Dashboard.
+Description: The goal this R Package is to generate a report to provide insight into the completeness, 
+             transparency and quality of the performed Extraction Transform, and Load (ETL) process and the readiness of 
+             the data partner to be onboarded in the data network and participate in research studies.
 License: Apache License 2.0
 VignetteBuilder: knitr
 URL: https://github.com/EHDEN/CdmInspection
@@ -19,15 +21,19 @@ RoxygenNote: 7.1.1
 Depends:     R (>= 3.5.0),
     DatabaseConnector (>= 3.0.0),
     ROhdsiWebApi (>= 1.1.2),
+    ParallelLogger,
+    SqlRender
+Imports: parallel,
+    benchmarkme,
+    prettyunits,
+    magrittr,
+    tools,
     dplyr,
     officer,
     data.table,
     flextable,
     lubridate,
-    ggplot2
-Imports: parallel,
-         benchmarkme,
-         prettyunits,
-         magrittr,
-         tools
+    ggplot2,
+    knitr,
+    devtools
          
