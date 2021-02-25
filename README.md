@@ -79,6 +79,8 @@ Contributing
 ============
 This package is maintained by the EHDEN consortium as part of its quality control procedures. Additions are welcome through pull requests. We suggest to first create an issue and discuss with the maintainer before implementing additional functionality.
 
+The roadmap of this tool can be found [here](https://github.com/EHDEN/CdmInspection/projects/1)
+
 License
 =======
 CdmInspection is licensed under Apache License 2.0
