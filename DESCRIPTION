@@ -1,6 +1,6 @@
 Package: CdmInspection
 Title: R Package to support quality control inspection of an OMOP-CDM instance
-Version: 1.0.3
+Version: 1.0.4
 Authors@R: 
     person(given = "Peter",
            family = "Rijnbeek",
@@ -36,4 +36,3 @@ Imports: parallel,
     ggplot2,
     knitr,
     devtools
-         
