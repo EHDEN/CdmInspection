@@ -6,5 +6,6 @@ select concept_class_id as "Class",
        count_big(distinct drug_source_value) as "#Source Codes"
 from @cdmDatabaseSchema.drug_exposure
 join @vocabDatabaseSchema.concept on drug_concept_id=concept_id
+where concept.domain_id = 'Drug'
 group by concept_class_id
 order by "#Source Codes" DESC
