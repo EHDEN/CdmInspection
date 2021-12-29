@@ -82,7 +82,7 @@ generateResultsDocument<- function(results, outputFolder, docTemplate="EHDEN", a
 
     doc<-doc %>% officer::body_add_par(value = "SME Role", style = "heading 2") %>%
 
-    officer::body_add_par(value = "Describe the involvement of the SME in the ETL Delopment process",style="Highlight") %>%
+    officer::body_add_par(value = "Describe the involvement of the SME in the ETL Development process",style="Highlight") %>%
     officer::body_add_break()
 
 
@@ -90,7 +90,7 @@ generateResultsDocument<- function(results, outputFolder, docTemplate="EHDEN", a
 
     doc<-doc %>%
       officer::body_add_par(value = "ETL Development General", style = "heading 1") %>%
-      officer::body_add_par(paste0("This section decribes the ETL development steps and discusses the quality control steps performed by the SME")) %>%
+      officer::body_add_par(paste0("This section describes the ETL development steps and discusses the quality control steps performed by the SME")) %>%
       officer::body_add_par(value = "ETL Documentation", style = "heading 2") %>%
       officer::body_add_par("Perform the following checks and discuss the findings here:", style="Highlight") %>%
 
