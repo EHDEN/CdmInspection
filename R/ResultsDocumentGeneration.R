@@ -1,4 +1,9 @@
-
+# @file ResultsDocumentGeneration
+#
+# Copyright 2020 European Health Data and Evidence Network (EHDEN)
+#
+# This file is part of CdmInspection
+#
 #' Generates the Results Document
 #'
 #' @description

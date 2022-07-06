@@ -1,8 +1,8 @@
-# @file CdmInspection
+# @file VocabularyChecks
 #
 # Copyright 2020 European Health Data and Evidence Network (EHDEN)
 #
-# This file is part of CatalogueExport
+# This file is part of CdmInspection
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
