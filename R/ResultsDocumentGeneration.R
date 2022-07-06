@@ -258,10 +258,10 @@ generateResultsDocument<- function(results, outputFolder, docTemplate="EHDEN", a
     doc<-doc %>%
       officer::body_add_par(value = "System Information", style = "heading 2") %>%
       officer::body_add_par(paste0("Installed R version: ",results$sys_details$r_version$version.string)) %>%
-      officer::body_add_par(paste0("System CPU vendor: ",results$sys_details$cpu$vendor_id)) %>%
-      officer::body_add_par(paste0("System CPU model: ",results$sys_details$cpu$model_name)) %>%
-      officer::body_add_par(paste0("System CPU number of cores: ",results$sys_details$cpu$no_of_cores)) %>%
-      officer::body_add_par(paste0("System RAM: ",prettyunits::pretty_bytes(as.numeric(results$sys_details$ram)))) %>%
+      officer::body_add_par(paste0("System CPU vendor: ",results$sys_details$cpu$vendor_id, collapse =", ")) %>%
+      officer::body_add_par(paste0("System CPU model: ",results$sys_details$cpu$model_name, collapse =", ")) %>%
+      officer::body_add_par(paste0("System CPU number of cores: ",results$sys_details$cpu$no_of_cores, collapse =", ")) %>%
+      officer::body_add_par(paste0("System RAM: ",prettyunits::pretty_bytes(as.numeric(results$sys_details$ram)), collapse =", ")) %>%
       officer::body_add_par(paste0("DBMS: ",results$dms)) %>%
       officer::body_add_par(paste0("WebAPI version: ",results$webAPIversion)) %>%
       officer::body_add_par(" ")
