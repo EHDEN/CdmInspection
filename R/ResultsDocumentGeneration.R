@@ -199,22 +199,24 @@ generateResultsDocument<- function(results, outputFolder, docTemplate="EHDEN", a
     my_unmapped_section(doc, vocabResults$unmappedObservations, 10, "observations",smallCellCount)
     my_unmapped_section(doc, vocabResults$unmappedProcedures, 11, "procedures", smallCellCount)
     my_unmapped_section(doc, vocabResults$unmappedDevices, 12, "devices", smallCellCount)
+    my_unmapped_section(doc, vocabResults$unmappedVisits, 13, "visits", smallCellCount)
 
     ## add top 25 mapped codes
     doc<-doc %>%
       officer::body_add_par(value = "Mapped Codes", style = "heading 2")
-    my_mapped_section(doc, vocabResults$mappedDrugs, 13, "drugs", smallCellCount)
-    my_mapped_section(doc, vocabResults$mappedConditions, 14, "conditions", smallCellCount)
-    my_mapped_section(doc, vocabResults$mappedMeasurements, 15, "measurements", smallCellCount)
-    my_mapped_section(doc, vocabResults$mappedObservations, 16, "observations", smallCellCount)
-    my_mapped_section(doc, vocabResults$mappedProcedures, 17, "procedures", smallCellCount)
-    my_mapped_section(doc, vocabResults$mappedDevices, 18, "devices", smallCellCount)
+    my_mapped_section(doc, vocabResults$mappedDrugs, 14, "drugs", smallCellCount)
+    my_mapped_section(doc, vocabResults$mappedConditions, 15, "conditions", smallCellCount)
+    my_mapped_section(doc, vocabResults$mappedMeasurements, 16, "measurements", smallCellCount)
+    my_mapped_section(doc, vocabResults$mappedObservations, 17, "observations", smallCellCount)
+    my_mapped_section(doc, vocabResults$mappedProcedures, 18, "procedures", smallCellCount)
+    my_mapped_section(doc, vocabResults$mappedDevices, 19, "devices", smallCellCount)
+    my_mapped_section(doc, vocabResults$mappedVisits, 20, "visits", smallCellCount)
 
     ## add source_to_concept_map breakdown
     doc<-doc %>%
       officer::body_add_par(value = "Source to concept map", style = "heading 2") %>%
       officer::body_add_par("If you did not use the source_to_concept_map table in the ETL the table below will be empty. In that case provide your custom mappings in an Excel file.", style="Highlight") %>%
-      officer::body_add_par("Table 19. Source to concept map breakdown") %>%
+      officer::body_add_par("Table 21. Source to concept map breakdown") %>%
       my_body_add_table(value = vocabResults$sourceConceptFrequency$result, style = "EHDEN") %>%
       officer::body_add_par(" ") %>%
       officer::body_add_par(paste("Query executed in ",sprintf("%.2f", vocabResults$sourceConceptFrequency$duration),"secs")) %>%
@@ -240,7 +242,7 @@ generateResultsDocument<- function(results, outputFolder, docTemplate="EHDEN", a
     t_cdmSource <- cbind(field, t_cdmSource)
     doc<-doc %>%
       officer::body_add_par(value = "CDM Source Table", style = "heading 2") %>%
-      officer::body_add_par("Table 20. cdm_source table content") %>%
+      officer::body_add_par("Table 22. cdm_source table content") %>%
       my_body_add_table(value =t_cdmSource, style = "EHDEN")
   }
 
@@ -248,7 +250,7 @@ generateResultsDocument<- function(results, outputFolder, docTemplate="EHDEN", a
     #installed packages
     doc<-doc %>%
       officer::body_add_par(value = "HADES packages", style = "heading 2") %>%
-      officer::body_add_par("Table 21. Versions of all installed HADES R packages") %>%
+      officer::body_add_par("Table 23. Versions of all installed HADES R packages") %>%
       my_body_add_table(value = results$hadesPackageVersions, style = "EHDEN")
 
     if (results$missingPackage=="") {
@@ -279,7 +281,7 @@ generateResultsDocument<- function(results, outputFolder, docTemplate="EHDEN", a
 
     doc<-doc %>%
       officer::body_add_par(value = "Achilles Query Performance", style = "heading 2") %>%
-      officer::body_add_par("Table 22. Execution time of queries of the Achilles R-Package")
+      officer::body_add_par("Table 24. Execution time of queries of the Achilles R-Package")
 
     if (!is.null(results$performanceResults$achillesTiming$result)) {
       doc<-doc %>%
