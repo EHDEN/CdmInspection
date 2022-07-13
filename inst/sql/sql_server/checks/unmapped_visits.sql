@@ -7,7 +7,7 @@ FROM (
        floor((count_big(*)+99)/100)*100 as "#Records",
        floor((count_big(distinct person_id)+99)/100)*100 as "#Subjects"
   from @cdmDatabaseSchema.visit_occurrence
-  where visit_occurrence_concept_id = 0
+  where visit_concept_id = 0
   group by visit_source_value
   having count_big(*)>@smallCellCount
 ) z

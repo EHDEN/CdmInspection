@@ -293,6 +293,7 @@ cdmInspection <- function (connectionDetails,
                                            cdmDatabaseSchema = cdmDatabaseSchema)
   if (sqlOnly) {
     SqlRender::writeSql(sql = sql, targetFile = file.path(outputFolder, "get_cdm_source_table.sql"))
+    return(NULL)
   } else {
     tryCatch({
       connection <- DatabaseConnector::connect(connectionDetails = connectionDetails)
@@ -305,8 +306,8 @@ cdmInspection <- function (connectionDetails,
       DatabaseConnector::disconnect(connection = connection)
       rm(connection)
     })
+    return(cdmSource)
   }
-  cdmSource
 }
 
 .checkAchillesTablesExist <- function(connectionDetails, resultsDatabaseSchema) {
