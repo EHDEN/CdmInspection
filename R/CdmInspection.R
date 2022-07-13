@@ -103,143 +103,148 @@ cdmInspection <- function (connectionDetails,
   if (compareVersion(a = as.character(cdmVersion), b = "5") < 0) {
     ParallelLogger::logError("Not possible to execute the check, this function is only for v5 and above.")
     ParallelLogger::logError("Is the CDM version available in the cdm_source table?")
-  } else {
-    # Establish folder paths --------------------------------------------------------------------------------------------------------
+    return(NULL)
+  }
 
-    if (!dir.exists(outputFolder)) {
-      dir.create(path = outputFolder, recursive = TRUE)
-    }
+  # Check whether Achilles output is available
+  if (!sqlOnly && !.checkAchillesTablesExist(connectionDetails, resultsDatabaseSchema)) {
+    ParallelLogger::logError(paste("The output from Achilles is required. Please run Achilles first and make sure the result tables are in the", resultsDatabaseSchema, "schema"))
+    return(NULL)
+  }
 
-    # Get source name if none provided ----------------------------------------------------------------------------------------------
+  # Establish folder paths --------------------------------------------------------------------------------------------------------
 
-    if (missing(databaseName) & !sqlOnly) {
-      databaseName <- .getDatabaseName(connectionDetails, cdmDatabaseSchema)
-    }
+  if (!dir.exists(outputFolder)) {
+    dir.create(path = outputFolder, recursive = TRUE)
+  }
 
-    # Logging
-    ParallelLogger::logInfo(paste0("CDM Inspection of database ",databaseName, " started (cdm_version=",cdmVersion,")"))
+  # Get source name if none provided ----------------------------------------------------------------------------------------------
 
-    # run all the checks ------------------------------------------------------------------------------------------------------------
-    dataTablesResults <- NULL
-    cdmSource<-NULL
+  if (missing(databaseName) & !sqlOnly) {
+    databaseName <- .getDatabaseName(connectionDetails, cdmDatabaseSchema)
+  }
 
-    if (runDataTablesChecks) {
-      ParallelLogger::logInfo(paste0("Running Data Table Checks"))
-      dataTablesResults <- dataTablesChecks(connectionDetails = connectionDetails,
-                                    cdmDatabaseSchema = cdmDatabaseSchema,
-                                    resultsDatabaseSchema = resultsDatabaseSchema,
-                                    outputFolder = outputFolder,
-                                    sqlOnly = sqlOnly)
-      cdmSource<- .getCdmSource(connectionDetails, cdmDatabaseSchema,sqlOnly,outputFolder)
-      temp <- cdmSource
-      temp$CDM_RELEASE_DATE <- as.character(cdmSource$CDM_RELEASE_DATE)
-      temp$SOURCE_RELEASE_DATE <- as.character(cdmSource$SOURCE_RELEASE_DATE)
-      cdmSource <- temp
-    }
+  # Logging
+  ParallelLogger::logInfo(paste0("CDM Inspection of database ",databaseName, " started (cdm_version=",cdmVersion,")"))
 
+  # run all the checks ------------------------------------------------------------------------------------------------------------
+  dataTablesResults <- NULL
+  cdmSource<-NULL
 
-    vocabularyResults <- NULL
-    if (runVocabularyChecks) {
-      ParallelLogger::logInfo(paste0("Running Vocabulary Checks"))
-      vocabularyResults<-vocabularyChecks(connectionDetails = connectionDetails,
-                       cdmDatabaseSchema = cdmDatabaseSchema,
-                       vocabDatabaseSchema = vocabDatabaseSchema,
-                       resultsDatabaseSchema = resultsDatabaseSchema,
-                       smallCellCount = smallCellCount,
-                       oracleTempSchema = oracleTempSchema,
-                       sqlOnly = sqlOnly,
-                       outputFolder = outputFolder)
-    }
-    packinfo <- NULL
-    sys_details <- NULL
-    hadesPackageVersions <- NULL
-    performanceResults <- NULL
-    missingPackages <- NULL
-    if (runPerformanceChecks) {
-
-      ParallelLogger::logInfo(paste0("Check installed R Packages"))
-      packages <- c("SqlRender", "DatabaseConnector", "DatabaseConnectorJars", "PatientLevelPrediction", "CohortDiagnostics", "CohortMethod", "Cyclops","ParallelLogger","FeatureExtraction","Andromeda",
-                    "ROhdsiWebApi","OhdsiSharing","Hydra","Eunomia","EmpiricalCalibration","MethodEvaluation","EvidenceSynthesis","SelfControlledCaseSeries","SelfControlledCohort")
-      diffPackages <- setdiff(packages, rownames(installed.packages()))
-      missingPackages <- paste(diffPackages, collapse=', ')
-
-      if (length(diffPackages)>0){
-        ParallelLogger::logInfo(paste0("Not all the HADES packages are installed, see https://ohdsi.github.io/Hades/installingHades.html for more information"))
-        ParallelLogger::logInfo(paste0("Missing:", missingPackages))
-      } else
-        ParallelLogger::logInfo(paste0("> All HADES packages are installed"))
-
-      packinfo <- installed.packages(fields = c("Package", "Version"))
-      hades<-packinfo[,c("Package", "Version")]
-      hadesPackageVersions <- as.data.frame(hades[row.names(hades) %in% packages,])
-
-      sys_details <- benchmarkme::get_sys_details(sys_info=FALSE)
-      ParallelLogger::logInfo(paste0("Running Performance Checks on ", sys_details$cpu$model_name, " cpu with ", sys_details$cpu$no_of_cores, " cores, and ", prettyunits::pretty_bytes(as.numeric(sys_details$ram)), " ram."))
-     # benchmark <- benchmark_std()
-
-      ParallelLogger::logInfo(paste0("Running Performance Checks SQL"))
-      performanceResults <- performanceChecks(connectionDetails = connectionDetails,
-                        cdmDatabaseSchema = cdmDatabaseSchema,
-                        resultsDatabaseSchema = resultsDatabaseSchema,
-                        oracleTempSchema = oracleTempSchema,
-                        sqlOnly = sqlOnly,
-                        outputFolder = outputFolder)
+  if (runDataTablesChecks) {
+    ParallelLogger::logInfo(paste0("Running Data Table Checks"))
+    dataTablesResults <- dataTablesChecks(connectionDetails = connectionDetails,
+                                  cdmDatabaseSchema = cdmDatabaseSchema,
+                                  resultsDatabaseSchema = resultsDatabaseSchema,
+                                  outputFolder = outputFolder,
+                                  sqlOnly = sqlOnly)
+    cdmSource<- .getCdmSource(connectionDetails, cdmDatabaseSchema,sqlOnly,outputFolder)
+    temp <- cdmSource
+    temp$CDM_RELEASE_DATE <- as.character(cdmSource$CDM_RELEASE_DATE)
+    temp$SOURCE_RELEASE_DATE <- as.character(cdmSource$SOURCE_RELEASE_DATE)
+    cdmSource <- temp
+  }
 
 
+  vocabularyResults <- NULL
+  if (runVocabularyChecks) {
+    ParallelLogger::logInfo(paste0("Running Vocabulary Checks"))
+    vocabularyResults<-vocabularyChecks(connectionDetails = connectionDetails,
+                     cdmDatabaseSchema = cdmDatabaseSchema,
+                     vocabDatabaseSchema = vocabDatabaseSchema,
+                     resultsDatabaseSchema = resultsDatabaseSchema,
+                     smallCellCount = smallCellCount,
+                     oracleTempSchema = oracleTempSchema,
+                     sqlOnly = sqlOnly,
+                     outputFolder = outputFolder)
+  }
+  packinfo <- NULL
+  sys_details <- NULL
+  hadesPackageVersions <- NULL
+  performanceResults <- NULL
+  missingPackages <- NULL
+  if (runPerformanceChecks) {
 
-    }
+    ParallelLogger::logInfo(paste0("Check installed R Packages"))
+    packages <- c("SqlRender", "DatabaseConnector", "DatabaseConnectorJars", "PatientLevelPrediction", "CohortDiagnostics", "CohortMethod", "Cyclops","ParallelLogger","FeatureExtraction","Andromeda",
+                  "ROhdsiWebApi","OhdsiSharing","Hydra","Eunomia","EmpiricalCalibration","MethodEvaluation","EvidenceSynthesis","SelfControlledCaseSeries","SelfControlledCohort")
+    diffPackages <- setdiff(packages, rownames(installed.packages()))
+    missingPackages <- paste(diffPackages, collapse=', ')
 
-    webAPIversion <- "unknown"
-    if (runWebAPIChecks){
-      ParallelLogger::logInfo(paste0("Running WebAPIChecks"))
+    if (length(diffPackages)>0){
+      ParallelLogger::logInfo(paste0("Not all the HADES packages are installed, see https://ohdsi.github.io/Hades/installingHades.html for more information"))
+      ParallelLogger::logInfo(paste0("Missing:", missingPackages))
+    } else
+      ParallelLogger::logInfo(paste0("> All HADES packages are installed"))
 
-      tryCatch({
-        webAPIversion <- ROhdsiWebApi::getWebApiVersion(baseUrl = baseUrl)
-        ParallelLogger::logInfo(sprintf("> Connected successfully to %s", baseUrl))
-        ParallelLogger::logInfo(sprintf("> WebAPI version: %s", webAPIversion))},
-               error = function (e) {
-                 ParallelLogger::logError(paste0("Could not connect to the WebAPI: ", baseUrl))
-                 webAPIversion <- "Failed"
-        })
-    }
+    packinfo <- installed.packages(fields = c("Package", "Version"))
+    hades<-packinfo[,c("Package", "Version")]
+    hadesPackageVersions <- as.data.frame(hades[row.names(hades) %in% packages,])
 
+    sys_details <- benchmarkme::get_sys_details(sys_info=FALSE)
+    ParallelLogger::logInfo(paste0("Running Performance Checks on ", sys_details$cpu$model_name, " cpu with ", sys_details$cpu$no_of_cores, " cores, and ", prettyunits::pretty_bytes(as.numeric(sys_details$ram)), " ram."))
+   # benchmark <- benchmark_std()
 
-    ParallelLogger::logInfo(paste0("Done."))
-
-    duration <- as.numeric(difftime(Sys.time(),start_time), units="mins")
-    ParallelLogger::logInfo(paste("Complete CdmInspection took ", sprintf("%.2f", duration)," minutes"))
-    # save results  ------------------------------------------------------------------------------------------------------------
-
-    results<-list(executionDate = date(),
-                  executionDuration = as.numeric(difftime(Sys.time(),start_time), units="secs"),
-                  databaseName = databaseName,
-                  databaseId = databaseId,
-                  databaseDescription = databaseDescription,
-                  vocabularyResults = vocabularyResults,
-                  dataTablesResults = dataTablesResults,
-                  packinfo=packinfo,
-                  hadesPackageVersions = hadesPackageVersions,
-                  missingPackages = missingPackages,
-                  performanceResults = performanceResults,
-                  sys_details= sys_details,
-                  webAPIversion = webAPIversion,
-                  cdmSource = cdmSource,
-                  dms=connectionDetails$dbms)
+    ParallelLogger::logInfo(paste0("Running Performance Checks SQL"))
+    performanceResults <- performanceChecks(connectionDetails = connectionDetails,
+                      cdmDatabaseSchema = cdmDatabaseSchema,
+                      resultsDatabaseSchema = resultsDatabaseSchema,
+                      oracleTempSchema = oracleTempSchema,
+                      sqlOnly = sqlOnly,
+                      outputFolder = outputFolder)
 
 
-
-    saveRDS(results, file.path(outputFolder,"inspection_results.rds"))
-    ParallelLogger::logInfo(sprintf("The cdm inspection results have been exported to: %s", outputFolder))
-    bundledResultsLocation <- bundleResults(outputFolder, databaseId)
-    ParallelLogger::logInfo(paste("All cdm inspection results are bundled for sharing at: ", bundledResultsLocation))
-    ParallelLogger::logInfo("Next step: generate and complete the inspection report and share this together with the zip file.")
-
-    duration <- as.numeric(difftime(Sys.time(),start_time), units="secs")
-    ParallelLogger::logInfo(paste("CdmInspection run took", sprintf("%.2f", duration),"secs"))
-    return(results)
 
   }
 
+  webAPIversion <- "unknown"
+  if (runWebAPIChecks){
+    ParallelLogger::logInfo(paste0("Running WebAPIChecks"))
+
+    tryCatch({
+      webAPIversion <- ROhdsiWebApi::getWebApiVersion(baseUrl = baseUrl)
+      ParallelLogger::logInfo(sprintf("> Connected successfully to %s", baseUrl))
+      ParallelLogger::logInfo(sprintf("> WebAPI version: %s", webAPIversion))},
+             error = function (e) {
+               ParallelLogger::logError(paste0("Could not connect to the WebAPI: ", baseUrl))
+               webAPIversion <- "Failed"
+      })
+  }
+
+
+  ParallelLogger::logInfo(paste0("Done."))
+
+  duration <- as.numeric(difftime(Sys.time(),start_time), units="mins")
+  ParallelLogger::logInfo(paste("Complete CdmInspection took ", sprintf("%.2f", duration)," minutes"))
+  # save results  ------------------------------------------------------------------------------------------------------------
+
+  results<-list(executionDate = date(),
+                executionDuration = as.numeric(difftime(Sys.time(),start_time), units="secs"),
+                databaseName = databaseName,
+                databaseId = databaseId,
+                databaseDescription = databaseDescription,
+                vocabularyResults = vocabularyResults,
+                dataTablesResults = dataTablesResults,
+                packinfo=packinfo,
+                hadesPackageVersions = hadesPackageVersions,
+                missingPackages = missingPackages,
+                performanceResults = performanceResults,
+                sys_details= sys_details,
+                webAPIversion = webAPIversion,
+                cdmSource = cdmSource,
+                dms=connectionDetails$dbms)
+
+
+
+  saveRDS(results, file.path(outputFolder,"inspection_results.rds"))
+  ParallelLogger::logInfo(sprintf("The cdm inspection results have been exported to: %s", outputFolder))
+  bundledResultsLocation <- bundleResults(outputFolder, databaseId)
+  ParallelLogger::logInfo(paste("All cdm inspection results are bundled for sharing at: ", bundledResultsLocation))
+  ParallelLogger::logInfo("Next step: generate and complete the inspection report and share this together with the zip file.")
+
+  duration <- as.numeric(difftime(Sys.time(),start_time), units="secs")
+  ParallelLogger::logInfo(paste("CdmInspection run took", sprintf("%.2f", duration),"secs"))
+  return(results)
 }
 
 .getDatabaseName <- function(connectionDetails,
@@ -302,4 +307,38 @@ cdmInspection <- function (connectionDetails,
     })
   }
   cdmSource
+}
+
+.checkAchillesTablesExist <- function(connectionDetails, resultsDatabaseSchema) {
+  required_achilles_tables <- c("achilles_analysis", "achilles_results", "achilles_results_dist")
+  achilles_tables_exist <- tryCatch({
+    connection <- DatabaseConnector::connect(connectionDetails = connectionDetails)
+    for(x in required_achilles_tables) {
+      sql <- SqlRender::translate(
+        SqlRender::render(
+          "SELECT * FROM @resultsDatabaseSchema.@table",
+          resultsDatabaseSchema=resultsDatabaseSchema,
+          table=x
+        ),
+        targetDialect = 'postgresql'
+      )
+      DatabaseConnector::executeSql(
+        connection = connection,
+        sql = sql,
+        progressBar = F,
+        reportOverallTime = F,
+        errorReportFile = "errorAchillesExistsSql.txt"
+      )
+    }
+    TRUE
+  },
+  error = function (e) {
+    ParallelLogger::logWarn("Achilles Tables have not been found.")
+    FALSE
+  },
+  finally = {
+    DatabaseConnector::disconnect(connection = connection)
+    rm(connection)
+  })
+  return(achilles_tables_exist)
 }
