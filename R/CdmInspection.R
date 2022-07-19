@@ -166,8 +166,16 @@ cdmInspection <- function (connectionDetails,
   if (runPerformanceChecks) {
 
     ParallelLogger::logInfo(paste0("Check installed R Packages"))
-    packages <- c("SqlRender", "DatabaseConnector", "DatabaseConnectorJars", "PatientLevelPrediction", "CohortDiagnostics", "CohortMethod", "Cyclops","ParallelLogger","FeatureExtraction","Andromeda",
-                  "ROhdsiWebApi","OhdsiSharing","Hydra","Eunomia","EmpiricalCalibration","MethodEvaluation","EvidenceSynthesis","SelfControlledCaseSeries","SelfControlledCohort")
+    # packageListUrl <- "https://raw.githubusercontent.com/OHDSI/Hades/main/extras/packages.csv"
+    # hadesPackageList <- read.table(packageListUrl, sep = ",", header = TRUE)
+    # packages <- hadesPackageList$name
+    # dump("packages", "")
+    packages <- c("CohortMethod", "SelfControlledCaseSeries", "SelfControlledCohort",
+                  "EvidenceSynthesis", "PatientLevelPrediction", "EnsemblePatientLevelPrediction",
+                  "Capr", "CirceR", "CohortGenerator", "PhenotypeLibrary", "EmpiricalCalibration",
+                  "MethodEvaluation", "CohortDiagnostics", "Andromeda", "BigKnn",
+                  "Cyclops", "DatabaseConnector", "Eunomia", "FeatureExtraction",
+                  "Hydra", "OhdsiSharing", "ParallelLogger", "ROhdsiWebApi", "SqlRender")
     diffPackages <- setdiff(packages, rownames(installed.packages()))
     missingPackages <- paste(diffPackages, collapse=', ')
 
