@@ -194,15 +194,15 @@ cdmInspection <- function (connectionDetails,
    # benchmark <- benchmark_std()
 
     ParallelLogger::logInfo(paste0("Running Performance Checks SQL"))
-    performanceResults <- performanceChecks(connectionDetails = connectionDetails,
-                      cdmDatabaseSchema = cdmDatabaseSchema,
-                      resultsDatabaseSchema = resultsDatabaseSchema,
-                      oracleTempSchema = oracleTempSchema,
-                      sqlOnly = sqlOnly,
-                      outputFolder = outputFolder)
-
-
-
+    performanceResults <- performanceChecks(
+      connectionDetails = connectionDetails,
+      cdmDatabaseSchema = cdmDatabaseSchema,  # not used by the current performance checks
+      vocabDatabaseSchema = vocabDatabaseSchema,
+      resultsDatabaseSchema = resultsDatabaseSchema,
+      oracleTempSchema = oracleTempSchema,
+      sqlOnly = sqlOnly,
+      outputFolder = outputFolder
+    )
   }
 
   webAPIversion <- "unknown"
