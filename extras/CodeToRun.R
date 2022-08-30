@@ -14,24 +14,20 @@
 # where you have cloned this code. For more information on setting environment variables please refer to:
 # https://stat.ethz.ch/R-manual/R-devel/library/base/html/readRenviron.html
 #
-#
-# Below is an example .Renviron file's contents: (please remove)
-# the "#" below as these too are interprted as comments in the .Renviron file:
+# Below is an example .Renviron file's contents.
+# Remove the "#" below as these too are interpreted as comments in the .Renviron file.
 #
 #    DBMS = "postgresql"
 #    DB_SERVER = "database.server.com"
 #    DB_PORT = 5432
 #    DB_USER = "database_user_name_goes_here"
 #    DB_PASSWORD = "your_secret_password"
-#    FFTEMP_DIR = "E:/fftemp"
+#    PATH_TO_DRIVER = "C:/path_to_jdbc_driver"
 #
 # The following describes the settings
 #    DBMS, DB_SERVER, DB_PORT, DB_USER, DB_PASSWORD := These are the details used to connect
 #    to your database server. For more information on how these are set, please refer to:
 #    http://ohdsi.github.io/DatabaseConnector/
-#
-#    FFTEMP_DIR = A directory where temporary files used by the FF package are stored while running.
-#.
 #
 # Once you have established an .Renviron file, you must restart your R session for R to pick up these new
 # variables.
@@ -63,16 +59,13 @@ Sys.setenv("R_REMOTES_NO_ERRORS_FROM_WARNINGS" = TRUE)
 # *******************************************************
 library(CdmInspection)
 
-# Optional: specify where the temporary files (used by the ff package) will be created:
-fftempdir <- if (Sys.getenv("FFTEMP_DIR") == "") "~/fftemp" else Sys.getenv("FFTEMP_DIR")
-options(fftempdir = fftempdir)
-
 # Details for connecting to the server:
-dbms = Sys.getenv("DBMS")
+dbms <- Sys.getenv("DBMS")
 user <- if (Sys.getenv("DB_USER") == "") NULL else Sys.getenv("DB_USER")
 password <- if (Sys.getenv("DB_PASSWORD") == "") NULL else Sys.getenv("DB_PASSWORD")
-server = Sys.getenv("DB_SERVER")
-port = Sys.getenv("DB_PORT")
+server <- Sys.getenv("DB_SERVER")
+port <- Sys.getenv("DB_PORT")
+pathToDriver <- Sys.getenv("PATH_TO_DRIVER")
 
 # connectionString is optional
 # if specified, the server, port fields are ignored. If user and password are not specified, they are assumed to already be included in the connection string.
@@ -82,7 +75,7 @@ connectionString = if (Sys.getenv("CONNECTION_STRING") == "") NULL else Sys.gete
 authors <-"<your_name>" # used on the title page
 
 # Details specific to the database:
-databaseId <- "<your_id>" #for example SYNPUF (this will be used as results sub-folder)
+databaseId <- "<your_id>" # for example SYNPUF (this will be used as results sub-folder)
 databaseName <- "<your_full_databasename>"
 databaseDescription <- "<your_description>"
 
@@ -92,11 +85,11 @@ oracleTempSchema <- NULL
 # Details for connecting to the CDM and storing the results
 outputFolder <- file.path(getwd(), "results",databaseId)
 cdmDatabaseSchema <- "<your_cdm_schema>"
-resultsDatabaseSchema <- "<your_results_schema>" #Make sure the Achilles results are in this schema!
+resultsDatabaseSchema <- "<your_results_schema>" # Make sure the Achilles results are in this schema!
 vocabDatabaseSchema <- "<your_vocab_schema>"
 
 # Url to check the version of your local Atlas
-baseUrl <- "<your_baseUrl>" # example: "http://atlas-demo.ohdsi.org/WebAPI"
+baseUrl <- "<your_baseUrl>" # example: "http://atlas.your.organisation.com/WebAPI"
 
 # All results smaller than this value are removed from the results.
 smallCellCount <- 5
@@ -109,25 +102,38 @@ verboseMode <- TRUE
 
 connectionDetails <- DatabaseConnector::createConnectionDetails(dbms = dbms,
                                                                 server = server,
+                                                                port = port,
                                                                 user = user,
-                                                                password = password,
-                                                                connectionString = connectionString)
+                                                                password = password,                                                                
+                                                                connectionString = connectionString,
+                                                                pathToDriver = pathToDriver)
 
-results<-cdmInspection(connectionDetails,
-                cdmDatabaseSchema = cdmDatabaseSchema,
-                resultsDatabaseSchema = resultsDatabaseSchema,
-                vocabDatabaseSchema = vocabDatabaseSchema,
-                oracleTempSchema = oracleTempSchema,
-                databaseName = databaseName,
-                runVocabularyChecks = TRUE,
-                runDataTablesChecks = TRUE,
-                runPerformanceChecks = TRUE,
-                runWebAPIChecks = TRUE,
-                smallCellCount = smallCellCount,
-                baseUrl = baseUrl,
-                sqlOnly = FALSE,
-                outputFolder = outputFolder,
-                verboseMode = verboseMode)
+results<-cdmInspection(
+  connectionDetails = connectionDetails,
+  cdmDatabaseSchema = cdmDatabaseSchema,
+  resultsDatabaseSchema = resultsDatabaseSchema,
+  vocabDatabaseSchema = vocabDatabaseSchema,
+  oracleTempSchema = oracleTempSchema,
+  databaseId = databaseId,
+  databaseName = databaseName,
+  databaseDescription = databaseDescription,
+  runVocabularyChecks = TRUE,
+  runDataTablesChecks = TRUE,
+  runPerformanceChecks = TRUE,
+  runWebAPIChecks = TRUE,
+  smallCellCount = smallCellCount,
+  baseUrl = baseUrl,
+  sqlOnly = FALSE,
+  outputFolder = outputFolder,
+  verboseMode = verboseMode
+)
 
-generateResultsDocument(results,outputFolder, authors=authors, databaseDescription = databaseDescription, databaseName = databaseName, databaseId = databaseId, smallCellCount = smallCellCount)
-
+generateResultsDocument(
+  results,
+  outputFolder,
+  authors=authors,
+  databaseId = databaseId,
+  databaseName = databaseName,
+  databaseDescription = databaseDescription,
+  smallCellCount = smallCellCount
+)

@@ -2,7 +2,7 @@
 #
 # Copyright 2020 European Health Data and Evidence Network (EHDEN)
 #
-# This file is part of CatalogueExport
+# This file is part of CdmInspection
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -98,13 +98,18 @@ my_body_add_table <- function (x, value, style = NULL, pos = "after", header = T
 my_source_value_count_section <- function (x, data, table_number, domain, kind,smallCellCount) {
   n <- nrow(data$result)
 
-  msg <- paste0("Counts are rounded up to the nearest hundred. Values with a record count <=",smallCellCount," are omitted.")
-  if (n == 0) {
-    officer::body_add_par(x,paste0("Table ", table_number, " omitted because no ", kind, " ", domain, " were found."))
-  } else if (n < 25) {
-    officer::body_add_par(x,paste0("Table ", table_number, ". All ", n, " ", kind, " ", domain, ". ", msg))
+  if (is.null(smallCellCount)) {
+    msg <- paste0("Counts are rounded up to the nearest hundred. Values with a record count <=",smallCellCount," are omitted.")
   } else {
-    officer::body_add_par(x,paste0("Table ", table_number, ". Top 25 of ", kind, " ", domain, ". ", msg))
+    msg <- "Counts are rounded up to the nearest hundred."
+  }
+
+  if (n == 0) {
+    officer::body_add_par(x, paste0("Table ", table_number, " omitted because no ", kind, " ", domain, " were found."))
+  } else if (n < 25) {
+    officer::body_add_par(x, paste0("Table ", table_number, ". All ", n, " ", kind, " ", domain, ". ", msg))
+  } else {
+    officer::body_add_par(x, paste0("Table ", table_number, ". Top 25 of ", kind, " ", domain, ". ", msg))
   }
 
   if (n>0) {

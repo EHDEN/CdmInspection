@@ -1,4 +1,9 @@
-
+# @file ResultsDocumentGeneration
+#
+# Copyright 2020 European Health Data and Evidence Network (EHDEN)
+#
+# This file is part of CdmInspection
+#
 #' Generates the Results Document
 #'
 #' @description
@@ -82,7 +87,7 @@ generateResultsDocument<- function(results, outputFolder, docTemplate="EHDEN", a
 
     doc<-doc %>% officer::body_add_par(value = "SME Role", style = "heading 2") %>%
 
-    officer::body_add_par(value = "Describe the involvement of the SME in the ETL Delopment process",style="Highlight") %>%
+    officer::body_add_par(value = "Describe the involvement of the SME in the ETL Development process",style="Highlight") %>%
     officer::body_add_break()
 
 
@@ -90,7 +95,7 @@ generateResultsDocument<- function(results, outputFolder, docTemplate="EHDEN", a
 
     doc<-doc %>%
       officer::body_add_par(value = "ETL Development General", style = "heading 1") %>%
-      officer::body_add_par(paste0("This section decribes the ETL development steps and discusses the quality control steps performed by the SME")) %>%
+      officer::body_add_par(paste0("This section describes the ETL development steps and discusses the quality control steps performed by the SME")) %>%
       officer::body_add_par(value = "ETL Documentation", style = "heading 2") %>%
       officer::body_add_par("Perform the following checks and discuss the findings here:", style="Highlight") %>%
 
@@ -194,22 +199,24 @@ generateResultsDocument<- function(results, outputFolder, docTemplate="EHDEN", a
     my_unmapped_section(doc, vocabResults$unmappedObservations, 10, "observations",smallCellCount)
     my_unmapped_section(doc, vocabResults$unmappedProcedures, 11, "procedures", smallCellCount)
     my_unmapped_section(doc, vocabResults$unmappedDevices, 12, "devices", smallCellCount)
+    my_unmapped_section(doc, vocabResults$unmappedVisits, 13, "visits", smallCellCount)
 
     ## add top 25 mapped codes
     doc<-doc %>%
       officer::body_add_par(value = "Mapped Codes", style = "heading 2")
-    my_mapped_section(doc, vocabResults$mappedDrugs, 13, "drugs", smallCellCount)
-    my_mapped_section(doc, vocabResults$mappedConditions, 14, "conditions", smallCellCount)
-    my_mapped_section(doc, vocabResults$mappedMeasurements, 15, "measurements", smallCellCount)
-    my_mapped_section(doc, vocabResults$mappedObservations, 16, "observations", smallCellCount)
-    my_mapped_section(doc, vocabResults$mappedProcedures, 17, "procedures", smallCellCount)
-    my_mapped_section(doc, vocabResults$mappedDevices, 18, "devices", smallCellCount)
+    my_mapped_section(doc, vocabResults$mappedDrugs, 14, "drugs", smallCellCount)
+    my_mapped_section(doc, vocabResults$mappedConditions, 15, "conditions", smallCellCount)
+    my_mapped_section(doc, vocabResults$mappedMeasurements, 16, "measurements", smallCellCount)
+    my_mapped_section(doc, vocabResults$mappedObservations, 17, "observations", smallCellCount)
+    my_mapped_section(doc, vocabResults$mappedProcedures, 18, "procedures", smallCellCount)
+    my_mapped_section(doc, vocabResults$mappedDevices, 19, "devices", smallCellCount)
+    my_mapped_section(doc, vocabResults$mappedVisits, 20, "visits", smallCellCount)
 
     ## add source_to_concept_map breakdown
     doc<-doc %>%
       officer::body_add_par(value = "Source to concept map", style = "heading 2") %>%
       officer::body_add_par("If you did not use the source_to_concept_map table in the ETL the table below will be empty. In that case provide your custom mappings in an Excel file.", style="Highlight") %>%
-      officer::body_add_par("Table 19. Source to concept map breakdown") %>%
+      officer::body_add_par("Table 21. Source to concept map breakdown") %>%
       my_body_add_table(value = vocabResults$sourceConceptFrequency$result, style = "EHDEN") %>%
       officer::body_add_par(" ") %>%
       officer::body_add_par(paste("Query executed in ",sprintf("%.2f", vocabResults$sourceConceptFrequency$duration),"secs")) %>%
@@ -235,7 +242,7 @@ generateResultsDocument<- function(results, outputFolder, docTemplate="EHDEN", a
     t_cdmSource <- cbind(field, t_cdmSource)
     doc<-doc %>%
       officer::body_add_par(value = "CDM Source Table", style = "heading 2") %>%
-      officer::body_add_par("Table 20. cdm_source table content") %>%
+      officer::body_add_par("Table 22. cdm_source table content") %>%
       my_body_add_table(value =t_cdmSource, style = "EHDEN")
   }
 
@@ -243,7 +250,7 @@ generateResultsDocument<- function(results, outputFolder, docTemplate="EHDEN", a
     #installed packages
     doc<-doc %>%
       officer::body_add_par(value = "HADES packages", style = "heading 2") %>%
-      officer::body_add_par("Table 21. Versions of all installed HADES R packages") %>%
+      officer::body_add_par("Table 23. Versions of all installed HADES R packages") %>%
       my_body_add_table(value = results$hadesPackageVersions, style = "EHDEN")
 
     if (results$missingPackage=="") {
@@ -258,10 +265,10 @@ generateResultsDocument<- function(results, outputFolder, docTemplate="EHDEN", a
     doc<-doc %>%
       officer::body_add_par(value = "System Information", style = "heading 2") %>%
       officer::body_add_par(paste0("Installed R version: ",results$sys_details$r_version$version.string)) %>%
-      officer::body_add_par(paste0("System CPU vendor: ",results$sys_details$cpu$vendor_id)) %>%
-      officer::body_add_par(paste0("System CPU model: ",results$sys_details$cpu$model_name)) %>%
-      officer::body_add_par(paste0("System CPU number of cores: ",results$sys_details$cpu$no_of_cores)) %>%
-      officer::body_add_par(paste0("System RAM: ",prettyunits::pretty_bytes(as.numeric(results$sys_details$ram)))) %>%
+      officer::body_add_par(paste0("System CPU vendor: ",results$sys_details$cpu$vendor_id, collapse =", ")) %>%
+      officer::body_add_par(paste0("System CPU model: ",results$sys_details$cpu$model_name, collapse =", ")) %>%
+      officer::body_add_par(paste0("System CPU number of cores: ",results$sys_details$cpu$no_of_cores, collapse =", ")) %>%
+      officer::body_add_par(paste0("System RAM: ",prettyunits::pretty_bytes(as.numeric(results$sys_details$ram)), collapse =", ")) %>%
       officer::body_add_par(paste0("DBMS: ",results$dms)) %>%
       officer::body_add_par(paste0("WebAPI version: ",results$webAPIversion)) %>%
       officer::body_add_par(" ")
@@ -274,7 +281,7 @@ generateResultsDocument<- function(results, outputFolder, docTemplate="EHDEN", a
 
     doc<-doc %>%
       officer::body_add_par(value = "Achilles Query Performance", style = "heading 2") %>%
-      officer::body_add_par("Table 22. Execution time of queries of the Achilles R-Package")
+      officer::body_add_par("Table 24. Execution time of queries of the Achilles R-Package")
 
     if (!is.null(results$performanceResults$achillesTiming$result)) {
       doc<-doc %>%
