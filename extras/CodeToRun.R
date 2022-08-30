@@ -114,7 +114,9 @@ results<-cdmInspection(
   resultsDatabaseSchema = resultsDatabaseSchema,
   vocabDatabaseSchema = vocabDatabaseSchema,
   oracleTempSchema = oracleTempSchema,
+  databaseId = databaseId,
   databaseName = databaseName,
+  databaseDescription = databaseDescription,
   runVocabularyChecks = TRUE,
   runDataTablesChecks = TRUE,
   runPerformanceChecks = TRUE,
@@ -128,10 +130,10 @@ results<-cdmInspection(
 
 generateResultsDocument(
   results,
-  outputFolder, 
-  authors=authors, 
+  outputFolder,
+  authors=authors,
+  databaseId = databaseId,
+  databaseName = databaseName,
   databaseDescription = databaseDescription,
-  databaseName = databaseName, 
-  databaseId = databaseId, 
   smallCellCount = smallCellCount
 )
