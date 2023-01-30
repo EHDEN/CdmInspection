@@ -113,17 +113,29 @@ my_source_value_count_section <- function (x, data, table_number, domain, kind,s
   }
 
   if (n>0) {
-    my_body_add_table(x, value = data$result, style = "EHDEN")
+    if (kind == 'unmapped') {
+      alignment <- c('r','l','r','r') # #,name,n,n
+    } else {
+      alignment <- c('r','l','r','r') # #,concept_id,n,n
+    }
+    x <- my_body_add_table(
+      x,
+      value = data$result,
+      alignment = alignment,
+      style = "EHDEN"
+    )
   }
 
   officer::body_add_par(x, paste0("Query executed in ", sprintf("%.2f", data$duration), " secs"))
 }
 
 my_unmapped_section <- function(x, data, table_number, domain, smallCellCount) {
+  names(data$result) <- c("#", "Source Value", "#Records", "#Subjects")
   my_source_value_count_section(x, data, table_number, domain, "unmapped", smallCellCount)
 }
 
 my_mapped_section <- function(x, data, table_number, domain, smallCellCount) {
+  names(data$result) <- c("#", "Concept Name", "#Records", "#Subjects")
   my_source_value_count_section(x, data, table_number, domain, "mapped", smallCellCount)
 }
 
