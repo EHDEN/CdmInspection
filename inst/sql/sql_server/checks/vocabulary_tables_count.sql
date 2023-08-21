@@ -15,3 +15,5 @@ UNION
 select 'drug_strength' as tablename, count(*) as count from @vocabDatabaseSchema.drug_strength
 UNION
 select 'vocabulary' as tablename, count(*) as count from @vocabDatabaseSchema.vocabulary
+UNION
+select 'relationship' as tablename, count(*) as count from @vocabDatabaseSchema.relationship
