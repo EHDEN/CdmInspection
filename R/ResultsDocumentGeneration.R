@@ -151,8 +151,13 @@ generateResultsDocument<- function(results, outputFolder, docTemplate="EHDEN", a
   vocabResults <-results$vocabularyResults
   if (!is.null(vocabResults)) {
     #vocabularies table
+    vocabResults$conceptCounts$result <- vocabResults$conceptCounts$result %>%
+      rename(
+        S = N_STANDARD_CONCEPTS,
+        C = N_CLASSIFICATION_CONCEPTS,
+        `-` = N_NON_STANDARD_CONCEPTS
+      )
     doc<-doc %>%
-
       officer::body_add_par(value = "Vocabularies", style = "heading 2") %>%
       officer::body_add_par(paste0("Vocabulary version: ",results$vocabularyResults$version)) %>%
       officer::body_add_par("Table 3. The vocabularies available in the CDM with concept count. Note that this does not reflect which concepts are actually used in the clinical CDM tables. S=Standard, C=Classification and '-'=Non-standard") %>%
@@ -171,9 +176,21 @@ generateResultsDocument<- function(results, outputFolder, docTemplate="EHDEN", a
       officer::body_add_par(paste("Query executed in ",sprintf("%.2f", vocabResults$vocabularyCounts$duration),"secs"))
 
     ## add Mapping Completeness
-    vocabResults$mappingCompleteness$result$'%Codes Mapped' <- prettyHr(vocabResults$mappingCompleteness$result$'%Codes Mapped')
-    vocabResults$mappingCompleteness$result$'%Records Mapped' <- prettyHr(vocabResults$mappingCompleteness$result$'%Records Mapped')
-
+    vocabResults$mappingCompleteness$result <- vocabResults$mappingCompleteness$result %>%
+      arrange(DOMAIN) %>%
+      mutate(
+        p_codes_mapped = prettyPc(p_codes_mapped),
+        p_records_mapped = prettyPc(p_records_mapped),
+      ) %>%
+      rename(
+        Domain = DOMAIN,
+        `#Codes Source` = N_CODES_SOURCE,
+        `#Codes Mapped` = N_CODES_MAPPED,
+        `%Codes Mapped` = P_CODES_MAPPED,
+        `#Records Source` = N_RECORDS_SOURCE,
+        `#Records Mapped` = N_RECORDS_MAPPED,
+        `%Records Mapped` = P_RECORDS_MAPPED,
+      )
     doc<-doc %>%
       officer::body_add_par(value = "Mapping Completeness", style = "heading 2") %>%
       officer::body_add_par("Table 5. Shows the percentage of codes that are mapped to the standardized vocabularies as well as the percentage of records.") %>%
@@ -183,6 +200,14 @@ generateResultsDocument<- function(results, outputFolder, docTemplate="EHDEN", a
       officer::body_add_break()
 
     ## add Drug Level Mappings
+    vocabResults$drugMapping$result <- vocabResults$drugMapping$result %>%
+      arrange(desc(N_RECORDS)) %>%
+      rename(
+        Class = CLASS,
+        `#Records` = N_RECORDS,
+        `#Patients` = N_PATIENTS,
+        `#Codes` = N_SOURCE_CODES
+      )
     doc<-doc %>%
       officer::body_add_par(value = "Drug Mappings", style = "heading 2") %>%
       officer::body_add_par("Table 6. The level of the drug mappings") %>%
