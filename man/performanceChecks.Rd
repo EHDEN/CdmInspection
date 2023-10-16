@@ -38,8 +38,8 @@ On SQL Server, this should specifiy both the database and the schema, so for exa
 \item{verboseMode}{Boolean to determine if the console will show all execution steps. Default = TRUE}
 }
 \value{
-\preformatted{                            An object of type \code{achillesResults} containing details for connecting to the database containing the results
-}
+\if{html}{\out{<div class="sourceCode">}}\preformatted{                            An object of type \code{achillesResults} containing details for connecting to the database containing the results
+}\if{html}{\out{</div>}}
 }
 \description{
 \code{PerformanceChecks} runs a list of performance checks as part of the CDM inspection procedure
