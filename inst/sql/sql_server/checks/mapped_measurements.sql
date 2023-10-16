@@ -3,9 +3,9 @@
 SELECT *
 FROM (
 	select ROW_NUMBER() OVER(ORDER BY count_big(measurement_id) DESC) AS ROW_NUM,
-       Cr.concept_name as "Concept Name",
-       floor((count_big(measurement_id)+99)/100)*100 as "#Records",
-       floor((count_big(distinct person_id)+99)/100)*100 as "#Subjects"
+       Cr.concept_name as concept_name,
+       floor((count_big(measurement_id)+99)/100)*100 as n_records,
+       floor((count_big(distinct person_id)+99)/100)*100 as n_subjects
        from @cdmDatabaseSchema.measurement C
 JOIN @vocabDatabaseSchema.CONCEPT CR
 ON C.measurement_concept_id = CR.CONCEPT_ID
