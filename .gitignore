@@ -41,3 +41,12 @@ vignettes/*.pdf
 # Mac
 .DS_Store
 
+# Repo-specific
+results/
+output/
+errorReport*.txt
+error*.txt
+
+# VS code
+.lntr
+.vscode/

@@ -61,7 +61,13 @@ prettyHr <- function(x) {
   return(result)
 }
 
-
+prettyPc <- function(x) {
+  result <- sprintf("%.1f%%", x)
+  result[is.na(x)] <- "NA"
+  result[x == 100] <- "100%"
+  result[x == 0] <- "0%"
+  return(result)
+}
 
 my_body_add_table <- function (x, value, style = NULL, pos = "after", header = TRUE,
           alignment = NULL, stylenames = table_stylenames(), first_row = TRUE,
