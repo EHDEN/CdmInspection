@@ -8,4 +8,4 @@ from @cdmDatabaseSchema.drug_exposure
 join @vocabDatabaseSchema.concept on drug_concept_id=concept_id
 where concept.domain_id = 'Drug'
 group by concept_class_id
-order by "#Source Codes" DESC
+order by n_records DESC
