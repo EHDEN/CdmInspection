@@ -179,8 +179,8 @@ generateResultsDocument<- function(results, outputFolder, docTemplate="EHDEN", a
     vocabResults$mappingCompleteness$result <- vocabResults$mappingCompleteness$result %>%
       arrange(DOMAIN) %>%
       mutate(
-        p_codes_mapped = prettyPc(p_codes_mapped),
-        p_records_mapped = prettyPc(p_records_mapped),
+        P_CODES_MAPPED = prettyPc(P_CODES_MAPPED),
+        P_RECORDS_MAPPED = prettyPc(P_RECORDS_MAPPED),
       ) %>%
       rename(
         Domain = DOMAIN,
@@ -216,26 +216,26 @@ generateResultsDocument<- function(results, outputFolder, docTemplate="EHDEN", a
       officer::body_add_par(paste("Query executed in ",sprintf("%.2f", vocabResults$drugMapping$duration),"secs"))
 
     ## add Top 25 missing mappings
-    doc<-doc %>%
+    doc <- doc %>%
       officer::body_add_par(value = "Unmapped Codes", style = "heading 2") %>%
-      my_unmapped_section(doc, vocabResults$unmappedDrugs, 7, "drugs", smallCellCount) %>%
-      my_unmapped_section(doc, vocabResults$unmappedConditions, 8, "conditions", smallCellCount) %>%
-      my_unmapped_section(doc, vocabResults$unmappedMeasurements, 9, "measurements", smallCellCount) %>%
-      my_unmapped_section(doc, vocabResults$unmappedObservations, 10, "observations",smallCellCount) %>%
-      my_unmapped_section(doc, vocabResults$unmappedProcedures, 11, "procedures", smallCellCount) %>%
-      my_unmapped_section(doc, vocabResults$unmappedDevices, 12, "devices", smallCellCount) %>%
-      my_unmapped_section(doc, vocabResults$unmappedVisits, 13, "visits", smallCellCount)
+      my_unmapped_section(vocabResults$unmappedDrugs, 7, "drugs", smallCellCount) %>%
+      my_unmapped_section(vocabResults$unmappedConditions, 8, "conditions", smallCellCount) %>%
+      my_unmapped_section(vocabResults$unmappedMeasurements, 9, "measurements", smallCellCount) %>%
+      my_unmapped_section(vocabResults$unmappedObservations, 10, "observations",smallCellCount) %>%
+      my_unmapped_section(vocabResults$unmappedProcedures, 11, "procedures", smallCellCount) %>%
+      my_unmapped_section(vocabResults$unmappedDevices, 12, "devices", smallCellCount) %>%
+      my_unmapped_section(vocabResults$unmappedVisits, 13, "visits", smallCellCount)
 
     ## add top 25 mapped codes
-    doc<-doc %>%
+    doc <- doc %>%
       officer::body_add_par(value = "Mapped Codes", style = "heading 2") %>%
-      my_mapped_section(doc, vocabResults$mappedDrugs, 14, "drugs", smallCellCount) %>%
-      my_mapped_section(doc, vocabResults$mappedConditions, 15, "conditions", smallCellCount) %>%
-      my_mapped_section(doc, vocabResults$mappedMeasurements, 16, "measurements", smallCellCount) %>%
-      my_mapped_section(doc, vocabResults$mappedObservations, 17, "observations", smallCellCount) %>%
-      my_mapped_section(doc, vocabResults$mappedProcedures, 18, "procedures", smallCellCount) %>%
-      my_mapped_section(doc, vocabResults$mappedDevices, 19, "devices", smallCellCount) %>%
-      my_mapped_section(doc, vocabResults$mappedVisits, 20, "visits", smallCellCount)
+      my_mapped_section(vocabResults$mappedDrugs, 14, "drugs", smallCellCount) %>%
+      my_mapped_section(vocabResults$mappedConditions, 15, "conditions", smallCellCount) %>%
+      my_mapped_section(vocabResults$mappedMeasurements, 16, "measurements", smallCellCount) %>%
+      my_mapped_section(vocabResults$mappedObservations, 17, "observations", smallCellCount) %>%
+      my_mapped_section(vocabResults$mappedProcedures, 18, "procedures", smallCellCount) %>%
+      my_mapped_section(vocabResults$mappedDevices, 19, "devices", smallCellCount) %>%
+      my_mapped_section(vocabResults$mappedVisits, 20, "visits", smallCellCount)
 
     ## add source_to_concept_map breakdown
     doc<-doc %>%

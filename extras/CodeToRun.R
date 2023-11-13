@@ -75,13 +75,16 @@ connectionDetails <- DatabaseConnector::createConnectionDetails(
   pathToDriver = pathToDriver
 )
 
-# Author details
-authors <-"<your_name>" # used on the title page
-
 # Details specific to the database:
 cdmDatabaseSchema <- Sys.getenv("CDM_SCHEMA")
 resultsDatabaseSchema <- Sys.getenv("RESULTS_SCHEMA")
 vocabDatabaseSchema <- cdmDatabaseSchema
+
+# Database metadata
+databaseId <- ""
+authors <- c('<author_1>', '<author_2>') # used on the title page
+databaseName <- ""
+databaseDescription <- ""
 
 # For Oracle: define a schema that can be used to emulate temp tables:
 oracleTempSchema <- NULL
