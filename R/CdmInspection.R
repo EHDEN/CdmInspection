@@ -320,34 +320,20 @@ cdmInspection <- function (connectionDetails,
 
 .checkAchillesTablesExist <- function(connectionDetails, resultsDatabaseSchema) {
   required_achilles_tables <- c("achilles_analysis", "achilles_results", "achilles_results_dist")
-  achilles_tables_exist <- tryCatch({
-    connection <- DatabaseConnector::connect(connectionDetails = connectionDetails)
-    for(x in required_achilles_tables) {
-      sql <- SqlRender::translate(
-        SqlRender::render(
-          "SELECT * FROM @resultsDatabaseSchema.@table",
-          resultsDatabaseSchema=resultsDatabaseSchema,
-          table=x
-        ),
-        targetDialect = 'postgresql'
-      )
-      DatabaseConnector::executeSql(
-        connection = connection,
-        sql = sql,
-        progressBar = F,
-        reportOverallTime = F,
-        errorReportFile = "errorAchillesExistsSql.txt"
+
+  connection <- DatabaseConnector::connect(connectionDetails = connectionDetails)
+  on.exit(DatabaseConnector::disconnect(connection = connection))
+
+  achilles_tables_exist <- TRUE
+  for (table in required_achilles_tables) {
+    table_exists <- DatabaseConnector::existsTable(connection, resultsDatabaseSchema, table)
+    if (!table_exists) {
+      ParallelLogger::logWarn(
+        sprintf("Achilles table '%s.%s' has not been found", resultsDatabaseSchema, table)
       )
     }
-    TRUE
-  },
-  error = function (e) {
-    ParallelLogger::logWarn("Achilles Tables have not been found.")
-    FALSE
-  },
-  finally = {
-    DatabaseConnector::disconnect(connection = connection)
-    rm(connection)
-  })
+    achilles_tables_exist <- achilles_tables_exist && table_exists
+  }
+
   return(achilles_tables_exist)
 }

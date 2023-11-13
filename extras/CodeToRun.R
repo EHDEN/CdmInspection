@@ -61,32 +61,34 @@ library(CdmInspection)
 
 # Details for connecting to the server:
 dbms <- Sys.getenv("DBMS")
-user <- if (Sys.getenv("DB_USER") == "") NULL else Sys.getenv("DB_USER")
-password <- if (Sys.getenv("DB_PASSWORD") == "") NULL else Sys.getenv("DB_PASSWORD")
+user <- Sys.getenv("DB_USER")
+password <- Sys.getenv("DB_PASSWORD")
 server <- Sys.getenv("DB_SERVER")
 port <- Sys.getenv("DB_PORT")
 pathToDriver <- Sys.getenv("PATH_TO_DRIVER")
-
-# connectionString is optional
-# if specified, the server, port fields are ignored. If user and password are not specified, they are assumed to already be included in the connection string.
-connectionString = if (Sys.getenv("CONNECTION_STRING") == "") NULL else Sys.getenv("CONNECTION_STRING")
+connectionDetails <- DatabaseConnector::createConnectionDetails(
+  dbms = dbms,
+  server = server,
+  port = port,
+  user = user,
+  password = password,
+  pathToDriver = pathToDriver
+)
 
 # Author details
 authors <-"<your_name>" # used on the title page
 
 # Details specific to the database:
-databaseId <- "<your_id>" # for example SYNPUF (this will be used as results sub-folder)
-databaseName <- "<your_full_databasename>"
-databaseDescription <- "<your_description>"
+cdmDatabaseSchema <- Sys.getenv("CDM_SCHEMA")
+resultsDatabaseSchema <- Sys.getenv("RESULTS_SCHEMA")
+vocabDatabaseSchema <- cdmDatabaseSchema
 
 # For Oracle: define a schema that can be used to emulate temp tables:
 oracleTempSchema <- NULL
 
 # Details for connecting to the CDM and storing the results
-outputFolder <- file.path(getwd(), "results",databaseId)
-cdmDatabaseSchema <- "<your_cdm_schema>"
-resultsDatabaseSchema <- "<your_results_schema>" # Make sure the Achilles results are in this schema!
-vocabDatabaseSchema <- "<your_vocab_schema>"
+outputFolder <- file.path(getwd(), "results", databaseId)
+
 
 # Url to check the version of your local Atlas
 baseUrl <- "<your_baseUrl>" # example: "http://atlas.your.organisation.com/WebAPI"
@@ -99,16 +101,7 @@ verboseMode <- TRUE
 # *******************************************************
 # SECTION 3: Run the package
 # *******************************************************
-
-connectionDetails <- DatabaseConnector::createConnectionDetails(dbms = dbms,
-                                                                server = server,
-                                                                port = port,
-                                                                user = user,
-                                                                password = password,                                                                
-                                                                connectionString = connectionString,
-                                                                pathToDriver = pathToDriver)
-
-results<-cdmInspection(
+results <- cdmInspection(
   connectionDetails = connectionDetails,
   cdmDatabaseSchema = cdmDatabaseSchema,
   resultsDatabaseSchema = resultsDatabaseSchema,
