@@ -37,3 +37,16 @@ vignettes/*.pdf
 
 # R Environment Variables
 .Renviron
+
+# Mac
+.DS_Store
+
+# Repo-specific
+results/
+output/
+errorReport*.txt
+error*.txt
+
+# VS code
+.lntr
+.vscode/

@@ -61,7 +61,13 @@ prettyHr <- function(x) {
   return(result)
 }
 
-
+prettyPc <- function(x) {
+  result <- sprintf("%.1f%%", x)
+  result[is.na(x)] <- "NA"
+  result[x == 100] <- "100%"
+  result[x == 0] <- "0%"
+  return(result)
+}
 
 my_body_add_table <- function (x, value, style = NULL, pos = "after", header = TRUE,
           alignment = NULL, stylenames = table_stylenames(), first_row = TRUE,
@@ -95,7 +101,7 @@ my_body_add_table <- function (x, value, style = NULL, pos = "after", header = T
 }
 
 
-my_source_value_count_section <- function (x, data, table_number, domain, kind,smallCellCount) {
+my_source_value_count_section <- function(x, data, table_number, domain, kind,smallCellCount) {
   n <- nrow(data$result)
 
   if (is.null(smallCellCount)) {
@@ -105,14 +111,14 @@ my_source_value_count_section <- function (x, data, table_number, domain, kind,s
   }
 
   if (n == 0) {
-    officer::body_add_par(x, paste0("Table ", table_number, " omitted because no ", kind, " ", domain, " were found."))
+    x <- officer::body_add_par(x, paste0("Table ", table_number, " omitted because no ", kind, " ", domain, " were found."))
   } else if (n < 25) {
-    officer::body_add_par(x, paste0("Table ", table_number, ". All ", n, " ", kind, " ", domain, ". ", msg))
+    x <- officer::body_add_par(x, paste0("Table ", table_number, ". All ", n, " ", kind, " ", domain, ". ", msg))
   } else {
-    officer::body_add_par(x, paste0("Table ", table_number, ". Top 25 of ", kind, " ", domain, ". ", msg))
+    x <- officer::body_add_par(x, paste0("Table ", table_number, ". Top 25 of ", kind, " ", domain, ". ", msg))
   }
 
-  if (n>0) {
+  if (n > 0) {
     if (kind == 'unmapped') {
       alignment <- c('r','l','r','r') # #,name,n,n
     } else {
@@ -138,7 +144,6 @@ my_mapped_section <- function(x, data, table_number, domain, smallCellCount) {
   names(data$result) <- c("#", "Concept Name", "#Records", "#Subjects")
   my_source_value_count_section(x, data, table_number, domain, "mapped", smallCellCount)
 }
-
 
 recordsCountPlot <- function(results){
   temp <- results %>%
