@@ -81,10 +81,10 @@ resultsDatabaseSchema <- Sys.getenv("RESULTS_SCHEMA")
 vocabDatabaseSchema <- cdmDatabaseSchema
 
 # Database metadata
-databaseId <- ""
-authors <- c('<author_1>', '<author_2>') # used on the title page
-databaseName <- ""
-databaseDescription <- ""
+databaseId <- "MyDatabaseId"
+authors <- '<author_1>,<author_2>' # used on the title page
+databaseName <- "MyDatabaseName"
+databaseDescription <- "Lorem Ipsum Loriat"
 
 # For Oracle: define a schema that can be used to emulate temp tables:
 oracleTempSchema <- NULL
@@ -127,7 +127,7 @@ results <- cdmInspection(
 generateResultsDocument(
   results,
   outputFolder,
-  authors=authors,
+  authors = authors,
   databaseId = databaseId,
   databaseName = databaseName,
   databaseDescription = databaseDescription,
