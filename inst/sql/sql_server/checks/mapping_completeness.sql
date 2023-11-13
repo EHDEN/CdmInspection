@@ -1,5 +1,5 @@
 select  'Condition' as domain,
-        count_big(source_value) as n_codes_source,
+        count_big(*) as n_codes_source,
         sum(is_mapped) as n_codes_mapped,
         100.0*sum(is_mapped) / count_big(*) as p_codes_mapped,
         sum(num_records) as n_records_source,
