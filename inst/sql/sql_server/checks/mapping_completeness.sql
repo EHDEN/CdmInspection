@@ -165,7 +165,7 @@ select 'Observation value', count_big(*),
       100.0*sum(case when is_mapped > 0 then num_records else 0 end)/sum(num_records)
 from
 (
-   select '', case when value_as_concept_id > 0 then 1 else 0 end as is_mapped, count_big(*) as num_records
+   select '' AS source_value, case when value_as_concept_id > 0 then 1 else 0 end as is_mapped, count_big(*) as num_records
    from @cdmDatabaseSchema.observation
    where value_as_concept_id IS NOT NULL
    group by case when value_as_concept_id > 0 then 1 else 0 end
