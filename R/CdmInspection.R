@@ -214,7 +214,9 @@ cdmInspection <- function (connectionDetails,
       ParallelLogger::logInfo(sprintf("> Connected successfully to %s", baseUrl))
       ParallelLogger::logInfo(sprintf("> WebAPI version: %s", webAPIversion))},
              error = function (e) {
+               errorMessage <- conditionMessage(e)
                ParallelLogger::logError(paste0("Could not connect to the WebAPI: ", baseUrl))
+               ParallelLogger::logError(paste0("Error details: ", errorMessage))
                webAPIversion <- "Failed"
       })
   }
