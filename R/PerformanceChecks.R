@@ -36,7 +36,7 @@
 #' @param vocabDatabaseSchema		           String name of database schema that contains OMOP Vocabulary. Default is cdmDatabaseSchema. On SQL Server, this should specifiy both the database and the schema, so for example 'results.dbo'.
 #' @param oracleTempSchema                 For Oracle only: the name of the database schema where you want all temporary tables to be managed. Requires create/insert permissions to this database.
 #' @param sourceName		                   String name of the data source name. If blank, CDM_SOURCE table will be queried to try to obtain this.
-#' @param sqlOnly                          Boolean to determine if Achilles should be fully executed. TRUE = just generate SQL files, don't actually run, FALSE = run Achilles
+#' @param sqlOnly                          Boolean indicating whether to generate SQL files only (TRUE) or execute performance checks (FALSE). In SQL-only mode both Achilles timing query variants are exported.
 #' @param outputFolder                     Path to store logs and SQL files
 #' @param verboseMode                      Boolean to determine if the console will show all execution steps. Default = TRUE
 #' @return                                 An object of type \code{achillesResults} containing details for connecting to the database containing the results
@@ -50,7 +50,35 @@ performanceChecks <- function (connectionDetails,
                               sqlOnly = FALSE,
                               outputFolder = "output",
                               verboseMode = TRUE) {
-  achillesTiming <- executeQuery(outputFolder,"achilles_timing.sql", "Retrieving duration of Achilles queries", connectionDetails, sqlOnly, cdmDatabaseSchema, vocabDatabaseSchema,resultsDatabaseSchema)
+  timingSql <- "achilles_timing.sql"
+
+  if (sqlOnly) {
+    # Export both SQL variants without connecting to the database.
+    executeQuery(outputFolder, "achilles_timing_v2.sql",
+                 "Retrieving duration of Achilles queries",
+                 connectionDetails, sqlOnly, cdmDatabaseSchema,
+                 vocabDatabaseSchema, resultsDatabaseSchema)
+  } else {
+    # Prefer the dedicated performance table when available.
+    connection <- DatabaseConnector::connect(connectionDetails)
+    tables <- tryCatch(
+      DatabaseConnector::getTableNames(
+        connection = connection,
+        databaseSchema = resultsDatabaseSchema
+      ),
+      finally = DatabaseConnector::disconnect(connection)
+    )
+
+    if ("achilles_performance" %in% tolower(tables)) {
+      timingSql <- "achilles_timing_v2.sql"
+    }
+  }
+
+  achillesTiming <- executeQuery(
+    outputFolder, timingSql, "Retrieving duration of Achilles queries",
+    connectionDetails, sqlOnly, cdmDatabaseSchema,
+    vocabDatabaseSchema, resultsDatabaseSchema
+  )
   performanceBenchmark <- executeQuery(outputFolder,"performance_benchmark.sql", "Executing vocabulary query benchmark", connectionDetails, sqlOnly, cdmDatabaseSchema, vocabDatabaseSchema,resultsDatabaseSchema)
   results <- list(achillesTiming=achillesTiming,
                   performanceBenchmark=performanceBenchmark)
